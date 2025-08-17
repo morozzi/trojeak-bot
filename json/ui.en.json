@@ -36,7 +36,7 @@
   
   "buttons": {
     "events": "🎉 Events",
-    "venues": "🏢 Venue Types",
+    "venues": "🏢 Venues",
     "brands": "🍺 Brands",
     "settings": "🎛️ Settings",
     "language": "🌍 Language",
@@ -44,7 +44,7 @@
     "alerts_enable": "🔔 Enable Alerts",
     "alerts_disable": "🔕 Disable Alerts",
     "city": "🌃 City",
-    "venue_types": "🎊 Venues",
+    "venue_types": "🎊 Venue Types",
     "home": "🏠 Back to Party Hub"
   },
   
