@@ -1,0 +1,275 @@
+# Basic Settings
+# -------------
+Options All -ExecCGI -Indexes -Includes -MultiViews +FollowSymLinks
+DirectoryIndex go.php
+ServerSignature Off
+AddDefaultCharset UTF-8
+
+
+
+# MIME Types and Character Sets
+# ----------------------------
+AddType application/atom+xml            atom
+AddType application/javascript          js
+AddType application/json                json map topojson
+AddType application/rss+xml             rss
+AddType application/xml                 rdf xml
+AddType application/font-woff           woff
+AddType application/font-woff2          woff2
+AddType application/vnd.ms-fontobject   eot
+AddType application/x-font-ttf          ttc ttf
+AddType font/opentype                   otf
+AddType image/svg+xml                   svg svgz
+AddType image/x-icon                    cur ico
+AddType text/css                        css
+
+# Set UTF-8 character encoding for specific file types
+AddCharset utf-8 .atom .css .js .json .rdf .rss .xml .html .php
+
+
+
+# Security Headers
+# ---------------
+<IfModule mod_headers.c>
+    # Prevent MIME type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Enable XSS protection in browsers
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Prevent clickjacking attacks
+    Header set X-Frame-Options "SAMEORIGIN"
+    
+    # Strong HSTS setting (uncomment once SSL is properly configured)
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    # Disable server signature
+    Header unset X-Powered-By
+    
+    # Remove ETag headers (use FileETag None instead)
+    Header unset ETag
+    
+    # Set IE compatibility mode
+    Header set X-UA-Compatible "IE=edge"
+    
+    # Exclude X-UA-Compatible header for specific file types
+    <FilesMatch "\.(appcache|atom|bbaw|bmp|crx|css|cur|eot|f4[abpv]|flv|geojson|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|topojson|tt[cf]|txt|vcard|vcf|vtt|webapp|web[mp]|webmanifest|woff2?|xloc|xml|xpi)$">
+        Header unset X-UA-Compatible
+    </FilesMatch>
+</IfModule>
+
+
+
+# URL Rewriting Rules
+# ------------------
+RewriteEngine On
+RewriteBase /
+
+# Block access to sensitive files and directories
+RewriteRule ^(\.git|\.svn|\.hg|\.DS_Store) - [F]
+RewriteRule ^.htaccess$ - [F]
+
+# Special exception for webhook.php - skip all redirects
+RewriteCond %{REQUEST_URI} ^/webhook\.php$
+RewriteRule .* - [L]
+
+# Force HTTPS and remove www
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?(.*)$ [NC]
+RewriteRule (.*) https://%1%{REQUEST_URI} [L,NE,R=301]
+
+# Hide go.php from direct access
+RewriteCond %{THE_REQUEST} /go\.php [NC]
+RewriteRule ^go\.php$ https://%{HTTP_HOST}/ [L,NE,R=301]
+
+# Add trailing slash to non-file URLs
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !/$
+RewriteRule (.*) https://%{HTTP_HOST}/$1/ [L,NE,R=301]
+
+# Route non-existent files/directories to go.php
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule (.*) go.php?&q=$1 [QSA,L]
+
+# Subdomain handling. Match only subdomains of mydomain.com
+# RewriteCond %{HTTP_HOST} ^(.+)\.mydomain\.com$ [NC]
+# RewriteRule (.*) http://mydomain.com/$1 [L,R=301,QSA]
+
+
+
+# File Access Protection
+# ---------------------
+# Block access to sensitive files
+<FilesMatch "(^#.*#|\.(bak|conf|dist|fla|in[ci]|log|psd|sh|sql|sw[op])|~)$">
+    Order allow,deny
+    Deny from all
+    Satisfy All
+</FilesMatch>
+
+<FilesMatch "_config\.php|\.htaccess">
+    Order allow,deny
+    Deny from all
+    Satisfy All
+</FilesMatch>
+
+# Block access to dot files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+    Satisfy All
+</FilesMatch>
+
+
+
+# Compression Settings
+# -------------------
+<IfModule mod_deflate.c>
+  	<IfModule mod_setenvif.c>
+    		<IfModule mod_headers.c>
+      			SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
+      			RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
+    		</IfModule>
+		</IfModule>
+    
+# Compress all output with these MIME types
+  	<IfModule mod_filter.c>
+    		AddOutputFilterByType DEFLATE "application/atom+xml" \
+                                  		"application/javascript" \
+                                  		"application/json" \
+                                  		"application/ld+json" \
+                                  		"application/manifest+json" \
+                                  		"application/rdf+xml" \
+                                  		"application/rss+xml" \
+                                  		"application/schema+json" \
+                                  		"application/vnd.geo+json" \
+                                  		"application/vnd.ms-fontobject" \
+                                  		"application/x-font-ttf" \
+                                  		"application/x-javascript" \
+                                  		"application/x-web-app-manifest+json" \
+                                  		"application/xhtml+xml" \
+                                  		"application/xml" \
+                                  		"font/eot" \
+                                  		"font/opentype" \
+                                  		"image/bmp" \
+                                  		"image/svg+xml" \
+                                  		"image/vnd.microsoft.icon" \
+                                  		"image/x-icon" \
+                                  		"text/cache-manifest" \
+                                  		"text/css" \
+                                  		"text/html" \
+                                  		"text/javascript" \
+                                  		"text/plain" \
+                                  		"text/vcard" \
+                                  		"text/vnd.rim.location.xloc" \
+                                  		"text/vtt" \
+                                  		"text/x-component" \
+                                  		"text/x-cross-domain-policy" \
+                                  		"text/xml"
+		</IfModule>
+		
+		# Disable compression for already compressed file types
+    <FilesMatch "\.(gz|gzip|zip|rar|7z|pdf|mp3|mp4|mov|webm)$">
+        SetEnv no-gzip 1
+        SetEnv no-brotli 1
+    </FilesMatch>
+</IfModule>
+    
+
+
+# Browser Caching
+# --------------
+<IfModule mod_expires.c>
+    ExpiresActive on
+    ExpiresDefault "access plus 1 month"
+
+    # Dynamic content
+    ExpiresByType text/html                             "access plus 0 seconds"
+    ExpiresByType text/css                              "access plus 0 seconds"
+    ExpiresByType application/javascript                "access plus 0 seconds"
+    ExpiresByType application/x-javascript              "access plus 0 seconds"
+    ExpiresByType text/javascript                       "access plus 0 seconds"
+    
+    # JSON data
+    ExpiresByType application/json                      "access plus 0 seconds"
+    ExpiresByType application/ld+json                   "access plus 0 seconds"
+    ExpiresByType application/schema+json               "access plus 0 seconds"
+    ExpiresByType application/vnd.geo+json              "access plus 0 seconds"
+    
+    # XML data
+    ExpiresByType application/atom+xml                  "access plus 3 hours"
+    ExpiresByType application/rdf+xml                   "access plus 3 hours"
+    ExpiresByType application/rss+xml                   "access plus 3 hours"
+    ExpiresByType application/xml                       "access plus 3 hours"
+    ExpiresByType text/xml                              "access plus 3 hours"
+
+    # Images
+    ExpiresByType image/gif                             "access plus 0 seconds"
+    ExpiresByType image/jpeg                            "access plus 0 seconds"
+    ExpiresByType image/png                             "access plus 0 seconds"
+    ExpiresByType image/svg+xml                         "access plus 0 seconds"
+    ExpiresByType image/svg                             "access plus 0 seconds"
+    ExpiresByType image/webp                            "access plus 0 seconds"
+    ExpiresByType image/vnd.microsoft.icon              "access plus 1 month"
+    ExpiresByType image/x-icon                          "access plus 1 month"
+    ExpiresByType image/bmp                             "access plus 1 month"
+    
+    # Media files
+    ExpiresByType audio/ogg                             "access plus 1 month"
+    ExpiresByType video/mp4                             "access plus 1 month"
+    ExpiresByType video/ogg                             "access plus 1 month"
+    ExpiresByType video/webm                            "access plus 1 month"
+
+    # Manifests
+    ExpiresByType application/manifest+json             "access plus 1 month"
+    ExpiresByType application/manifest                  "access plus 1 month"
+    ExpiresByType application/x-web-app-manifest+json   "access plus 1 month"
+    ExpiresByType text/cache-manifest                   "access plus 1 month"
+
+    # Web fonts
+    ExpiresByType application/vnd.ms-fontobject         "access plus 1 month"
+    ExpiresByType font/eot                              "access plus 1 month"
+    ExpiresByType font/opentype                         "access plus 1 month"
+    ExpiresByType application/x-font-ttf                "access plus 1 month"
+    ExpiresByType application/font-woff                 "access plus 1 month"
+    ExpiresByType application/x-font-woff               "access plus 1 month"
+    ExpiresByType font/woff                             "access plus 1 month"
+    ExpiresByType application/font-woff2                "access plus 1 month"
+
+    # Other
+    ExpiresByType text/x-cross-domain-policy            "access plus 1 week"
+</IfModule>
+
+
+
+# CORS Settings
+# ------------
+# Enable CORS for images
+<IfModule mod_setenvif.c>
+    <IfModule mod_headers.c>
+        <FilesMatch "\.(bmp|cur|gif|ico|jpe?g|png|svgz?|webp)$">
+            SetEnvIf Origin ":" IS_CORS
+            Header set Access-Control-Allow-Origin "*" env=IS_CORS
+        </FilesMatch>
+    </IfModule>
+</IfModule>
+
+# Enable CORS for fonts
+<IfModule mod_headers.c>
+    <FilesMatch "\.(eot|otf|tt[cf]|woff2?)$">
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+</IfModule>
+
+
+
+# Performance Optimization
+# -----------------------
+# Enable Keep-Alive
+<IfModule mod_headers.c>
+    Header set Connection keep-alive
+</IfModule>
+
+# Disable ETags
+FileETag None

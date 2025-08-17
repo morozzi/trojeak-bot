@@ -1,0 +1,56 @@
+# Environment Configuration
+.env
+.env.local
+.env.*.local
+
+# Log Files
+/logs/
+*.log
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.buildpath
+.settings/
+
+# Cache and Session Files
+/cache/
+/tmp/
+/temp/
+session_*
+
+# Database Dumps and Backups
+*.sql
+*.dump
+*.backup
+*.db
+
+# Project-specific Exclusions
+/a/
+/pic/
+/miniapp/
+
+# Web Files (not needed for Telegram bot)
+robots.txt
+sitemap.xml

@@ -1,0 +1,60 @@
+{
+  "welcome": "🔥 Let's Trojeak 🍺🍹\n\nBest deals at bars, clubs & KTV in Cambodia 🇰🇭✨",
+  "menu": "Choose your vibe 🎉",
+  "unknown_command": "Lost me there, bro 😅 Hit the buttons below 🍻",
+  "no_results": "No %s match your vibe 😅",
+  
+  "channel": {
+    "join_required": "Hey, party people 🎉 Unlock exclusive deals 🔥",
+    "join_button": "📲 Join Trojeak Channel"
+  },
+  
+  "events": {
+    "browse_all": "🎯 Browse All Events in %s",
+    "no_results": "No %s events in %s right now 😅",
+    "fallback_other_events": "Here are other parties in your city! 🎉",
+    "alerts_onboarding_prompt": "🔔 Want to know when %s events happen? Turn on alerts and never miss your vibe! 🔥",
+    "filter_prompt": "Filter your party vibe 🎯🔥"
+  },
+  
+  "app": {
+    "coming_soon": "Full event browsing coming soon! 🚀"
+  },
+  
+  "settings": {
+    "home_menu": "🎛️ Tune your vibe controls",
+    "language_menu": "🌍 Choose your party language",
+    "alerts_menu_disabled": "🔔 Never miss exclusive deals 🔥",
+    "alerts_menu_enabled": "😴 Chill Mode required?",
+    "city_menu": "🏙️ Pick your party city",
+    "venue_types_menu": "🎯 Choose your party spots"
+  },
+  
+  "error": {
+    "user_creation": "Oops! Party bug 😅\nTry that move again!"
+  },
+  
+  "buttons": {
+    "events": "🎉 Events",
+    "venues": "🏢 Venues",
+    "brands": "🍺 Brands",
+    "settings": "🎛️ Settings",
+    "language": "🌍 Language",
+    "alerts": "🔔 Event Alerts",
+    "alerts_enable": "🔔 Enable Alerts",
+    "alerts_disable": "🔕 Disable Alerts",
+    "city": "🌃 City",
+    "venue_types": "🎊 Venues",
+    "home": "🏠 Back to Party Hub"
+  },
+  
+  "confirmations": {
+    "language_changed": "🇺🇸 English on! Let's go!",
+    "unknown_callback": "🤔 That button's expired, bro! Try the fresh ones below 🍻",
+    "alerts_enabled": "You're in 🎉🔔",
+    "alerts_disabled": "Alerts paused 🔕",
+    "city_changed": "%s locked in 🏙️🔥",
+    "venue_added": "%s added to favorites 🎯✨",
+    "venue_removed": "%s removed from favorites 🎯✨"
+  }
+}

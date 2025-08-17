@@ -1,0 +1,45 @@
+{
+  "data": {
+    "user_create_failed": "Failed to create user: %s",
+    "user_lookup_failed": "User not found in database",
+    "user_update_failed": "Failed to update user information: %s",
+    "user_info_missing": "Missing user information in message",
+    "user_extraction_failed": "Failed to extract user ID from update",
+    "connection_failed": "Database connection error: %s",
+    "query_failed": "SQL Error: %s in query: %s",
+    "prepare_failed": "Prepare statement error: %s in query: %s",
+    "transaction_failed": "Transaction failed: %s",
+    "channel_membership_update_failed": "Channel membership update failed"
+  },
+
+  "api": {
+    "request_failed": "API request to %s failed: %s",
+    "rate_limit_hit": "Rate limit hit for endpoint %s: %s",
+    "chat_id_missing": "Missing chat ID in message"
+  },
+
+  "bot": {
+    "message_processing": "Processing message: %s from user %s",
+    "callback_processing": "Processing callback: %s from user %s",
+    "user_navigation": "User %s accessed %s by %s",
+    "user_started_new": "New user %s started bot with detected language: %s",
+    "user_started_existing": "Existing user %s started bot again",
+    "unknown_message_sent": "User %s sent unknown message: %s",
+    "protected_command_attempted": "User %s attempted member feature",
+    "pending_request_stored": "Stored pending request %s for user %s",
+    "request_auto_fulfilled": "Auto-fulfilled pending request %s for user %s",
+    "channel_prompt_sent": "Sent channel join prompt to user %s",
+    "channel_webhook_accessed": "User %s %s the channel via webhook",
+    "user_preference_changed": "User %s changed %s to %s",
+    "user_created": "Created new user %s with ID %s",
+    "user_bot_status_changed": "User %s %s the bot"
+  },
+
+  "core": {
+    "general_error": "System error: %s",
+    "exception_caught": "Uncaught exception: %s in %s:%d",
+    "callback_duplicate": "Duplicate callback %s from user %s - debounced",
+    "callback_unknown": "Unknown callback data received: %s",
+    "webhook_validation_failed": "Webhook security validation failed"
+  }
+}
