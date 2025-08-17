@@ -36,7 +36,7 @@ date_default_timezone_set("Asia/Phnom_Penh");
 
 final class Constants {
     public const string NAMESPACE = 'trojeakbot';
-    public const string JSON_VERSION = '1.1';
+    public const string JSON_VERSION = '1.2';
     
     public const string USER_ACTIVE = 'active';
     public const string USER_BLOCKED = 'blocked';
