@@ -3,29 +3,46 @@
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="/favicon.png" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="theme-color" content="#1a1a1a" />
+		<title>Trojeak Mini App</title>
+		
+		<!-- Telegram WebApp Script -->
 		<script src="https://telegram.org/js/telegram-web-app.js"></script>
 		
-		<link rel="modulepreload" href="/app/immutable/entry/start.BFyKr0Yd.js">
-		<link rel="modulepreload" href="/app/immutable/chunks/BUE4hbNo.js">
-		<link rel="modulepreload" href="/app/immutable/chunks/kJjknr4U.js">
-		<link rel="modulepreload" href="/app/immutable/chunks/CPRSF_xy.js">
-		<link rel="modulepreload" href="/app/immutable/entry/app.zeNAH_lk.js">
+		<!-- Telegram WebApp Styles -->
+		<style>
+			body {
+				margin: 0;
+				padding: 0;
+				background-color: var(--tg-theme-bg-color, #ffffff);
+				color: var(--tg-theme-text-color, #000000);
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			}
+		</style>
+		
+		
+		<link rel="modulepreload" href="/app/immutable/entry/start.Cx6agAED.js">
+		<link rel="modulepreload" href="/app/immutable/chunks/BlpFEZ1V.js">
+		<link rel="modulepreload" href="/app/immutable/chunks/g72nthpy.js">
+		<link rel="modulepreload" href="/app/immutable/chunks/C9-kHj3i.js">
+		<link rel="modulepreload" href="/app/immutable/entry/app.Cs0aR36X.js">
 		<link rel="modulepreload" href="/app/immutable/chunks/Bzak7iHL.js">
+		<link rel="modulepreload" href="/app/immutable/chunks/Coos6UKX.js">
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">
 			<script>
 				{
-					__sveltekit_17kr6ta = {
+					__sveltekit_thfgl0 = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/app/immutable/entry/start.BFyKr0Yd.js"),
-						import("/app/immutable/entry/app.zeNAH_lk.js")
+						import("/app/immutable/entry/start.Cx6agAED.js"),
+						import("/app/immutable/entry/app.Cs0aR36X.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element);
 					});
