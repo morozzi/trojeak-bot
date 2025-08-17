@@ -49,7 +49,6 @@ session_*
 # Project-specific Exclusions
 /a/
 /pic/
-/miniapp/
 
 # Web Files (not needed for Telegram bot)
 robots.txt
