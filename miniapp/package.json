@@ -1,0 +1,22 @@
+{
+  "name": "trojeak-miniapp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.9",
+    "@sveltejs/kit": "^2.31.0",
+    "@sveltejs/vite-plugin-svelte": "^6.1.2",
+    "svelte": "^5.38.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2"
+  },
+  "dependencies": {
+    "@twa-dev/sdk": "^8.0.2"
+  }
+}
