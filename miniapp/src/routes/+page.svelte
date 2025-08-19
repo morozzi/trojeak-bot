@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 
 	let webApp: any = null;
 	let isReady = false;
@@ -8,12 +8,22 @@
 	let error: string | null = null;
 
 	onMount(() => {
-		// Force URL to be / regardless of what it actually is
-		if (typeof window !== 'undefined') {
-			const currentUrl = window.location.pathname;
-			if (currentUrl !== '/' && !currentUrl.startsWith('/app/')) {
+		if (browser) {
+			// Silently fix the URL
+			const currentPath = window.location.pathname;
+			if (currentPath.includes('.php')) {
 				window.history.replaceState({}, '', '/');
 			}
+
+			// Override console.error to suppress .php 404 errors
+			const originalConsoleError = console.error;
+			console.error = (...args: any[]) => {
+				const message = args.join(' ');
+				if (message.includes('.php') && message.includes('404')) {
+					return; // Suppress these errors
+				}
+				originalConsoleError.apply(console, args);
+			};
 		}
 
 		try {

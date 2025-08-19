@@ -11,7 +11,14 @@ export default {
 		}),
 		appDir: 'app',
 		prerender: {
-			entries: ['/']
+			entries: ['/'],
+			handleHttpError: ({ path, referrer, message }) => {
+				// Ignore 404s for .php paths
+				if (path.includes('.php')) {
+					return;
+				}
+				throw new Error(message);
+			}
 		}
 	}
 };
