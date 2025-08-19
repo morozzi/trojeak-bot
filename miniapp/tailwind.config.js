@@ -14,6 +14,7 @@ export default {
     }
   },
   plugins: [
-    require('@tailwindcss/forms')
+    // Note: @tailwindcss/forms may need to be updated for v4
+    // You might need to install @tailwindcss/forms@next for v4 compatibility
   ]
 }
