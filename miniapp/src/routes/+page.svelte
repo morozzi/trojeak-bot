@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
 	let webApp: any = null;
 	let isReady = false;
@@ -7,20 +8,25 @@
 	let error: string | null = null;
 
 	onMount(() => {
+		// Force URL to be / regardless of what it actually is
+		if (typeof window !== 'undefined') {
+			const currentUrl = window.location.pathname;
+			if (currentUrl !== '/' && !currentUrl.startsWith('/app/')) {
+				window.history.replaceState({}, '', '/');
+			}
+		}
+
 		try {
 			if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
 				webApp = window.Telegram.WebApp;
 				
-				// Initialize Telegram WebApp
 				webApp.ready();
 				webApp.expand();
 				
-				// Get user information
 				if (webApp.initDataUnsafe?.user) {
 					userInfo = webApp.initDataUnsafe.user;
 				}
 				
-				// Set main button (optional)
 				webApp.MainButton.text = "Close App";
 				webApp.MainButton.show();
 				webApp.MainButton.onClick(() => {
@@ -29,8 +35,6 @@
 				
 				isReady = true;
 				console.log('✅ Telegram WebApp initialized successfully');
-				console.log('User:', userInfo);
-				console.log('WebApp:', webApp);
 			} else {
 				error = 'Telegram WebApp not available. Open this in Telegram.';
 				console.warn('⚠️ Not running in Telegram environment');
@@ -183,7 +187,6 @@
 		color: var(--tg-theme-text-color, #555);
 	}
 
-	/* Responsive design */
 	@media (max-width: 480px) {
 		.container {
 			padding: 16px;

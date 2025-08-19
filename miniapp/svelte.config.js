@@ -9,6 +9,9 @@ export default {
 			precompress: false,
 			strict: false
 		}),
-		appDir: 'app'
+		appDir: 'app',
+		prerender: {
+			entries: ['/']
+		}
 	}
 };
