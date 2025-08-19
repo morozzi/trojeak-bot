@@ -9,14 +9,6 @@ export default {
 			precompress: false,
 			strict: false
 		}),
-		appDir: 'app',
-		paths: {
-			base: '',
-			assets: ''
-		},
-		prerender: {
-			handleHttpError: 'warn',
-			handleMissingId: 'warn'
-		}
+		appDir: 'app'
 	}
 };
