@@ -1,22 +1,13 @@
 <?php
-// miniapp.php - NUCLEAR FIX - Serves the built Svelte Mini App
-
-error_log("miniapp.php called with REQUEST_URI: " . ($_SERVER['REQUEST_URI'] ?? 'null'));
-error_log("miniapp.php parsed path: " . $path);
+// miniapp.php - Serves the built Svelte Mini App
 
 $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
 $parsedUri = parse_url($requestUri, PHP_URL_PATH);
-
-// Remove query parameters and normalize path
 $path = rtrim($parsedUri, '/');
 
-// DEBUG: Log what's being requested
-error_log("miniapp.php: Requested path: " . $path);
-
-// Handle /app assets (SvelteKit assets) - CRITICAL FIX
+// Handle /app assets (SvelteKit assets)
 if (str_starts_with($path, '/app/')) {
     $filePath = __DIR__ . '/miniapp/dist' . $path;
-    error_log("miniapp.php: Looking for file: " . $filePath);
     
     if (file_exists($filePath)) {
         $extension = pathinfo($filePath, PATHINFO_EXTENSION);
@@ -35,11 +26,9 @@ if (str_starts_with($path, '/app/')) {
         
         header('Content-Type: ' . $mimeType);
         header('Cache-Control: public, max-age=31536000');
-        error_log("miniapp.php: Serving file: " . $filePath . " as " . $mimeType);
         readfile($filePath);
         exit;
     } else {
-        error_log("miniapp.php: File NOT FOUND: " . $filePath);
         http_response_code(404);
         echo "File not found: " . $path;
         exit;
@@ -49,7 +38,6 @@ if (str_starts_with($path, '/app/')) {
 // Handle other static assets
 if (preg_match('/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2)$/', $path)) {
     $filePath = __DIR__ . '/miniapp/dist' . $path;
-    error_log("miniapp.php: Static asset request: " . $filePath);
     
     if (file_exists($filePath)) {
         $extension = pathinfo($filePath, PATHINFO_EXTENSION);
@@ -75,15 +63,12 @@ if (preg_match('/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2)$/', $path)) {
 
 // Handle all other routes - serve main app
 $indexPath = __DIR__ . '/miniapp/dist/index.html';
-error_log("miniapp.php: Serving index.html from: " . $indexPath);
 
 if (file_exists($indexPath)) {
     header('Content-Type: text/html; charset=utf-8');
     header('Cache-Control: no-cache, no-store, must-revalidate');
     readfile($indexPath);
 } else {
-    error_log("miniapp.php: index.html NOT FOUND at: " . $indexPath);
     http_response_code(404);
     echo '<!DOCTYPE html><html><body><h1>Mini App Not Found</h1><p>Build files not uploaded.</p></body></html>';
 }
-?>
