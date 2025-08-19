@@ -1,14 +1,12 @@
 <script>
-	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	
 	onMount(() => {
-		if (browser) {
-			// Silently fix the URL without triggering SvelteKit navigation
-			const currentPath = window.location.pathname;
-			if (currentPath.includes('.php')) {
-				window.history.replaceState({}, '', '/');
-			}
+		// If the URL contains .php, redirect to root
+		if ($page.url.pathname.includes('.php')) {
+			goto('/', { replaceState: true });
 		}
 	});
 </script>
