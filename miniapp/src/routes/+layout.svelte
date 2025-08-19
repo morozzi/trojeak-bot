@@ -1,11 +1,12 @@
 <script>
-	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	
 	onMount(() => {
-		// Use native browser redirect to avoid SvelteKit routing errors
-		if (browser && window.location.pathname.includes('.php')) {
-			window.location.replace('/');
+		// If the URL contains .php, redirect to root
+		if ($page.url.pathname.includes('.php')) {
+			goto('/', { replaceState: true });
 		}
 	});
 </script>
