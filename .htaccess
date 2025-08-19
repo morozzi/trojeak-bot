@@ -83,6 +83,13 @@ RewriteRule (.*) https://%1%{REQUEST_URI} [L,NE,R=301]
 RewriteCond %{THE_REQUEST} /go\.php [NC]
 RewriteRule ^go\.php$ https://%{HTTP_HOST}/ [L,NE,R=301]
 
+# MINIAPP RULES - Handle /app/ requests for Svelte assets
+RewriteCond %{REQUEST_URI} ^/app/
+RewriteRule ^app/ miniapp.php [QSA,L]
+
+# MINIAPP RULES - Optional direct access to miniapp
+RewriteRule ^miniapp/?$ miniapp.php [L]
+
 # Add trailing slash to non-file URLs
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !/$
