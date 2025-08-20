@@ -21,10 +21,15 @@
 		description: string;
 	}
 
-	export let event: Event;
-	export let availableBrands: Brand[];
-	export let onComplete: () => void;
-	export let onCancel: () => void;
+	interface BookingWizardProps {
+		event: Event;
+		availableBrands: Brand[];
+		onComplete: () => void;
+		onCancel: () => void;
+	}
+
+	// Use $props() instead of export let for Svelte 5
+	const { event, availableBrands, onComplete, onCancel }: BookingWizardProps = $props();
 
 	// Booking state
 	let currentStep = $state(1);
@@ -118,7 +123,7 @@
 			<!-- Step 1: Select Drinks -->
 			<div class="step-content animate-fade-in">
 				<h3 class="step-title">Select Your Drinks</h3>
-				<p class="step-description">Choose from available brands at this event</p>
+				<p class="step-description">Choose from available brands for this event</p>
 				
 				<div class="brands-grid">
 					{#each availableBrands as brand}
@@ -129,17 +134,21 @@
 								<p class="brand-description">{brand.description}</p>
 							</div>
 							
-							<div class="quantity-selector">
+							<div class="quantity-controls">
 								<button 
 									class="qty-btn"
 									onclick={() => updateBrandQuantity(brand.id, Math.max(0, (selectedBrands[brand.id] || 0) - 1))}
 									disabled={!selectedBrands[brand.id]}
-								>-</button>
-								<span class="qty-display">{selectedBrands[brand.id] || 0}</span>
+								>
+									-
+								</button>
+								<span class="quantity">{selectedBrands[brand.id] || 0}</span>
 								<button 
 									class="qty-btn"
-									onclick={() => updateBrandQuantity(brand.id, Math.min(10, (selectedBrands[brand.id] || 0) + 1))}
-								>+</button>
+									onclick={() => updateBrandQuantity(brand.id, (selectedBrands[brand.id] || 0) + 1)}
+								>
+									+
+								</button>
 							</div>
 						</div>
 					{/each}
@@ -147,134 +156,162 @@
 
 				{#if totalItems > 0}
 					<div class="selection-summary">
-						<p class="summary-text">
-							Selected: <span class="highlight">{totalItems}</span> items
-						</p>
+						<div class="summary-item">
+							<span>Total items: {totalItems}</span>
+							<span>Estimated: ${estimatedTotal}</span>
+						</div>
 					</div>
 				{/if}
 			</div>
-
 		{:else if currentStep === 2}
 			<!-- Step 2: Guest Details -->
 			<div class="step-content animate-fade-in">
-				<h3 class="step-title">Guest Details</h3>
-				<p class="step-description">Tell us about your party</p>
+				<h3 class="step-title">Booking Details</h3>
+				<p class="step-description">Tell us about your group</p>
 				
 				<div class="form-group">
-					<label class="form-label">Number of Guests</label>
-					<select bind:value={guestCount} class="form-input form-select">
-						{#each Array.from({length: 10}, (_, i) => i + 1) as num}
-							<option value={num}>{num} {num === 1 ? 'guest' : 'guests'}</option>
-						{/each}
-					</select>
+					<label for="guests">Number of Guests</label>
+					<input 
+						type="number" 
+						id="guests"
+						bind:value={guestCount}
+						min="1" 
+						max="20"
+						class="form-input"
+					/>
 				</div>
 
 				<div class="form-group">
-					<label class="form-label">Phone Number</label>
+					<label for="phone">Phone Number</label>
 					<input 
 						type="tel" 
+						id="phone"
 						value={phoneNumber}
 						oninput={handlePhoneInput}
+						placeholder="+855 12 345 678"
 						class="form-input"
-						placeholder="+855 XX XXX XXX"
 					/>
-					<p class="form-hint">We'll send booking confirmation to this number</p>
 				</div>
 			</div>
-
 		{:else if currentStep === 3}
-			<!-- Step 3: Review & Comment -->
+			<!-- Step 3: Additional Details -->
 			<div class="step-content animate-fade-in">
-				<h3 class="step-title">Review Your Booking</h3>
-				<p class="step-description">Double-check everything looks good</p>
+				<h3 class="step-title">Additional Information</h3>
+				<p class="step-description">Any special requests or comments?</p>
 				
+				<div class="form-group">
+					<label for="comment">Comments (Optional)</label>
+					<textarea 
+						id="comment"
+						bind:value={comment}
+						placeholder="Special requests, dietary restrictions, etc."
+						maxlength="200"
+						rows="4"
+						class="form-textarea"
+					></textarea>
+					<div class="char-count">
+						{comment.length}/200 characters
+					</div>
+				</div>
+
 				<!-- Booking Summary -->
 				<div class="booking-summary">
-					<div class="summary-section">
-						<h4 class="summary-title">Event Details</h4>
-						<p>{event.title}</p>
-						<p>{event.venue_name}, {event.city}</p>
-						<p>{event.date}</p>
+					<h4 class="summary-title">Booking Summary</h4>
+					<div class="summary-details">
+						<div class="summary-item">
+							<span>Event:</span>
+							<span>{event.title}</span>
+						</div>
+						<div class="summary-item">
+							<span>Venue:</span>
+							<span>{event.venue_name}</span>
+						</div>
+						<div class="summary-item">
+							<span>Date:</span>
+							<span>{event.date}</span>
+						</div>
+						<div class="summary-item">
+							<span>Guests:</span>
+							<span>{guestCount}</span>
+						</div>
+						<div class="summary-item">
+							<span>Phone:</span>
+							<span>{phoneNumber}</span>
+						</div>
 					</div>
-
-					<div class="summary-section">
-						<h4 class="summary-title">Your Party</h4>
-						<p>{guestCount} {guestCount === 1 ? 'guest' : 'guests'}</p>
-						<p>{phoneNumber}</p>
-					</div>
-
-					<div class="summary-section">
-						<h4 class="summary-title">Selected Drinks</h4>
-						{#each Object.entries(selectedBrands) as [brandId, quantity]}
-							{@const brand = availableBrands.find(b => b.id === brandId)}
-							{#if brand}
-								<p>{quantity}x {brand.name}</p>
-							{/if}
-						{/each}
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="form-label">Special Requests (Optional)</label>
-					<textarea 
-						bind:value={comment}
-						class="form-input"
-						rows="3"
-						maxlength="200"
-						placeholder="Any special requests or notes..."
-					></textarea>
-					<p class="form-hint">{comment.length}/200 characters</p>
+					
+					{#if totalItems > 0}
+						<div class="drinks-summary">
+							<h5>Selected Drinks:</h5>
+							{#each Object.entries(selectedBrands) as [brandId, qty]}
+								{@const brand = availableBrands.find(b => b.id === brandId)}
+								{#if brand}
+									<div class="drink-item">
+										<span>{brand.name}</span>
+										<span>×{qty}</span>
+									</div>
+								{/if}
+							{/each}
+						</div>
+					{/if}
 				</div>
 			</div>
-
 		{:else if currentStep === 4}
 			<!-- Step 4: Payment -->
 			<div class="step-content animate-fade-in">
 				<h3 class="step-title">Choose Payment Method</h3>
-				<p class="step-description">Secure payment to confirm your booking</p>
+				<p class="step-description">How would you like to pay?</p>
 				
 				<div class="payment-methods">
-					<button 
-						class="payment-option"
-						class:selected={paymentMethod === 'aba'}
-						onclick={() => paymentMethod = 'aba'}
-					>
-						<div class="payment-icon">🏦</div>
-						<div class="payment-info">
-							<h4>ABA QR Pay</h4>
-							<p>Pay with ABA mobile app</p>
+					<label class="payment-option">
+						<input 
+							type="radio" 
+							name="payment"
+							value="aba"
+							onchange={() => paymentMethod = 'aba'}
+							checked={paymentMethod === 'aba'}
+						/>
+						<div class="payment-card">
+							<div class="payment-info">
+								<h4>ABA QR Pay</h4>
+								<p>Pay with ABA mobile banking</p>
+							</div>
+							<div class="payment-logo">🏦</div>
 						</div>
-						<div class="payment-check">
-							{#if paymentMethod === 'aba'}✓{/if}
-						</div>
-					</button>
+					</label>
 
-					<button 
-						class="payment-option"
-						class:selected={paymentMethod === 'ipay88'}
-						onclick={() => paymentMethod = 'ipay88'}
-					>
-						<div class="payment-icon">💳</div>
-						<div class="payment-info">
-							<h4>Card Payment</h4>
-							<p>Credit/debit cards via iPay88</p>
+					<label class="payment-option">
+						<input 
+							type="radio" 
+							name="payment"
+							value="ipay88"
+							onchange={() => paymentMethod = 'ipay88'}
+							checked={paymentMethod === 'ipay88'}
+						/>
+						<div class="payment-card">
+							<div class="payment-info">
+								<h4>iPay88</h4>
+								<p>Credit/Debit cards & online banking</p>
+							</div>
+							<div class="payment-logo">💳</div>
 						</div>
-						<div class="payment-check">
-							{#if paymentMethod === 'ipay88'}✓{/if}
-						</div>
-					</button>
+					</label>
 				</div>
 
-				<div class="total-summary">
-					<div class="total-line">
-						<span>Items ({totalItems})</span>
-						<span>${estimatedTotal}</span>
+				{#if totalItems > 0}
+					<div class="final-total">
+						<div class="total-breakdown">
+							<div class="total-item">
+								<span>Drinks ({totalItems} items)</span>
+								<span>${estimatedTotal}</span>
+							</div>
+							<div class="total-item final">
+								<span>Total</span>
+								<span class="total-amount">${estimatedTotal}</span>
+							</div>
+						</div>
 					</div>
-					<div class="total-line final">
-						<span>Total</span>
-						<span class="total-amount">${estimatedTotal}</span>
-					</div>
-				</div>
+				{/if}
 			</div>
 		{/if}
 	</div>
