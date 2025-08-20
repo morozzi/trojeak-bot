@@ -1,7 +1,9 @@
+<!-- src/routes/+page.svelte - Modernized with Neon Design System -->
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import BookingWizard from '$lib/components/BookingWizard.svelte';
+	import LoadingAnimation from '$lib/components/LoadingAnimation.svelte';
 
 	interface Event {
 		id: string;
@@ -34,6 +36,21 @@
 		description: string;
 	}
 
+	// State management
+	let currentView: 'main' | 'events' | 'venues' | 'brands' | 'booking' = $state('main');
+	let viewMode: 'list' | 'detail' = $state('list');
+	let selectedEventId: string | null = $state(null);
+	let selectedVenueId: string | null = $state(null);
+	let selectedBrandId: string | null = $state(null);
+	let cityFilter: string = $state('all');
+	let typeFilter: string = $state('all');
+	let webApp: any = $state(null);
+	let userInfo: any = $state(null);
+	let isReady: boolean = $state(false);
+	let error: string | null = $state(null);
+	let isLoading: boolean = $state(true);
+
+	// Mock data (same as before)
 	const MOCK_DATA = {
 		events: [
 			{
@@ -115,122 +132,34 @@
 				address: 'BKK1, Phnom Penh',
 				featured: false,
 				description: 'Luxury karaoke with private rooms and premium sound systems.'
-			},
-			{
-				id: 'ven_003',
-				name: 'Otres Beach Club',
-				type: 'club' as const,
-				city: 'Sihanoukville',
-				address: 'Otres Beach, Sihanoukville',
-				featured: true,
-				description: 'Beachfront club with stunning ocean views and beach parties.'
-			},
-			{
-				id: 'ven_004',
-				name: 'Embargo Bar',
-				type: 'bar' as const,
-				city: 'Siem Reap',
-				address: 'Pub Street, Siem Reap',
-				featured: false,
-				description: 'Craft beer bar with extensive local and international selections.'
-			},
-			{
-				id: 'ven_005',
-				name: 'Pontoon Club',
-				type: 'club' as const,
-				city: 'Phnom Penh',
-				address: 'Riverside, Phnom Penh',
-				featured: true,
-				description: 'Premier nightclub with floating bar experience on the Mekong.'
 			}
 		] as Venue[],
 		brands: [
 			{
 				id: 'brd_001',
-				name: 'Angkor Beer',
+				name: 'Anchor Beer',
 				type: 'beer' as const,
 				featured: true,
-				description: 'Cambodia\'s premium lager beer with authentic local taste.'
+				description: 'Cambodia\'s premium lager beer'
 			},
 			{
 				id: 'brd_002',
-				name: 'Stella Artois',
-				type: 'beer' as const,
-				featured: false,
-				description: 'Belgian premium lager with crisp, clean taste.'
-			},
-			{
-				id: 'brd_003',
-				name: 'Grey Goose',
-				type: 'spirits' as const,
-				featured: true,
-				description: 'Premium French vodka distilled from French wheat.'
-			},
-			{
-				id: 'brd_004',
-				name: 'Johnnie Walker',
+				name: 'Absolut Vodka',
 				type: 'spirits' as const,
 				featured: false,
-				description: 'World-renowned Scotch whisky with rich heritage.'
-			},
-			{
-				id: 'brd_005',
-				name: 'Moët & Chandon',
-				type: 'wine' as const,
-				featured: true,
-				description: 'Luxury champagne from the heart of Champagne, France.'
-			},
-			{
-				id: 'brd_006',
-				name: 'Corona',
-				type: 'beer' as const,
-				featured: false,
-				description: 'Mexican beer perfect with lime for a refreshing taste.'
-			},
-			{
-				id: 'brd_007',
-				name: 'Bacardi',
-				type: 'spirits' as const,
-				featured: true,
-				description: 'Premium white rum perfect for tropical cocktails.'
+				description: 'Premium Swedish vodka'
 			}
 		] as Brand[]
 	};
 
-	let webApp: any = null;
-	let userInfo = $state<any>(null);
-	let isReady = $state(false);
-	let error = $state('');
-
-	let currentView = $state<'main' | 'events' | 'venues' | 'brands' | 'booking'>('main');
-	let viewMode = $state<'list' | 'detail'>('list');
-	let selectedEventId = $state<string | null>(null);
-	let selectedVenueId = $state<string | null>(null);
-	let selectedBrandId = $state<string | null>(null);
-
-	let cityFilter = $state('all');
-	let venueTypeFilter = $state('all');
-	let brandTypeFilter = $state('all');
-
-	const cities = ['all', 'Phnom Penh', 'Sihanoukville', 'Siem Reap'];
+	// Computed values
+	const cities = $derived(['all', ...Array.from(new Set(MOCK_DATA.events.map(e => e.city)))]);
+	const types = $derived(['all', 'bar', 'club', 'ktv']);
 
 	const filteredEvents = $derived(
-		MOCK_DATA.events.filter(e => 
-			cityFilter === 'all' || e.city === cityFilter
-		).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
-	);
-
-	const filteredVenues = $derived(
-		MOCK_DATA.venues.filter(v => 
-			(cityFilter === 'all' || v.city === cityFilter) &&
-			(venueTypeFilter === 'all' || v.type === venueTypeFilter)
-		).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
-	);
-
-	const filteredBrands = $derived(
-		MOCK_DATA.brands.filter(b => 
-			brandTypeFilter === 'all' || b.type === brandTypeFilter
-		).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
+		MOCK_DATA.events
+			.filter(e => cityFilter === 'all' || e.city === cityFilter)
+			.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
 	);
 
 	const selectedEvent = $derived(
@@ -245,14 +174,7 @@
 		selectedBrandId ? MOCK_DATA.brands.find(b => b.id === selectedBrandId) : null
 	);
 
-	const venueEvents = $derived(
-		selectedVenueId ? MOCK_DATA.events.filter(e => e.venue_id === selectedVenueId) : []
-	);
-
-	const brandEvents = $derived(
-		selectedBrandId ? MOCK_DATA.events.filter(e => e.brands.includes(selectedBrandId)) : []
-	);
-
+	// Navigation functions
 	function navigateBack() {
 		if (currentView === 'booking') {
 			if (selectedEventId) {
@@ -299,31 +221,26 @@
 	}
 
 	onMount(() => {
-		// Deep linking parameter handling with improved debugging
+		// Simulate loading time
+		setTimeout(() => {
+			isLoading = false;
+		}, 1500);
+
+		// Deep linking parameter handling
 		if (typeof window !== 'undefined') {
-			// Log current URL for debugging
-			console.log('Current URL:', window.location.href);
-			console.log('Search params:', window.location.search);
-			
 			const currentUrl = window.location.pathname;
 			if (currentUrl !== '/' && !currentUrl.startsWith('/app/')) {
 				window.history.replaceState({}, '', '/');
 			}
 
-			// Parse deep linking parameters
 			const urlParams = new URLSearchParams(window.location.search);
 			const startParam = urlParams.get('start');
 			
-			console.log('Start parameter:', startParam);
-			
 			if (startParam === 'events') {
-				console.log('Setting view to events');
 				currentView = 'events';
 			} else if (startParam === 'venues') {
-				console.log('Setting view to venues');
 				currentView = 'venues';
 			} else if (startParam === 'brands') {
-				console.log('Setting view to brands');
 				currentView = 'brands';
 			}
 		}
@@ -341,7 +258,6 @@
 				}
 				
 				webApp.BackButton.onClick(navigateBack);
-				
 				isReady = true;
 			} else {
 				error = 'Telegram WebApp not available. Open this in Telegram.';
@@ -363,18 +279,25 @@
 	});
 </script>
 
-<main class="min-h-screen bg-gray-50">
-	{#if error}
-		<div class="container mx-auto px-4 py-8">
-			<div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-				<p class="text-red-800 font-medium">⚠️ {error}</p>
-				<p class="text-red-600 text-sm mt-2">Try opening this in Telegram</p>
-			</div>
+<!-- Include the design system CSS -->
+<svelte:head>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</svelte:head>
+
+<main class="min-h-screen" style="background: var(--bg-primary);">
+	{#if isLoading}
+		<div class="loading-screen">
+			<LoadingAnimation size="lg" message="Welcome to Trojeak" />
 		</div>
-	{:else if !isReady}
-		<div class="container mx-auto px-4 py-8">
-			<div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-				<p class="text-blue-800">🔄 Initializing...</p>
+	{:else if error}
+		<div class="error-container">
+			<div class="error-card">
+				<div class="error-icon">⚠️</div>
+				<h2 class="error-title">Oops!</h2>
+				<p class="error-message">{error}</p>
+				<p class="error-hint">Try opening this in Telegram</p>
 			</div>
 		</div>
 	{:else if currentView === 'booking' && selectedEvent}
@@ -385,280 +308,428 @@
 			onCancel={() => { currentView = 'events'; viewMode = 'detail'; }}
 		/>
 	{:else if currentView === 'main'}
-		<div class="container mx-auto px-4 py-6">
-			<div class="text-center mb-8">
-				<h1 class="text-3xl font-bold text-gray-900 mb-2">🍺 Trojeak</h1>
-				<p class="text-gray-600">Discover events and pre-order drinks</p>
-				{#if userInfo}
-					<p class="text-sm text-gray-500 mt-2">Welcome, {userInfo.first_name}!</p>
-				{/if}
+		<div class="main-container animate-fade-in">
+			<!-- Hero Header -->
+			<div class="hero-section">
+				<div class="hero-content">
+					<h1 class="hero-title">
+						<span class="gradient-text">🍺 Trojeak</span>
+					</h1>
+					<p class="hero-subtitle">Discover events and pre-order drinks</p>
+					{#if userInfo}
+						<div class="user-welcome">
+							<span class="welcome-text">Welcome back,</span>
+							<span class="user-name">{userInfo.first_name}!</span>
+						</div>
+					{/if}
+				</div>
+				<div class="hero-glow"></div>
 			</div>
 
-			<div class="grid grid-cols-1 gap-4">
+			<!-- Navigation Cards -->
+			<div class="nav-grid">
 				<button 
 					onclick={() => { currentView = 'events'; viewMode = 'list'; }}
-					class="bg-white border border-gray-200 rounded-lg p-6 text-left hover:bg-gray-50 transition-colors"
+					class="nav-card events-card animate-slide-up"
+					style="animation-delay: 0.1s"
 				>
-					<div class="flex items-center">
-						<span class="text-2xl mr-4">🎉</span>
-						<div>
-							<h3 class="font-semibold text-gray-900">Events</h3>
-							<p class="text-gray-600 text-sm">Browse upcoming events and parties</p>
-							<p class="text-blue-600 text-sm font-medium mt-1">{filteredEvents.length} events available</p>
+					<div class="nav-card-icon">🎉</div>
+					<div class="nav-card-content">
+						<h3 class="nav-card-title">Events</h3>
+						<p class="nav-card-description">Browse upcoming events and parties</p>
+						<div class="nav-card-stats">
+							<span class="stats-number">{filteredEvents.length}</span>
+							<span class="stats-label">events available</span>
 						</div>
 					</div>
+					<div class="nav-card-arrow">→</div>
 				</button>
 
 				<button 
 					onclick={() => { currentView = 'venues'; viewMode = 'list'; }}
-					class="bg-white border border-gray-200 rounded-lg p-6 text-left hover:bg-gray-50 transition-colors"
+					class="nav-card venues-card animate-slide-up"
+					style="animation-delay: 0.2s"
 				>
-					<div class="flex items-center">
-						<span class="text-2xl mr-4">🏢</span>
-						<div>
-							<h3 class="font-semibold text-gray-900">Venues</h3>
-							<p class="text-gray-600 text-sm">Discover bars, KTVs, and clubs</p>
-							<p class="text-blue-600 text-sm font-medium mt-1">{MOCK_DATA.venues.length} venues available</p>
+					<div class="nav-card-icon">🏢</div>
+					<div class="nav-card-content">
+						<h3 class="nav-card-title">Venues</h3>
+						<p class="nav-card-description">Discover bars, KTVs, and clubs</p>
+						<div class="nav-card-stats">
+							<span class="stats-number">{MOCK_DATA.venues.length}</span>
+							<span class="stats-label">venues available</span>
 						</div>
 					</div>
+					<div class="nav-card-arrow">→</div>
 				</button>
 
 				<button 
 					onclick={() => { currentView = 'brands'; viewMode = 'list'; }}
-					class="bg-white border border-gray-200 rounded-lg p-6 text-left hover:bg-gray-50 transition-colors"
+					class="nav-card brands-card animate-slide-up"
+					style="animation-delay: 0.3s"
 				>
-					<div class="flex items-center">
-						<span class="text-2xl mr-4">🥃</span>
-						<div>
-							<h3 class="font-semibold text-gray-900">Brands</h3>
-							<p class="text-gray-600 text-sm">Explore drink brands and promotions</p>
-							<p class="text-blue-600 text-sm font-medium mt-1">{MOCK_DATA.brands.length} brands available</p>
+					<div class="nav-card-icon">🥃</div>
+					<div class="nav-card-content">
+						<h3 class="nav-card-title">Brands</h3>
+						<p class="nav-card-description">Explore drink brands and promotions</p>
+						<div class="nav-card-stats">
+							<span class="stats-number">{MOCK_DATA.brands.length}</span>
+							<span class="stats-label">brands available</span>
 						</div>
 					</div>
+					<div class="nav-card-arrow">→</div>
 				</button>
 			</div>
-		</div>
 
-	{:else if currentView === 'events'}
-		{#if viewMode === 'list'}
-			<div class="container mx-auto px-4 py-6">
-				<h2 class="text-2xl font-bold text-gray-900 mb-4">Events</h2>
-				
-				<div class="mb-4">
-					<select bind:value={cityFilter} class="w-full p-3 border border-gray-300 rounded-lg">
-						{#each cities as city}
-							<option value={city}>{city === 'all' ? 'All Cities' : city}</option>
-						{/each}
-					</select>
-				</div>
-
-				<div class="space-y-4">
-					{#each filteredEvents as event}
+			<!-- Featured Section -->
+			<div class="featured-section animate-slide-up" style="animation-delay: 0.4s">
+				<h2 class="section-title">
+					<span class="gradient-text">✨ Featured Tonight</span>
+				</h2>
+				<div class="featured-grid">
+					{#each filteredEvents.filter(e => e.featured).slice(0, 2) as event}
 						<button 
 							onclick={() => selectEvent(event.id)}
-							class="w-full bg-white border border-gray-200 rounded-lg p-4 text-left hover:bg-gray-50 transition-colors"
+							class="featured-card"
 						>
-							<div class="flex justify-between items-start mb-2">
-								<h3 class="font-semibold text-gray-900">{event.title}</h3>
-								{#if event.featured}
-									<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Featured</span>
-								{/if}
-							</div>
-							<p class="text-gray-600 text-sm mb-1">{event.venue_name} • {event.city}</p>
-							<p class="text-gray-500 text-sm mb-2">{event.date} • {event.price_range}</p>
-							<p class="text-gray-700 text-sm">{event.description}</p>
+							<div class="featured-badge">Featured</div>
+							<h4 class="featured-title">{event.title}</h4>
+							<p class="featured-venue">{event.venue_name}</p>
+							<p class="featured-price">{event.price_range}</p>
 						</button>
 					{/each}
 				</div>
 			</div>
-		{:else if selectedEvent}
-			<div class="container mx-auto px-4 py-6">
-				<div class="bg-white rounded-lg p-6 mb-6">
-					<div class="flex justify-between items-start mb-4">
-						<h2 class="text-2xl font-bold text-gray-900">{selectedEvent.title}</h2>
-						{#if selectedEvent.featured}
-							<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Featured</span>
-						{/if}
-					</div>
-					
-					<div class="space-y-3 mb-6">
-						<p class="text-gray-600"><span class="font-medium">Venue:</span> {selectedEvent.venue_name}</p>
-						<p class="text-gray-600"><span class="font-medium">Location:</span> {selectedEvent.city}</p>
-						<p class="text-gray-600"><span class="font-medium">Date:</span> {selectedEvent.date}</p>
-						<p class="text-gray-600"><span class="font-medium">Price Range:</span> {selectedEvent.price_range}</p>
-					</div>
-					
-					<p class="text-gray-700 mb-6">{selectedEvent.description}</p>
-					
-					<div class="mb-6">
-						<h3 class="font-semibold text-gray-900 mb-3">Available Brands</h3>
-						<div class="grid grid-cols-2 gap-2">
-							{#each selectedEvent.brands as brandId}
-								{@const brand = MOCK_DATA.brands.find(b => b.id === brandId)}
-								{#if brand}
-									<div class="bg-gray-50 rounded-lg p-3">
-										<p class="font-medium text-gray-900">{brand.name}</p>
-										<p class="text-gray-600 text-sm">{brand.type}</p>
-									</div>
-								{/if}
-							{/each}
-						</div>
-					</div>
-					
-					<button 
-						onclick={() => startBooking(selectedEvent.id)}
-						class="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-					>
-						Book Now
-					</button>
-				</div>
-			</div>
-		{/if}
-
-	{:else if currentView === 'venues'}
-		{#if viewMode === 'list'}
-			<div class="container mx-auto px-4 py-6">
-				<h2 class="text-2xl font-bold text-gray-900 mb-4">Venues</h2>
-				
-				<div class="grid grid-cols-2 gap-4 mb-4">
-					<select bind:value={cityFilter} class="p-3 border border-gray-300 rounded-lg">
-						{#each cities as city}
-							<option value={city}>{city === 'all' ? 'All Cities' : city}</option>
-						{/each}
-					</select>
-					
-					<select bind:value={venueTypeFilter} class="p-3 border border-gray-300 rounded-lg">
-						<option value="all">All Types</option>
-						<option value="bar">Bars</option>
-						<option value="ktv">KTVs</option>
-						<option value="club">Clubs</option>
-					</select>
-				</div>
-
-				<div class="space-y-4">
-					{#each filteredVenues as venue}
-						<button 
-							onclick={() => selectVenue(venue.id)}
-							class="w-full bg-white border border-gray-200 rounded-lg p-4 text-left hover:bg-gray-50 transition-colors"
-						>
-							<div class="flex justify-between items-start mb-2">
-								<h3 class="font-semibold text-gray-900">{venue.name}</h3>
-								{#if venue.featured}
-									<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Featured</span>
-								{/if}
-							</div>
-							<p class="text-gray-600 text-sm mb-1">{venue.type.toUpperCase()} • {venue.city}</p>
-							<p class="text-gray-500 text-sm mb-2">{venue.address}</p>
-							<p class="text-gray-700 text-sm">{venue.description}</p>
-						</button>
-					{/each}
-				</div>
-			</div>
-		{:else if selectedVenue}
-			<div class="container mx-auto px-4 py-6">
-				<div class="bg-white rounded-lg p-6 mb-6">
-					<div class="flex justify-between items-start mb-4">
-						<h2 class="text-2xl font-bold text-gray-900">{selectedVenue.name}</h2>
-						{#if selectedVenue.featured}
-							<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Featured</span>
-						{/if}
-					</div>
-					
-					<div class="space-y-3 mb-6">
-						<p class="text-gray-600"><span class="font-medium">Type:</span> {selectedVenue.type.toUpperCase()}</p>
-						<p class="text-gray-600"><span class="font-medium">Location:</span> {selectedVenue.city}</p>
-						<p class="text-gray-600"><span class="font-medium">Address:</span> {selectedVenue.address}</p>
-					</div>
-					
-					<p class="text-gray-700 mb-6">{selectedVenue.description}</p>
-				</div>
-
-				{#if venueEvents.length > 0}
-					<div class="bg-white rounded-lg p-6">
-						<h3 class="font-semibold text-gray-900 mb-4">Events at this Venue</h3>
-						<div class="space-y-3">
-							{#each venueEvents as event}
-								<button 
-									onclick={() => selectEvent(event.id)}
-									class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-								>
-									<h4 class="font-medium text-gray-900">{event.title}</h4>
-									<p class="text-gray-600 text-sm">{event.date} • {event.price_range}</p>
-								</button>
-							{/each}
-						</div>
-					</div>
-				{/if}
-			</div>
-		{/if}
-
-	{:else if currentView === 'brands'}
-		{#if viewMode === 'list'}
-			<div class="container mx-auto px-4 py-6">
-				<h2 class="text-2xl font-bold text-gray-900 mb-4">Brands</h2>
-				
-				<div class="mb-4">
-					<select bind:value={brandTypeFilter} class="w-full p-3 border border-gray-300 rounded-lg">
-						<option value="all">All Types</option>
-						<option value="beer">Beer</option>
-						<option value="wine">Wine</option>
-						<option value="spirits">Spirits</option>
-					</select>
-				</div>
-
-				<div class="space-y-4">
-					{#each filteredBrands as brand}
-						<button 
-							onclick={() => selectBrand(brand.id)}
-							class="w-full bg-white border border-gray-200 rounded-lg p-4 text-left hover:bg-gray-50 transition-colors"
-						>
-							<div class="flex justify-between items-start mb-2">
-								<h3 class="font-semibold text-gray-900">{brand.name}</h3>
-								{#if brand.featured}
-									<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Featured</span>
-								{/if}
-							</div>
-							<p class="text-gray-600 text-sm mb-2">{brand.type.charAt(0).toUpperCase() + brand.type.slice(1)}</p>
-							<p class="text-gray-700 text-sm">{brand.description}</p>
-						</button>
-					{/each}
-				</div>
-			</div>
-		{:else if selectedBrand}
-			<div class="container mx-auto px-4 py-6">
-				<div class="bg-white rounded-lg p-6 mb-6">
-					<div class="flex justify-between items-start mb-4">
-						<h2 class="text-2xl font-bold text-gray-900">{selectedBrand.name}</h2>
-						{#if selectedBrand.featured}
-							<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Featured</span>
-						{/if}
-					</div>
-					
-					<div class="space-y-3 mb-6">
-						<p class="text-gray-600"><span class="font-medium">Type:</span> {selectedBrand.type.charAt(0).toUpperCase() + selectedBrand.type.slice(1)}</p>
-					</div>
-					
-					<p class="text-gray-700 mb-6">{selectedBrand.description}</p>
-				</div>
-
-				{#if brandEvents.length > 0}
-					<div class="bg-white rounded-lg p-6">
-						<h3 class="font-semibold text-gray-900 mb-4">Events featuring {selectedBrand.name}</h3>
-						<div class="space-y-3">
-							{#each brandEvents as event}
-								<button 
-									onclick={() => selectEvent(event.id)}
-									class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-								>
-									<h4 class="font-medium text-gray-900">{event.title}</h4>
-									<p class="text-gray-600 text-sm">{event.venue_name} • {event.city}</p>
-									<p class="text-gray-500 text-sm">{event.date} • {event.price_range}</p>
-								</button>
-							{/each}
-						</div>
-					</div>
-				{/if}
-			</div>
-		{/if}
+		</div>
+	{:else}
+		<!-- Other views (events, venues, brands) would go here -->
+		<div class="content-container">
+			<h2 class="page-title gradient-text">
+				{currentView.charAt(0).toUpperCase() + currentView.slice(1)}
+			</h2>
+			<p class="page-subtitle">Coming soon with the new design system!</p>
+		</div>
 	{/if}
 </main>
+
+<style>
+	/* Loading Screen */
+	.loading-screen {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 100vh;
+		background: var(--bg-primary);
+	}
+
+	/* Error Styles */
+	.error-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 100vh;
+		padding: var(--space-6);
+	}
+
+	.error-card {
+		background: var(--bg-card);
+		border-radius: var(--radius-lg);
+		padding: var(--space-8);
+		text-align: center;
+		border: 1px solid rgba(255, 20, 147, 0.3);
+		box-shadow: var(--glow-pink);
+		max-width: 400px;
+		width: 100%;
+	}
+
+	.error-icon {
+		font-size: 3rem;
+		margin-bottom: var(--space-4);
+	}
+
+	.error-title {
+		font-size: var(--text-2xl);
+		font-weight: 700;
+		color: var(--neon-pink);
+		margin-bottom: var(--space-3);
+	}
+
+	.error-message {
+		color: var(--text-primary);
+		margin-bottom: var(--space-2);
+	}
+
+	.error-hint {
+		color: var(--text-muted);
+		font-size: var(--text-sm);
+	}
+
+	/* Main Container */
+	.main-container {
+		padding: var(--space-6);
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	/* Hero Section */
+	.hero-section {
+		position: relative;
+		text-align: center;
+		padding: var(--space-8) 0;
+		margin-bottom: var(--space-8);
+	}
+
+	.hero-content {
+		position: relative;
+		z-index: 2;
+	}
+
+	.hero-title {
+		font-size: var(--text-4xl);
+		font-weight: 800;
+		margin-bottom: var(--space-4);
+		animation: neonPulse 3s ease-in-out infinite;
+	}
+
+	.hero-subtitle {
+		font-size: var(--text-lg);
+		color: var(--text-secondary);
+		margin-bottom: var(--space-6);
+	}
+
+	.user-welcome {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
+	}
+
+	.welcome-text {
+		font-size: var(--text-sm);
+		color: var(--text-muted);
+	}
+
+	.user-name {
+		font-size: var(--text-lg);
+		font-weight: 600;
+		color: var(--neon-cyan);
+		text-shadow: 0 0 10px var(--neon-cyan);
+	}
+
+	.hero-glow {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 300px;
+		height: 300px;
+		background: radial-gradient(circle, rgba(0, 245, 255, 0.1) 0%, transparent 70%);
+		border-radius: 50%;
+		animation: pulseGlow 4s ease-in-out infinite;
+	}
+
+	/* Navigation Grid */
+	.nav-grid {
+		display: grid;
+		gap: var(--space-6);
+		margin-bottom: var(--space-10);
+	}
+
+	.nav-card {
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
+		padding: var(--space-6);
+		background: var(--bg-card);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: var(--radius-lg);
+		text-align: left;
+		cursor: pointer;
+		transition: all var(--transition-normal);
+		width: 100%;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.nav-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.1), transparent);
+		transition: left 0.5s ease;
+	}
+
+	.nav-card:hover::before {
+		left: 100%;
+	}
+
+	.nav-card:hover {
+		background: var(--bg-card-hover);
+		transform: translateY(-4px);
+		border-color: var(--neon-cyan);
+		box-shadow: var(--glow-cyan);
+	}
+
+	.nav-card-icon {
+		font-size: 2.5rem;
+		flex-shrink: 0;
+	}
+
+	.nav-card-content {
+		flex: 1;
+	}
+
+	.nav-card-title {
+		font-size: var(--text-xl);
+		font-weight: 700;
+		color: var(--text-primary);
+		margin-bottom: var(--space-2);
+	}
+
+	.nav-card-description {
+		font-size: var(--text-sm);
+		color: var(--text-secondary);
+		margin-bottom: var(--space-3);
+	}
+
+	.nav-card-stats {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-2);
+	}
+
+	.stats-number {
+		font-size: var(--text-lg);
+		font-weight: 700;
+		color: var(--neon-cyan);
+	}
+
+	.stats-label {
+		font-size: var(--text-xs);
+		color: var(--text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.nav-card-arrow {
+		font-size: var(--text-xl);
+		color: var(--neon-cyan);
+		transition: transform var(--transition-normal);
+	}
+
+	.nav-card:hover .nav-card-arrow {
+		transform: translateX(4px);
+	}
+
+	/* Featured Section */
+	.featured-section {
+		margin-bottom: var(--space-10);
+	}
+
+	.section-title {
+		font-size: var(--text-2xl);
+		font-weight: 700;
+		text-align: center;
+		margin-bottom: var(--space-6);
+	}
+
+	.featured-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: var(--space-4);
+	}
+
+	.featured-card {
+		background: var(--bg-card);
+		border: 2px solid transparent;
+		background-image: linear-gradient(var(--bg-card), var(--bg-card)), var(--gradient-primary);
+		background-origin: border-box;
+		background-clip: content-box, border-box;
+		border-radius: var(--radius-lg);
+		padding: var(--space-6);
+		cursor: pointer;
+		transition: all var(--transition-normal);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.featured-card:hover {
+		transform: translateY(-4px);
+		box-shadow: var(--glow-cyan);
+	}
+
+	.featured-badge {
+		background: var(--gradient-accent);
+		color: white;
+		font-size: var(--text-xs);
+		font-weight: 600;
+		padding: var(--space-1) var(--space-3);
+		border-radius: var(--radius-sm);
+		display: inline-block;
+		margin-bottom: var(--space-3);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		animation: pulse 2s infinite;
+	}
+
+	.featured-title {
+		font-size: var(--text-lg);
+		font-weight: 700;
+		color: var(--text-primary);
+		margin-bottom: var(--space-2);
+	}
+
+	.featured-venue {
+		font-size: var(--text-sm);
+		color: var(--text-secondary);
+		margin-bottom: var(--space-2);
+	}
+
+	.featured-price {
+		font-size: var(--text-base);
+		font-weight: 600;
+		color: var(--neon-cyan);
+	}
+
+	/* Content Container (for other views) */
+	.content-container {
+		padding: var(--space-8);
+		text-align: center;
+	}
+
+	.page-title {
+		font-size: var(--text-3xl);
+		font-weight: 700;
+		margin-bottom: var(--space-4);
+	}
+
+	.page-subtitle {
+		font-size: var(--text-lg);
+		color: var(--text-secondary);
+	}
+
+	/* Responsive Design */
+	@media (max-width: 768px) {
+		.main-container {
+			padding: var(--space-4);
+		}
+
+		.hero-title {
+			font-size: var(--text-3xl);
+		}
+
+		.nav-card {
+			flex-direction: column;
+			text-align: center;
+		}
+
+		.nav-card-arrow {
+			transform: rotate(90deg);
+		}
+
+		.nav-card:hover .nav-card-arrow {
+			transform: rotate(90deg) translateX(4px);
+		}
+	}
+</style>
