@@ -98,6 +98,7 @@ function normalizeEndpoint(string $url): string {
         str_contains($url, '/setMyCommands') => 'setMyCommands',
         str_contains($url, '/setWebhook') => 'setWebhook',
         str_contains($url, '/getWebhookInfo') => 'getWebhookInfo',
+        str_contains($url, '/pinChatMessage') => 'pinChatMessage',
         default => preg_match('/\/([^\/]+)$/', $url, $matches) ? $matches[1] : 'telegram_api'
     };
 }
@@ -250,6 +251,17 @@ function answerCallbackQuery(string $token, string $callbackQueryId, string $tex
     if ($showAlert) {
         $params['show_alert'] = true;
     }
+    
+    return makeRequest($apiUrl, $params);
+}
+
+function pinChatMessage(string $token, int|string $chatId, int $messageId): array {
+    $apiUrl = getApiUrl($token, "pinChatMessage");
+    $params = [
+        'chat_id' => $chatId,
+        'message_id' => $messageId,
+        'disable_notification' => false
+    ];
     
     return makeRequest($apiUrl, $params);
 }
