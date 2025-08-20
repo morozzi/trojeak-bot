@@ -1,3 +1,13 @@
+/* miniapp/src/app.css */
+
+/* Import Tailwind CSS base styles */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Override Tailwind defaults if needed */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}

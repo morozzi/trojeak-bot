@@ -1,6 +1,10 @@
-/* Trojeak Design System - Neon Nightlife Theme */
+/* miniapp/src/lib/styles/design-system.css */
+/* Trojeak Design System - Clean & Organized */
 
-/* CSS Custom Properties - Based on Logo Colors */
+/* =============================================================================
+   CSS CUSTOM PROPERTIES
+   ============================================================================= */
+
 :root {
   /* Primary Neon Colors (from logo) */
   --neon-cyan: #00F5FF;
@@ -22,12 +26,12 @@
   --text-muted: #8B8BA7;
   --text-accent: var(--neon-cyan);
   
-  /* Gradient Definitions */
+  /* Gradients */
   --gradient-primary: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 100%);
   --gradient-secondary: linear-gradient(135deg, var(--neon-pink) 0%, var(--neon-purple) 100%);
   --gradient-accent: linear-gradient(90deg, var(--neon-cyan) 0%, var(--neon-pink) 50%, var(--neon-purple) 100%);
   
-  /* Shadows & Glows */
+  /* Effects */
   --glow-cyan: 0 0 20px rgba(0, 245, 255, 0.3);
   --glow-pink: 0 0 20px rgba(255, 20, 147, 0.3);
   --glow-purple: 0 0 20px rgba(138, 43, 226, 0.3);
@@ -39,18 +43,16 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
   
-  /* Spacing Scale */
+  /* Spacing */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
-  --space-5: 1.25rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
   --space-10: 2.5rem;
-  --space-12: 3rem;
   
-  /* Typography Scale */
+  /* Typography */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -60,13 +62,20 @@
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
   
-  /* Animation Timing */
+  /* Transitions */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
 }
 
-/* Base Styles */
+/* =============================================================================
+   BASE STYLES
+   ============================================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -74,22 +83,30 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
 }
 
-/* Typography Classes */
-.text-neon {
+/* =============================================================================
+   TYPOGRAPHY UTILITIES
+   ============================================================================= */
+
+.gradient-text {
   background: var(--gradient-accent);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 700;
 }
 
 .text-glow {
   text-shadow: 0 0 10px currentColor;
 }
 
-/* Button Styles */
+/* =============================================================================
+   BUTTON COMPONENTS
+   ============================================================================= */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -97,12 +114,12 @@ body {
   padding: var(--space-3) var(--space-6);
   border-radius: var(--radius-md);
   font-weight: 600;
+  font-size: var(--text-base);
   text-decoration: none;
   border: none;
   cursor: pointer;
   transition: all var(--transition-normal);
-  position: relative;
-  overflow: hidden;
+  font-family: inherit;
 }
 
 .btn-primary {
@@ -139,7 +156,10 @@ body {
   box-shadow: var(--glow-cyan);
 }
 
-/* Card Styles */
+/* =============================================================================
+   CARD COMPONENTS
+   ============================================================================= */
+
 .card {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -156,14 +176,16 @@ body {
 }
 
 .card-featured {
-  position: relative;
   border: 2px solid transparent;
   background-image: linear-gradient(var(--bg-card), var(--bg-card)), var(--gradient-primary);
   background-origin: border-box;
   background-clip: content-box, border-box;
 }
 
-/* Badge Styles */
+/* =============================================================================
+   BADGE COMPONENTS
+   ============================================================================= */
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -187,7 +209,10 @@ body {
   box-shadow: var(--glow-pink);
 }
 
-/* Form Styles */
+/* =============================================================================
+   FORM COMPONENTS
+   ============================================================================= */
+
 .form-input {
   width: 100%;
   padding: var(--space-4);
@@ -196,6 +221,7 @@ body {
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: var(--text-base);
+  font-family: inherit;
   transition: all var(--transition-normal);
 }
 
@@ -205,31 +231,79 @@ body {
   box-shadow: var(--glow-cyan);
 }
 
-.form-select {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2300F5FF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+.form-input::placeholder {
+  color: var(--text-muted);
 }
 
-/* Animation Classes */
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2300F5FF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right var(--space-3) center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: var(--space-8);
+}
+
+/* =============================================================================
+   ANIMATION UTILITIES
+   ============================================================================= */
+
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out;
 }
 
 .animate-slide-up {
   animation: slideUp 0.5s ease-out;
+  animation-fill-mode: both;
 }
 
 .animate-pulse-glow {
   animation: pulseGlow 2s infinite;
 }
 
-/* Keyframe Animations */
+/* =============================================================================
+   LOADING COMPONENTS
+   ============================================================================= */
+
+.loading-spinner {
+  border: 2px solid transparent;
+  border-top: 2px solid var(--neon-cyan);
+  border-right: 2px solid var(--neon-pink);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* =============================================================================
+   UTILITY CLASSES
+   ============================================================================= */
+
+.neon-border {
+  border: 1px solid var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Size utilities */
+.w-6, .h-6 { width: 1.5rem; height: 1.5rem; }
+.w-10, .h-10 { width: 2.5rem; height: 2.5rem; }
+.w-16, .h-16 { width: 4rem; height: 4rem; }
+
+/* Text size utilities */
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+
+/* =============================================================================
+   KEYFRAME ANIMATIONS
+   ============================================================================= */
+
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideUp {
@@ -244,12 +318,8 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
 }
 
 @keyframes pulseGlow {
@@ -261,6 +331,11 @@ body {
   }
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @keyframes neonPulse {
   0%, 100% {
     text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
@@ -270,56 +345,10 @@ body {
   }
 }
 
-/* Loading Animation */
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--bg-secondary);
-  border-top: 3px solid var(--neon-cyan);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-pulse {
-  animation: loadingPulse 1.5s ease-in-out infinite;
-}
-
-@keyframes loadingPulse {
-  0%, 100% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-}
-
-/* Utility Classes */
-.neon-border {
-  border: 1px solid var(--neon-cyan);
-  box-shadow: var(--glow-cyan);
-}
-
-.gradient-text {
-  background: var(--gradient-accent);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.glass-effect {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Responsive Typography */
 @media (max-width: 768px) {
   :root {
     --text-3xl: 1.5rem;
@@ -327,7 +356,10 @@ body {
   }
 }
 
-/* High contrast mode support */
+/* =============================================================================
+   ACCESSIBILITY
+   ============================================================================= */
+
 @media (prefers-contrast: high) {
   :root {
     --text-secondary: #FFFFFF;
@@ -335,7 +367,6 @@ body {
   }
 }
 
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
