@@ -1,8 +1,9 @@
-<!-- src/routes/+page.svelte - Complete version with ALL individual pages -->
+<!-- src/routes/+page.svelte - Fixed interactions and booking -->
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import LoadingAnimation from '$lib/components/LoadingAnimation.svelte';
+	import BookingWizard from '$lib/components/BookingWizard.svelte';
 
 	interface Event {
 		id: string;
@@ -249,7 +250,7 @@
 		selectedBrandId ? MOCK_DATA.events.filter(e => e.brands.includes(selectedBrandId)) : []
 	);
 
-	// Navigation functions
+	// Navigation functions - FIXED
 	function navigateBack() {
 		if (currentView === 'booking') {
 			if (selectedEventId) {
@@ -269,18 +270,28 @@
 		}
 	}
 
+	// FIXED: Clear navigation functions
 	function selectEvent(eventId: string) {
 		selectedEventId = eventId;
+		selectedVenueId = null;
+		selectedBrandId = null;
+		currentView = 'events';
 		viewMode = 'detail';
 	}
 
 	function selectVenue(venueId: string) {
 		selectedVenueId = venueId;
+		selectedEventId = null;
+		selectedBrandId = null;
+		currentView = 'venues';
 		viewMode = 'detail';
 	}
 
 	function selectBrand(brandId: string) {
 		selectedBrandId = brandId;
+		selectedEventId = null;
+		selectedVenueId = null;
+		currentView = 'brands';
 		viewMode = 'detail';
 	}
 
@@ -292,7 +303,18 @@
 	function completeBooking() {
 		currentView = 'main';
 		selectedEventId = null;
+		selectedVenueId = null;
+		selectedBrandId = null;
 		viewMode = 'list';
+	}
+
+	function cancelBooking() {
+		if (selectedEventId) {
+			currentView = 'events';
+			viewMode = 'detail';
+		} else {
+			currentView = 'main';
+		}
 	}
 
 	onMount(() => {
@@ -369,12 +391,13 @@
 			</div>
 		</div>
 	{:else if currentView === 'booking' && selectedEvent}
-		<!-- Booking flow would go here -->
-		<div class="content-container">
-			<h2 class="page-title gradient-text">Booking</h2>
-			<p class="page-subtitle">Booking for {selectedEvent.title}</p>
-			<button class="btn btn-primary" onclick={() => completeBooking()}>Complete Booking</button>
-		</div>
+		<!-- FIXED: Actual BookingWizard component -->
+		<BookingWizard 
+			event={selectedEvent}
+			availableBrands={MOCK_DATA.brands.filter(b => selectedEvent.brands.includes(b.id))}
+			onComplete={completeBooking}
+			onCancel={cancelBooking}
+		/>
 	{:else if currentView === 'main'}
 		<div class="main-container animate-fade-in">
 			<!-- Hero Header -->
@@ -448,7 +471,7 @@
 				</button>
 			</div>
 
-			<!-- Featured Section -->
+			<!-- Featured Section - FIXED onclick handlers -->
 			<div class="featured-section animate-slide-up" style="animation-delay: 0.4s">
 				<h2 class="section-title">
 					<span class="gradient-text">✨ Featured Tonight</span>
@@ -456,7 +479,11 @@
 				<div class="featured-grid">
 					{#each filteredEvents.filter(e => e.featured).slice(0, 2) as event}
 						<button 
-							onclick={() => selectEvent(event.id)}
+							onclick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								selectEvent(event.id);
+							}}
 							class="featured-card"
 						>
 							<div class="featured-badge">Featured</div>
@@ -485,7 +512,11 @@
 				<div class="featured-grid">
 					{#each filteredEvents as event}
 						<button 
-							onclick={() => selectEvent(event.id)}
+							onclick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								selectEvent(event.id);
+							}}
 							class="card"
 						>
 							{#if event.featured}
@@ -541,7 +572,11 @@
 				<div class="featured-grid">
 					{#each filteredVenues as venue}
 						<button 
-							onclick={() => selectVenue(venue.id)}
+							onclick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								selectVenue(venue.id);
+							}}
 							class="card"
 						>
 							{#if venue.featured}
@@ -580,9 +615,13 @@
 						<div style="display: flex; flex-direction: column; gap: var(--space-3);">
 							{#each venueEvents as event}
 								<button 
-									onclick={() => selectEvent(event.id)}
+									onclick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+										selectEvent(event.id);
+									}}
 									class="card"
-									style="text-align: left; padding: var(--space-4); border: 1px solid rgba(255, 255, 255, 0.1);"
+									style="text-align: left; padding: var(--space-4); border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer;"
 								>
 									<h4 style="font-weight: 600; color: var(--text-primary);">{event.title}</h4>
 									<p style="color: var(--text-secondary); font-size: var(--text-sm);">{event.date} • {event.price_range}</p>
@@ -602,7 +641,11 @@
 				<div class="featured-grid">
 					{#each MOCK_DATA.brands as brand}
 						<button 
-							onclick={() => selectBrand(brand.id)}
+							onclick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								selectBrand(brand.id);
+							}}
 							class="card"
 						>
 							{#if brand.featured}
@@ -638,9 +681,13 @@
 						<div style="display: flex; flex-direction: column; gap: var(--space-3);">
 							{#each brandEvents as event}
 								<button 
-									onclick={() => selectEvent(event.id)}
+									onclick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+										selectEvent(event.id);
+									}}
 									class="card"
-									style="text-align: left; padding: var(--space-4); border: 1px solid rgba(255, 255, 255, 0.1);"
+									style="text-align: left; padding: var(--space-4); border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer;"
 								>
 									<h4 style="font-weight: 600; color: var(--text-primary);">{event.title}</h4>
 									<p style="color: var(--text-secondary); font-size: var(--text-sm);">{event.venue_name} • {event.city}</p>

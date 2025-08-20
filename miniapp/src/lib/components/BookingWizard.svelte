@@ -1,5 +1,17 @@
+<!-- miniapp/src/lib/components/BookingWizard.svelte -->
 <script lang="ts">
-	import { z } from 'zod';
+	interface Event {
+		id: string;
+		title: string;
+		venue_id: string;
+		venue_name: string;
+		city: string;
+		featured: boolean;
+		brands: string[];
+		price_range: string;
+		date: string;
+		description: string;
+	}
 
 	interface Brand {
 		id: string;
@@ -9,361 +21,300 @@
 		description: string;
 	}
 
-	interface Event {
-		id: string;
-		title: string;
-		venue_name: string;
-		city: string;
-		date: string;
-		price_range: string;
-	}
+	export let event: Event;
+	export let availableBrands: Brand[];
+	export let onComplete: () => void;
+	export let onCancel: () => void;
 
-	interface BookingFormData {
-		eventId: string;
-		selectedBrands: Array<{ brandId: string; quantity: number }>;
-		guestCount: number;
-		phone: string;
-		comment: string;
-		paymentMethod: 'aba_qr' | 'ipay88';
-	}
+	// Booking state
+	let currentStep = $state(1);
+	let selectedBrands = $state<{[key: string]: number}>({});
+	let guestCount = $state(2);
+	let phoneNumber = $state('+855');
+	let comment = $state('');
+	let paymentMethod = $state<'aba' | 'ipay88' | null>(null);
+	let isProcessing = $state(false);
 
-	interface Props {
-		event: Event;
-		availableBrands: Brand[];
-		onComplete: () => void;
-		onCancel: () => void;
-	}
-
-	let { event, availableBrands, onComplete, onCancel }: Props = $props();
-
-	const phoneSchema = z.string()
-		.regex(/^\+855[0-9]{8,9}$/, 'Phone must be in format +855XXXXXXXX')
-		.min(12, 'Phone number too short')
-		.max(13, 'Phone number too long');
-
-	const commentSchema = z.string()
-		.max(200, 'Comment cannot exceed 200 characters')
-		.optional();
-
-	let step = $state<'brands' | 'details' | 'confirm' | 'success'>(availableBrands.length > 0 ? 'brands' : 'details');
-	let errors = $state<Record<string, string>>({});
-
-	let formData = $state<BookingFormData>({
-		eventId: event.id,
-		selectedBrands: [],
-		guestCount: 1,
-		phone: '',
-		comment: '',
-		paymentMethod: 'aba_qr'
-	});
-
-	const brandQuantities = $state<Record<string, number>>(
-		Object.fromEntries(availableBrands.map(brand => [brand.id, 0]))
-	);
-
-	const totalItems = $derived(
-		Object.values(brandQuantities).reduce((sum, qty) => sum + qty, 0)
-	);
-
-	const hasSelectedBrands = $derived(totalItems > 0);
+	// Computed values
+	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
+	const estimatedTotal = $derived(totalItems * 12); // Rough estimate
+	const canProceedFromStep1 = $derived(totalItems > 0);
+	const canProceedFromStep2 = $derived(guestCount > 0 && phoneNumber.length > 4);
+	const canProceedFromStep3 = $derived(comment.length <= 200);
+	const canCompleteBooking = $derived(paymentMethod !== null);
 
 	function updateBrandQuantity(brandId: string, quantity: number) {
-		brandQuantities[brandId] = Math.max(0, Math.min(10, quantity));
-		formData.selectedBrands = Object.entries(brandQuantities)
-			.filter(([_, qty]) => qty > 0)
-			.map(([brandId, quantity]) => ({ brandId, quantity }));
-	}
-
-	function validatePhone(): boolean {
-		try {
-			phoneSchema.parse(formData.phone);
-			delete errors.phone;
-			return true;
-		} catch (err) {
-			if (err instanceof z.ZodError) {
-				errors.phone = err.errors[0].message;
-			}
-			return false;
+		if (quantity === 0) {
+			delete selectedBrands[brandId];
+			selectedBrands = {...selectedBrands};
+		} else {
+			selectedBrands[brandId] = quantity;
+			selectedBrands = {...selectedBrands};
 		}
 	}
 
-	function validateComment(): boolean {
-		try {
-			commentSchema.parse(formData.comment);
-			delete errors.comment;
-			return true;
-		} catch (err) {
-			if (err instanceof z.ZodError) {
-				errors.comment = err.errors[0].message;
-			}
-			return false;
+	function nextStep() {
+		if (currentStep < 4) {
+			currentStep += 1;
 		}
 	}
 
-	function proceedToDetails() {
-		if (availableBrands.length > 0 && !hasSelectedBrands) {
-			errors.brands = 'Please select at least one item';
-			return;
+	function prevStep() {
+		if (currentStep > 1) {
+			currentStep -= 1;
 		}
-		delete errors.brands;
-		step = 'details';
 	}
 
-	function proceedToConfirm() {
-		const phoneValid = validatePhone();
-		const commentValid = validateComment();
+	function handleCompleteBooking() {
+		isProcessing = true;
 		
-		if (!phoneValid || !commentValid) return;
-		
-		step = 'confirm';
-	}
-
-	function submitBooking() {
-		const bookingRef = 'TRJ' + Date.now().toString().slice(-6);
+		// Simulate payment processing
 		setTimeout(() => {
-			step = 'success';
-		}, 1000);
+			isProcessing = false;
+			onComplete();
+		}, 2000);
 	}
 
-	function getBrandName(brandId: string): string {
-		return availableBrands.find(b => b.id === brandId)?.name || 'Unknown Brand';
+	function formatPhoneNumber(value: string) {
+		// Basic Cambodia phone formatting
+		let cleaned = value.replace(/\D/g, '');
+		if (!cleaned.startsWith('855')) {
+			cleaned = '855' + cleaned.replace(/^0+/, '');
+		}
+		return '+' + cleaned;
+	}
+
+	function handlePhoneInput(event: any) {
+		phoneNumber = formatPhoneNumber(event.target.value);
 	}
 </script>
 
-<div class="min-h-screen bg-gray-50">
-	<div class="container mx-auto px-4 py-6">
-		<div class="bg-white rounded-lg p-6">
-			<div class="mb-6">
-				<h2 class="text-xl font-bold text-gray-900">Book Event</h2>
-				<p class="text-gray-600 text-sm mt-1">{event.title} • {event.venue_name}</p>
+<div class="booking-container">
+	<!-- Header -->
+	<div class="booking-header">
+		<h2 class="booking-title gradient-text">Book Your Experience</h2>
+		<p class="booking-subtitle">{event.title} at {event.venue_name}</p>
+		
+		<!-- Progress Steps -->
+		<div class="progress-container">
+			{#each [1, 2, 3, 4] as step}
+				<div class="progress-step" class:active={currentStep >= step}>
+					<div class="step-number">{step}</div>
+					<div class="step-label">
+						{#if step === 1}Drinks
+						{:else if step === 2}Details  
+						{:else if step === 3}Review
+						{:else}Payment
+						{/if}
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
+
+	<!-- Step Content -->
+	<div class="booking-content">
+		{#if currentStep === 1}
+			<!-- Step 1: Select Drinks -->
+			<div class="step-content animate-fade-in">
+				<h3 class="step-title">Select Your Drinks</h3>
+				<p class="step-description">Choose from available brands at this event</p>
+				
+				<div class="brands-grid">
+					{#each availableBrands as brand}
+						<div class="brand-card">
+							<div class="brand-info">
+								<h4 class="brand-name">{brand.name}</h4>
+								<p class="brand-type">{brand.type}</p>
+								<p class="brand-description">{brand.description}</p>
+							</div>
+							
+							<div class="quantity-selector">
+								<button 
+									class="qty-btn"
+									onclick={() => updateBrandQuantity(brand.id, Math.max(0, (selectedBrands[brand.id] || 0) - 1))}
+									disabled={!selectedBrands[brand.id]}
+								>-</button>
+								<span class="qty-display">{selectedBrands[brand.id] || 0}</span>
+								<button 
+									class="qty-btn"
+									onclick={() => updateBrandQuantity(brand.id, Math.min(10, (selectedBrands[brand.id] || 0) + 1))}
+								>+</button>
+							</div>
+						</div>
+					{/each}
+				</div>
+
+				{#if totalItems > 0}
+					<div class="selection-summary">
+						<p class="summary-text">
+							Selected: <span class="highlight">{totalItems}</span> items
+						</p>
+					</div>
+				{/if}
 			</div>
 
-			{#if step === 'brands'}
-				<div>
-					<h3 class="font-semibold text-gray-900 mb-4">Select Drinks</h3>
-					
-					{#if errors.brands}
-						<div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-							<p class="text-red-800 text-sm">{errors.brands}</p>
-						</div>
-					{/if}
+		{:else if currentStep === 2}
+			<!-- Step 2: Guest Details -->
+			<div class="step-content animate-fade-in">
+				<h3 class="step-title">Guest Details</h3>
+				<p class="step-description">Tell us about your party</p>
+				
+				<div class="form-group">
+					<label class="form-label">Number of Guests</label>
+					<select bind:value={guestCount} class="form-input form-select">
+						{#each Array.from({length: 10}, (_, i) => i + 1) as num}
+							<option value={num}>{num} {num === 1 ? 'guest' : 'guests'}</option>
+						{/each}
+					</select>
+				</div>
 
-					<div class="space-y-4 mb-6">
-						{#each availableBrands as brand}
-							<div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-								<div class="flex-1">
-									<h4 class="font-medium text-gray-900">{brand.name}</h4>
-									<p class="text-gray-600 text-sm">{brand.type}</p>
-								</div>
-								<div class="flex items-center space-x-3">
-									<button 
-										onclick={() => updateBrandQuantity(brand.id, brandQuantities[brand.id] - 1)}
-										disabled={brandQuantities[brand.id] <= 0}
-										class="w-8 h-8 rounded-full bg-gray-200 disabled:opacity-50 hover:bg-gray-300 transition-colors flex items-center justify-center"
-									>
-										-
-									</button>
-									<span class="w-8 text-center font-medium">{brandQuantities[brand.id]}</span>
-									<button 
-										onclick={() => updateBrandQuantity(brand.id, brandQuantities[brand.id] + 1)}
-										disabled={brandQuantities[brand.id] >= 10}
-										class="w-8 h-8 rounded-full bg-gray-200 disabled:opacity-50 hover:bg-gray-300 transition-colors flex items-center justify-center"
-									>
-										+
-									</button>
-								</div>
-							</div>
+				<div class="form-group">
+					<label class="form-label">Phone Number</label>
+					<input 
+						type="tel" 
+						value={phoneNumber}
+						oninput={handlePhoneInput}
+						class="form-input"
+						placeholder="+855 XX XXX XXX"
+					/>
+					<p class="form-hint">We'll send booking confirmation to this number</p>
+				</div>
+			</div>
+
+		{:else if currentStep === 3}
+			<!-- Step 3: Review & Comment -->
+			<div class="step-content animate-fade-in">
+				<h3 class="step-title">Review Your Booking</h3>
+				<p class="step-description">Double-check everything looks good</p>
+				
+				<!-- Booking Summary -->
+				<div class="booking-summary">
+					<div class="summary-section">
+						<h4 class="summary-title">Event Details</h4>
+						<p>{event.title}</p>
+						<p>{event.venue_name}, {event.city}</p>
+						<p>{event.date}</p>
+					</div>
+
+					<div class="summary-section">
+						<h4 class="summary-title">Your Party</h4>
+						<p>{guestCount} {guestCount === 1 ? 'guest' : 'guests'}</p>
+						<p>{phoneNumber}</p>
+					</div>
+
+					<div class="summary-section">
+						<h4 class="summary-title">Selected Drinks</h4>
+						{#each Object.entries(selectedBrands) as [brandId, quantity]}
+							{@const brand = availableBrands.find(b => b.id === brandId)}
+							{#if brand}
+								<p>{quantity}x {brand.name}</p>
+							{/if}
 						{/each}
 					</div>
+				</div>
 
-					{#if totalItems > 0}
-						<div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
-							<p class="text-blue-800 text-sm font-medium">Total items: {totalItems}</p>
+				<div class="form-group">
+					<label class="form-label">Special Requests (Optional)</label>
+					<textarea 
+						bind:value={comment}
+						class="form-input"
+						rows="3"
+						maxlength="200"
+						placeholder="Any special requests or notes..."
+					></textarea>
+					<p class="form-hint">{comment.length}/200 characters</p>
+				</div>
+			</div>
+
+		{:else if currentStep === 4}
+			<!-- Step 4: Payment -->
+			<div class="step-content animate-fade-in">
+				<h3 class="step-title">Choose Payment Method</h3>
+				<p class="step-description">Secure payment to confirm your booking</p>
+				
+				<div class="payment-methods">
+					<button 
+						class="payment-option"
+						class:selected={paymentMethod === 'aba'}
+						onclick={() => paymentMethod = 'aba'}
+					>
+						<div class="payment-icon">🏦</div>
+						<div class="payment-info">
+							<h4>ABA QR Pay</h4>
+							<p>Pay with ABA mobile app</p>
 						</div>
-					{/if}
+						<div class="payment-check">
+							{#if paymentMethod === 'aba'}✓{/if}
+						</div>
+					</button>
 
 					<button 
-						onclick={proceedToDetails}
-						class="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+						class="payment-option"
+						class:selected={paymentMethod === 'ipay88'}
+						onclick={() => paymentMethod = 'ipay88'}
 					>
-						Continue
+						<div class="payment-icon">💳</div>
+						<div class="payment-info">
+							<h4>Card Payment</h4>
+							<p>Credit/debit cards via iPay88</p>
+						</div>
+						<div class="payment-check">
+							{#if paymentMethod === 'ipay88'}✓{/if}
+						</div>
 					</button>
 				</div>
 
-			{:else if step === 'details'}
-				<div>
-					<h3 class="font-semibold text-gray-900 mb-4">Booking Details</h3>
-
-					<div class="space-y-4 mb-6">
-						<div>
-							<label for="guest-count" class="block text-sm font-medium text-gray-700 mb-2">
-								Number of Guests
-							</label>
-							<select 
-								id="guest-count"
-								bind:value={formData.guestCount}
-								class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-							>
-								{#each Array(10) as _, i}
-									<option value={i + 1}>{i + 1} guest{i > 0 ? 's' : ''}</option>
-								{/each}
-							</select>
-						</div>
-
-						<div>
-							<label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-								Phone Number
-							</label>
-							<input 
-								id="phone"
-								type="tel"
-								bind:value={formData.phone}
-								placeholder="+855XXXXXXXX"
-								onblur={validatePhone}
-								class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-								class:border-red-300={errors.phone}
-							/>
-							{#if errors.phone}
-								<p class="text-red-600 text-sm mt-1">{errors.phone}</p>
-							{/if}
-						</div>
-
-						<div>
-							<label for="comment" class="block text-sm font-medium text-gray-700 mb-2">
-								Comment (Optional)
-							</label>
-							<textarea 
-								id="comment"
-								bind:value={formData.comment}
-								placeholder="Special requests or notes..."
-								maxlength="200"
-								rows="3"
-								onblur={validateComment}
-								class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-								class:border-red-300={errors.comment}
-							></textarea>
-							<div class="flex justify-between items-center mt-1">
-								{#if errors.comment}
-									<p class="text-red-600 text-sm">{errors.comment}</p>
-								{:else}
-									<span></span>
-								{/if}
-								<p class="text-gray-500 text-sm">{formData.comment.length}/200</p>
-							</div>
-						</div>
-
-						<div>
-							<fieldset class="space-y-2">
-								<legend class="block text-sm font-medium text-gray-700 mb-2">
-									Payment Method
-								</legend>
-								<label class="flex items-center">
-									<input 
-										type="radio" 
-										bind:group={formData.paymentMethod} 
-										value="aba_qr"
-										class="mr-3"
-									/>
-									<span class="text-gray-900">ABA QR Pay</span>
-								</label>
-								<label class="flex items-center">
-									<input 
-										type="radio" 
-										bind:group={formData.paymentMethod} 
-										value="ipay88"
-										class="mr-3"
-									/>
-									<span class="text-gray-900">Credit Card (ipay88)</span>
-								</label>
-							</fieldset>
-						</div>
+				<div class="total-summary">
+					<div class="total-line">
+						<span>Items ({totalItems})</span>
+						<span>${estimatedTotal}</span>
 					</div>
-
-					<button 
-						onclick={proceedToConfirm}
-						class="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-					>
-						Review Booking
-					</button>
-				</div>
-
-			{:else if step === 'confirm'}
-				<div>
-					<h3 class="font-semibold text-gray-900 mb-4">Confirm Booking</h3>
-
-					<div class="space-y-4 mb-6">
-						<div class="bg-gray-50 rounded-lg p-4">
-							<h4 class="font-medium text-gray-900 mb-2">Event Details</h4>
-							<p class="text-gray-700 text-sm">{event.title}</p>
-							<p class="text-gray-600 text-sm">{event.venue_name} • {event.date}</p>
-						</div>
-
-						{#if formData.selectedBrands.length > 0}
-							<div class="bg-gray-50 rounded-lg p-4">
-								<h4 class="font-medium text-gray-900 mb-2">Selected Items</h4>
-								{#each formData.selectedBrands as { brandId, quantity }}
-									<p class="text-gray-700 text-sm">{getBrandName(brandId)} × {quantity}</p>
-								{/each}
-							</div>
-						{/if}
-
-						<div class="bg-gray-50 rounded-lg p-4">
-							<h4 class="font-medium text-gray-900 mb-2">Booking Information</h4>
-							<p class="text-gray-700 text-sm">Guests: {formData.guestCount}</p>
-							<p class="text-gray-700 text-sm">Phone: {formData.phone}</p>
-							{#if formData.comment}
-								<p class="text-gray-700 text-sm">Comment: {formData.comment}</p>
-							{/if}
-							<p class="text-gray-700 text-sm">Payment: {formData.paymentMethod === 'aba_qr' ? 'ABA QR Pay' : 'Credit Card'}</p>
-						</div>
-					</div>
-
-					<div class="flex space-x-3">
-						<button 
-							onclick={() => step = 'details'}
-							class="flex-1 bg-gray-200 text-gray-800 font-medium py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors"
-						>
-							Edit
-						</button>
-						<button 
-							onclick={submitBooking}
-							class="flex-1 bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-						>
-							Confirm Booking
-						</button>
+					<div class="total-line final">
+						<span>Total</span>
+						<span class="total-amount">${estimatedTotal}</span>
 					</div>
 				</div>
+			</div>
+		{/if}
+	</div>
 
-			{:else if step === 'success'}
-				<div class="text-center">
-					<div class="mb-6">
-						<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-							<span class="text-2xl">✅</span>
-						</div>
-						<h3 class="text-xl font-bold text-gray-900 mb-2">Booking Confirmed!</h3>
-						<p class="text-gray-600">Your booking has been successfully submitted.</p>
-					</div>
-
-					<div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-						<p class="text-green-800 text-sm font-medium">Booking Reference: TRJ{Date.now().toString().slice(-6)}</p>
-						<p class="text-green-700 text-sm mt-1">A confirmation message will be sent to your Telegram chat.</p>
-					</div>
-
-					<button 
-						onclick={onComplete}
-						class="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-					>
-						Done
-					</button>
-				</div>
+	<!-- Navigation Buttons -->
+	<div class="booking-actions">
+		<button class="btn btn-outline" onclick={onCancel}>
+			Cancel
+		</button>
+		
+		<div class="action-buttons">
+			{#if currentStep > 1}
+				<button class="btn btn-outline" onclick={prevStep}>
+					Back
+				</button>
 			{/if}
-
-			{#if step !== 'success'}
+			
+			{#if currentStep < 4}
 				<button 
-					onclick={onCancel}
-					class="w-full mt-4 text-gray-600 font-medium py-2 hover:text-gray-800 transition-colors"
+					class="btn btn-primary"
+					onclick={nextStep}
+					disabled={
+						(currentStep === 1 && !canProceedFromStep1) ||
+						(currentStep === 2 && !canProceedFromStep2) ||
+						(currentStep === 3 && !canProceedFromStep3)
+					}
 				>
-					Cancel
+					Continue
+				</button>
+			{:else}
+				<button 
+					class="btn btn-primary"
+					onclick={handleCompleteBooking}
+					disabled={!canCompleteBooking || isProcessing}
+				>
+					{#if isProcessing}
+						Processing...
+					{:else}
+						Complete Booking
+					{/if}
 				</button>
 			{/if}
 		</div>
