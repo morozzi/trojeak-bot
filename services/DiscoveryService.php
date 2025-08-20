@@ -91,7 +91,7 @@ class DiscoveryService {
             
             if ($showKeyboard && $index === count($events) - 1) {
                 $cityName = $this->getCityName($user['cityid'], $language);
-                $keyboard = $this->keyboardService->getSimpleEventKeyboard($language, $cityName);
+                $keyboard = $this->keyboardService->getBrowseAllKeyboard('events', $language, $cityName);
                 if (!empty($keyboard)) {
                     $currentOptions['reply_markup'] = json_encode($keyboard);
                 }
@@ -142,11 +142,11 @@ class DiscoveryService {
         $this->userService->markOnboardingShown($user['telegram_id'], OnboardingTracker::VENUE_TYPES_SHOWN);
     }
     
-    private function showAlertsOnboarding(int $chatId, array $user, string $language, string $venueTypeDisplay = 'your favorite'): void {
-        $alertsMessage = Messages::get('events.alerts_onboarding_prompt', [$venueTypeDisplay], $language);
+    private function showAlertsOnboarding(int $chatId, array $user, string $language, ?string $venueTypeDisplay = null): void {
+        $messageText = Messages::get('events.alerts_onboarding_prompt', [$venueTypeDisplay ?? ''], $language);
         $alertsKeyboard = $this->keyboardService->getToggleButtons('alerts', $user['alerts'], $language);
         
-        sendMessage(BotConfig::TOKEN, $chatId, $alertsMessage, [
+        sendMessage(BotConfig::TOKEN, $chatId, $messageText, [
             'parse_mode' => 'HTML',
             'reply_markup' => json_encode($alertsKeyboard)
         ]);
@@ -154,8 +154,8 @@ class DiscoveryService {
         $this->userService->markOnboardingShown($user['telegram_id'], OnboardingTracker::ALERTS_SHOWN);
     }
     
-    private function getCityName(int $cityId, string $language): ?string {
-        $activeCities = $this->cityService->getActiveCities($language);
-        return $activeCities[$cityId] ?? null;
+    private function getCityName(int $cityId, string $language): string {
+        $cities = $this->cityService->getActiveCities($language);
+        return $cities[$cityId] ?? 'Unknown City';
     }
 }

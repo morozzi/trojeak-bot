@@ -12,6 +12,7 @@ define('_ENV_BOT_TOKEN', Env::get('BOT_TOKEN'));
 define('_ENV_BOT_USERNAME', Env::get('BOT_USERNAME'));
 define('_ENV_WEBHOOK_URL', Env::get('WEBHOOK_URL'));
 define('_ENV_CHANNEL_ID', Env::get('CHANNEL_ID'));
+define('_ENV_WEBAPP_DOMAIN', Env::get('WEBAPP_DOMAIN'));
 define('_ENV_WEBHOOK_SECRET_TOKEN', Env::get('WEBHOOK_SECRET_TOKEN'));
 
 ini_set('default_charset', 'utf-8');
@@ -114,6 +115,7 @@ final class BotConfig {
     public const string USERNAME = _ENV_BOT_USERNAME;
     public const string WEBHOOK_URL = _ENV_WEBHOOK_URL;
     public const string CHANNEL_ID = _ENV_CHANNEL_ID;
+    public const string WEBAPP_DOMAIN = _ENV_WEBAPP_DOMAIN;
 }
 
 final class TelegramApiConfig {

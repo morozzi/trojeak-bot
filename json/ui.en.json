@@ -17,8 +17,12 @@
     "filter_prompt": "Filter your party vibe 🎯🔥"
   },
   
-  "app": {
-    "coming_soon": "Full event browsing coming soon! 🚀"
+  "venues": {
+    "browse_all": "🎯 Browse All Venues in %s"
+  },
+  
+  "brands": {
+    "browse_all": "🎯 Browse All Brands"
   },
   
   "settings": {

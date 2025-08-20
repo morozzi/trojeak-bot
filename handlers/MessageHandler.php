@@ -76,6 +76,10 @@ class MessageHandler {
             } else {
                 $messageText = implode("\n\n", $formattedBrands);
             }
+            $keyboard = $this->deps->keyboardService->getBrowseAllKeyboard('brands', $userLanguage);
+            if (!empty($keyboard)) {
+                $messageOptions['reply_markup'] = json_encode($keyboard);
+            }
         } elseif ($command['command'] === 'venues') {
             $userVenueTypes = !empty($existingUser['venue_types']) ? explode(',', $existingUser['venue_types']) : [];
             $formattedVenues = $this->deps->venueService->getActiveVenues($userLanguage, $existingUser['cityid'], $userVenueTypes);
@@ -83,6 +87,11 @@ class MessageHandler {
                 $messageText = Messages::get('no_results', ['venues'], $userLanguage);
             } else {
                 $messageText = implode("\n\n", $formattedVenues);
+            }
+            $cityName = $this->deps->cityService->getActiveCities($userLanguage)[$existingUser['cityid']] ?? '';
+            $keyboard = $this->deps->keyboardService->getBrowseAllKeyboard('venues', $userLanguage, $cityName);
+            if (!empty($keyboard)) {
+                $messageOptions['reply_markup'] = json_encode($keyboard);
             }
         } else {
             if (isset($config['keyboard'])) {
@@ -114,55 +123,62 @@ class MessageHandler {
         );
     }
     
-    private function handleNewUserStart(int $chatId, array $telegramUser, string $userInfo): void {
-        $userLanguage = $this->deps->userService->resolveUserLanguage(null, $telegramUser);
+    private function handleExistingUserStart(int $chatId, array $user, string $userInfo): void {
+        $userLanguage = $user['language'] ?? array_keys($this->deps->languageService->getActiveLanguages())[0] ?? 'en';
         
-        $newUserId = $this->deps->userService->createUser(
-            $telegramUser['id'], 
-            $telegramUser['username'] ?? '', 
-            $telegramUser['first_name'] ?? '', 
-            $telegramUser['last_name'] ?? '', 
-            $userLanguage
-        );
+        $this->deps->logService->info($this->deps->errorLogService->getMessage('bot', 'existing_user_start', [$userInfo]));
         
-        if ($newUserId === 0) {
-            sendMessage(BotConfig::TOKEN, $chatId, Messages::get('error.user_creation', [], $userLanguage));
-            return;
-        }
+        $welcomeMessage = Messages::get('welcome', [], $userLanguage);
+        $menuMessage = Messages::get('menu', [], $userLanguage);
+        $keyboard = $this->deps->keyboardService->buildMenuKeyboard(
+            CommandService::BUTTON_GROUPS['home'], $userLanguage);
         
-        $keyboardMenu = $this->deps->keyboardService->buildMenuKeyboard(CommandService::BUTTON_GROUPS['home'], $userLanguage);
-        
-        $welcomeMessage = Messages::get('welcome', [], $userLanguage) . "\n\n" . Messages::get('menu', [], $userLanguage);
-        sendMessage(BotConfig::TOKEN, $chatId, $welcomeMessage, [
-            'reply_markup' => json_encode($keyboardMenu)
+        sendMessage(BotConfig::TOKEN, $chatId, $welcomeMessage);
+        sendMessage(BotConfig::TOKEN, $chatId, $menuMessage, [
+            'reply_markup' => json_encode($keyboard)
         ]);
-        
-        $this->deps->logService->info($this->deps->errorLogService->getMessage('bot', 'user_started_new', [$userInfo, $userLanguage]));
     }
     
-    private function handleExistingUserStart(int $chatId, array $userData, string $userInfo): void {
-        $userLanguage = $userData['language'] ?? array_keys($this->deps->languageService->getActiveLanguages())[0] ?? 'en';
+    private function handleNewUserStart(int $chatId, array $userFrom, string $userInfo): void {
+        $telegramId = $userFrom['id'];
+        $username = $userFrom['username'] ?? '';
+        $firstName = $userFrom['first_name'] ?? '';
+        $lastName = $userFrom['last_name'] ?? '';
+        $userLanguage = $this->deps->userService->resolveUserLanguage(null, $userFrom);
         
-        $keyboardMenu = $this->deps->keyboardService->buildMenuKeyboard(CommandService::BUTTON_GROUPS['home'], $userLanguage);
+        $result = $this->deps->userService->createUser($telegramId, $username, $firstName, $lastName, $userLanguage);
         
-        $welcomeMessage = Messages::get('welcome', [], $userLanguage) . "\n\n" . Messages::get('menu', [], $userLanguage);
-        sendMessage(BotConfig::TOKEN, $chatId, $welcomeMessage, [
-            'reply_markup' => json_encode($keyboardMenu)
-        ]);
-        
-        $this->deps->logService->info($this->deps->errorLogService->getMessage('bot', 'user_started_existing', [$userInfo]));
+        if ($result['success']) {
+            $this->deps->logService->info($this->deps->errorLogService->getMessage('bot', 'new_user_created', [$userInfo]));
+            
+            $welcomeMessage = Messages::get('welcome', [], $userLanguage);
+            $menuMessage = Messages::get('menu', [], $userLanguage);
+            $keyboard = $this->deps->keyboardService->buildMenuKeyboard(
+                CommandService::BUTTON_GROUPS['home'], $userLanguage);
+            
+            sendMessage(BotConfig::TOKEN, $chatId, $welcomeMessage);
+            sendMessage(BotConfig::TOKEN, $chatId, $menuMessage, [
+                'reply_markup' => json_encode($keyboard)
+            ]);
+        } else {
+            sendMessage(BotConfig::TOKEN, $chatId, Messages::get('error.user_creation', [], $userLanguage));
+        }
     }
     
     private function handleUnknownCommand(array $message, string $userInfo): void {
         $chatId = $message['chat']['id'];
-        $messageText = $message['text'] ?? '';
         $telegramId = $message['from']['id'];
+        $text = $message['text'] ?? '';
         
         $existingUser = $this->deps->userService->getUserByTelegramId($telegramId);
         $userLanguage = $existingUser['language'] ?? $this->deps->userService->resolveUserLanguage(null, $message['from']);
         
-        sendMessage(BotConfig::TOKEN, $chatId, Messages::get('unknown_command', [], $userLanguage));
+        $this->deps->errorLogService->log('core', 'unknown_command', 
+            ErrorContext::create($telegramId, $message['from']['username'] ?? ''), [$text]);
         
-        $this->deps->logService->info($this->deps->errorLogService->getMessage('bot', 'unknown_message_sent', [$userInfo, $messageText]));
+        sendMessage(BotConfig::TOKEN, $chatId, Messages::get('unknown_command', [], $userLanguage), [
+            'reply_markup' => json_encode($this->deps->keyboardService->buildMenuKeyboard(
+                CommandService::BUTTON_GROUPS['home'], $userLanguage))
+        ]);
     }
 }

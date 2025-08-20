@@ -34,20 +34,8 @@ class CallbackHandler {
                 $this->handlePreferenceChange($callbackQuery, 'venue_types'),
             str_starts_with($callbackData, 'city_') => 
                 $this->handlePreferenceChange($callbackQuery, 'city'),
-            str_starts_with($callbackData, 'app_') => 
-                $this->handleAppRedirect($callbackQuery),
             default => $this->handleUnknownCallback($callbackQuery)
         };
-    }
-    
-    private function handleAppRedirect(array $callbackQuery): void {
-        $callbackId = $callbackQuery['id'];
-        $userId = $callbackQuery['from']['id'];
-        
-        $user = $this->deps->userService->getUserByTelegramId($userId);
-        $userLanguage = $user['language'] ?? array_keys($this->deps->languageService->getActiveLanguages())[0] ?? 'en';
-        
-        answerCallbackQuery(BotConfig::TOKEN, $callbackId, Messages::get('app.coming_soon', [], $userLanguage));
     }
     
     private function processMultiSelectUpdate(string $currentValue, string $toggleValue): array
@@ -127,7 +115,7 @@ class CallbackHandler {
                 'alerts' => $value === '1' ? 'confirmations.alerts_enabled' : 'confirmations.alerts_disabled',
                 'city' => 'confirmations.city_changed',
                 'venue_types' => 'confirmations.venue_types_updated',
-                default => 'confirmations.unknown_callback'
+                default => 'confirmations.operation_completed'
             };
             
             $displayValue = match($preferenceType) {

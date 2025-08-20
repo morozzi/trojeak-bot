@@ -98,12 +98,17 @@ class KeyboardService {
         return $this->inlineKeyboard($buttons);
     }
     
-    public function getSimpleEventKeyboard(string $language, ?string $cityName = null): array {
-        $buttonText = Messages::get('events.browse_all', [$cityName ?? ''], $language);
+    public function getBrowseAllKeyboard(string $type, string $language, ?string $contextName = null): array {
+        $buttonText = match($type) {
+            'events' => Messages::get('events.browse_all', [$contextName ?? ''], $language),
+            'venues' => Messages::get('venues.browse_all', [$contextName ?? ''], $language),
+            'brands' => Messages::get('brands.browse_all', [], $language),
+            default => ''
+        };
         
         return [
             'inline_keyboard' => [[
-                ['text' => $buttonText, 'callback_data' => 'app_events']
+                ['text' => $buttonText, 'web_app' => ['url' => 'https://' . BotConfig::WEBAPP_DOMAIN . "/miniapp.php?start={$type}"]]
             ]]
         ];
     }
