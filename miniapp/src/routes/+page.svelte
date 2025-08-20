@@ -123,7 +123,7 @@
 				city: 'Sihanoukville',
 				address: 'Otres Beach, Sihanoukville',
 				featured: true,
-				description: 'Beachfront club with international DJs and beach party atmosphere.'
+				description: 'Beachfront club with stunning ocean views and beach parties.'
 			},
 			{
 				id: 'ven_004',
@@ -132,16 +132,16 @@
 				city: 'Siem Reap',
 				address: 'Pub Street, Siem Reap',
 				featured: false,
-				description: 'Craft beer specialist with local and international selections.'
+				description: 'Craft beer bar with extensive local and international selections.'
 			},
 			{
 				id: 'ven_005',
 				name: 'Pontoon Club',
 				type: 'club' as const,
 				city: 'Phnom Penh',
-				address: 'Sisowath Quay, Phnom Penh',
+				address: 'Riverside, Phnom Penh',
 				featured: true,
-				description: 'Floating club on Mekong River with themed nights and premium drinks.'
+				description: 'Premier nightclub with floating bar experience on the Mekong.'
 			}
 		] as Venue[],
 		brands: [
@@ -150,88 +150,86 @@
 				name: 'Angkor Beer',
 				type: 'beer' as const,
 				featured: true,
-				description: 'Cambodia\'s premium local beer, crisp and refreshing.'
+				description: 'Cambodia\'s premium lager beer with authentic local taste.'
 			},
 			{
 				id: 'brd_002',
-				name: 'Kingdom Brew',
+				name: 'Stella Artois',
 				type: 'beer' as const,
 				featured: false,
-				description: 'Craft beer made locally with international standards.'
+				description: 'Belgian premium lager with crisp, clean taste.'
 			},
 			{
 				id: 'brd_003',
-				name: 'Samai Rum',
+				name: 'Grey Goose',
 				type: 'spirits' as const,
 				featured: true,
-				description: 'Premium Cambodian rum with traditional distillation methods.'
+				description: 'Premium French vodka distilled from French wheat.'
 			},
 			{
 				id: 'brd_004',
-				name: 'Mekong Wine',
-				type: 'wine' as const,
+				name: 'Johnnie Walker',
+				type: 'spirits' as const,
 				featured: false,
-				description: 'Local wine made from tropical fruits and traditional grapes.'
+				description: 'World-renowned Scotch whisky with rich heritage.'
 			},
 			{
 				id: 'brd_005',
-				name: 'Cambodia Premium',
-				type: 'beer' as const,
+				name: 'Moët & Chandon',
+				type: 'wine' as const,
 				featured: true,
-				description: 'Export quality beer with smooth taste and premium ingredients.'
+				description: 'Luxury champagne from the heart of Champagne, France.'
 			},
 			{
 				id: 'brd_006',
-				name: 'Highland Coffee',
-				type: 'spirits' as const,
+				name: 'Corona',
+				type: 'beer' as const,
 				featured: false,
-				description: 'Coffee-infused spirits perfect for evening cocktails.'
+				description: 'Mexican beer perfect with lime for a refreshing taste.'
 			},
 			{
 				id: 'brd_007',
-				name: 'Tropical Spirits',
+				name: 'Bacardi',
 				type: 'spirits' as const,
 				featured: true,
-				description: 'Exotic fruit-infused spirits with authentic Cambodian flavors.'
+				description: 'Premium white rum perfect for tropical cocktails.'
 			}
 		] as Brand[]
 	};
 
 	let webApp: any = null;
-	let isReady = $state(false);
 	let userInfo = $state<any>(null);
-	let error = $state<string | null>(null);
+	let isReady = $state(false);
+	let error = $state('');
 
 	let currentView = $state<'main' | 'events' | 'venues' | 'brands' | 'booking'>('main');
+	let viewMode = $state<'list' | 'detail'>('list');
 	let selectedEventId = $state<string | null>(null);
 	let selectedVenueId = $state<string | null>(null);
 	let selectedBrandId = $state<string | null>(null);
-	let viewMode = $state<'list' | 'detail'>('list');
 
-	let cityFilter = $state<string>('all');
-	let venueTypeFilter = $state<'all' | 'bar' | 'ktv' | 'club'>('all');
-	let brandTypeFilter = $state<'all' | 'beer' | 'wine' | 'spirits'>('all');
+	let cityFilter = $state('all');
+	let venueTypeFilter = $state('all');
+	let brandTypeFilter = $state('all');
 
-	const cities = $derived(['all', ...new Set(MOCK_DATA.events.map(e => e.city))]);
-	const venueTypes = $derived(['all', 'bar', 'ktv', 'club'] as const);
-	const brandTypes = $derived(['all', 'beer', 'wine', 'spirits'] as const);
+	const cities = ['all', 'Phnom Penh', 'Sihanoukville', 'Siem Reap'];
 
 	const filteredEvents = $derived(
-		MOCK_DATA.events.filter(event => 
-			(cityFilter === 'all' || event.city === cityFilter)
+		MOCK_DATA.events.filter(e => 
+			cityFilter === 'all' || e.city === cityFilter
 		).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
 	);
 
 	const filteredVenues = $derived(
-		MOCK_DATA.venues.filter(venue => 
-			(cityFilter === 'all' || venue.city === cityFilter) &&
-			(venueTypeFilter === 'all' || venue.type === venueTypeFilter)
+		MOCK_DATA.venues.filter(v => 
+			(cityFilter === 'all' || v.city === cityFilter) &&
+			(venueTypeFilter === 'all' || v.type === venueTypeFilter)
 		).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
 	);
 
 	const filteredBrands = $derived(
-		MOCK_DATA.brands.filter(brand => 
-			(brandTypeFilter === 'all' || brand.type === brandTypeFilter)
+		MOCK_DATA.brands.filter(b => 
+			brandTypeFilter === 'all' || b.type === brandTypeFilter
 		).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
 	);
 
@@ -301,19 +299,36 @@
 	}
 
 	onMount(() => {
+		// Deep linking parameter handling with improved debugging
 		if (typeof window !== 'undefined') {
+			// Log current URL for debugging
+			console.log('Current URL:', window.location.href);
+			console.log('Search params:', window.location.search);
+			
 			const currentUrl = window.location.pathname;
 			if (currentUrl !== '/' && !currentUrl.startsWith('/app/')) {
 				window.history.replaceState({}, '', '/');
 			}
 
+			// Parse deep linking parameters
 			const urlParams = new URLSearchParams(window.location.search);
 			const startParam = urlParams.get('start');
-			if (startParam === 'events') currentView = 'events';
-			else if (startParam === 'venues') currentView = 'venues';
-			else if (startParam === 'brands') currentView = 'brands';
+			
+			console.log('Start parameter:', startParam);
+			
+			if (startParam === 'events') {
+				console.log('Setting view to events');
+				currentView = 'events';
+			} else if (startParam === 'venues') {
+				console.log('Setting view to venues');
+				currentView = 'venues';
+			} else if (startParam === 'brands') {
+				console.log('Setting view to brands');
+				currentView = 'brands';
+			}
 		}
 
+		// Telegram WebApp initialization
 		try {
 			if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
 				webApp = window.Telegram.WebApp;
@@ -362,6 +377,13 @@
 				<p class="text-blue-800">🔄 Initializing...</p>
 			</div>
 		</div>
+	{:else if currentView === 'booking' && selectedEvent}
+		<BookingWizard 
+			event={selectedEvent}
+			availableBrands={MOCK_DATA.brands.filter(b => selectedEvent.brands.includes(b.id))}
+			onComplete={completeBooking}
+			onCancel={() => { currentView = 'events'; viewMode = 'detail'; }}
+		/>
 	{:else if currentView === 'main'}
 		<div class="container mx-auto px-4 py-6">
 			<div class="text-center mb-8">
@@ -506,9 +528,10 @@
 					</select>
 					
 					<select bind:value={venueTypeFilter} class="p-3 border border-gray-300 rounded-lg">
-						{#each venueTypes as type}
-							<option value={type}>{type === 'all' ? 'All Types' : type.toUpperCase()}</option>
-						{/each}
+						<option value="all">All Types</option>
+						<option value="bar">Bars</option>
+						<option value="ktv">KTVs</option>
+						<option value="club">Clubs</option>
 					</select>
 				</div>
 
@@ -548,26 +571,24 @@
 					</div>
 					
 					<p class="text-gray-700 mb-6">{selectedVenue.description}</p>
-					
-					<div class="mb-6">
-						<h3 class="font-semibold text-gray-900 mb-3">Upcoming Events</h3>
-						{#if venueEvents.length > 0}
-							<div class="space-y-3">
-								{#each venueEvents as event}
-									<button 
-										onclick={() => { currentView = 'events'; selectEvent(event.id); }}
-										class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-left hover:bg-gray-100 transition-colors"
-									>
-										<h4 class="font-medium text-gray-900">{event.title}</h4>
-										<p class="text-gray-600 text-sm">{event.date} • {event.price_range}</p>
-									</button>
-								{/each}
-							</div>
-						{:else}
-							<p class="text-gray-500 text-sm">No upcoming events</p>
-						{/if}
-					</div>
 				</div>
+
+				{#if venueEvents.length > 0}
+					<div class="bg-white rounded-lg p-6">
+						<h3 class="font-semibold text-gray-900 mb-4">Events at this Venue</h3>
+						<div class="space-y-3">
+							{#each venueEvents as event}
+								<button 
+									onclick={() => selectEvent(event.id)}
+									class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+								>
+									<h4 class="font-medium text-gray-900">{event.title}</h4>
+									<p class="text-gray-600 text-sm">{event.date} • {event.price_range}</p>
+								</button>
+							{/each}
+						</div>
+					</div>
+				{/if}
 			</div>
 		{/if}
 
@@ -578,26 +599,27 @@
 				
 				<div class="mb-4">
 					<select bind:value={brandTypeFilter} class="w-full p-3 border border-gray-300 rounded-lg">
-						{#each brandTypes as type}
-							<option value={type}>{type === 'all' ? 'All Types' : type.charAt(0).toUpperCase() + type.slice(1)}</option>
-						{/each}
+						<option value="all">All Types</option>
+						<option value="beer">Beer</option>
+						<option value="wine">Wine</option>
+						<option value="spirits">Spirits</option>
 					</select>
 				</div>
 
-				<div class="grid grid-cols-2 gap-4">
+				<div class="space-y-4">
 					{#each filteredBrands as brand}
 						<button 
 							onclick={() => selectBrand(brand.id)}
-							class="bg-white border border-gray-200 rounded-lg p-4 text-left hover:bg-gray-50 transition-colors"
+							class="w-full bg-white border border-gray-200 rounded-lg p-4 text-left hover:bg-gray-50 transition-colors"
 						>
 							<div class="flex justify-between items-start mb-2">
-								<h3 class="font-semibold text-gray-900 text-sm">{brand.name}</h3>
+								<h3 class="font-semibold text-gray-900">{brand.name}</h3>
 								{#if brand.featured}
-									<span class="bg-yellow-100 text-yellow-800 text-xs px-1 py-0.5 rounded-full">★</span>
+									<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Featured</span>
 								{/if}
 							</div>
-							<p class="text-gray-600 text-xs mb-2">{brand.type}</p>
-							<p class="text-gray-700 text-xs">{brand.description}</p>
+							<p class="text-gray-600 text-sm mb-2">{brand.type.charAt(0).toUpperCase() + brand.type.slice(1)}</p>
+							<p class="text-gray-700 text-sm">{brand.description}</p>
 						</button>
 					{/each}
 				</div>
@@ -617,35 +639,26 @@
 					</div>
 					
 					<p class="text-gray-700 mb-6">{selectedBrand.description}</p>
-					
-					<div class="mb-6">
-						<h3 class="font-semibold text-gray-900 mb-3">Events featuring {selectedBrand.name}</h3>
-						{#if brandEvents.length > 0}
-							<div class="space-y-3">
-								{#each brandEvents as event}
-									<button 
-										onclick={() => { currentView = 'events'; selectEvent(event.id); }}
-										class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-left hover:bg-gray-100 transition-colors"
-									>
-										<h4 class="font-medium text-gray-900">{event.title}</h4>
-										<p class="text-gray-600 text-sm">{event.venue_name} • {event.date}</p>
-									</button>
-								{/each}
-							</div>
-						{:else}
-							<p class="text-gray-500 text-sm">No events featuring this brand</p>
-						{/if}
-					</div>
 				</div>
+
+				{#if brandEvents.length > 0}
+					<div class="bg-white rounded-lg p-6">
+						<h3 class="font-semibold text-gray-900 mb-4">Events featuring {selectedBrand.name}</h3>
+						<div class="space-y-3">
+							{#each brandEvents as event}
+								<button 
+									onclick={() => selectEvent(event.id)}
+									class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+								>
+									<h4 class="font-medium text-gray-900">{event.title}</h4>
+									<p class="text-gray-600 text-sm">{event.venue_name} • {event.city}</p>
+									<p class="text-gray-500 text-sm">{event.date} • {event.price_range}</p>
+								</button>
+							{/each}
+						</div>
+					</div>
+				{/if}
 			</div>
 		{/if}
-
-	{:else if currentView === 'booking' && selectedEvent}
-		<BookingWizard 
-			event={selectedEvent}
-			availableBrands={selectedEvent.brands.map(id => MOCK_DATA.brands.find(b => b.id === id)).filter(Boolean)}
-			onComplete={completeBooking}
-			onCancel={() => { currentView = 'events'; viewMode = 'detail'; }}
-		/>
 	{/if}
 </main>

@@ -4,9 +4,11 @@
 	import { onMount } from 'svelte';
 	
 	onMount(() => {
-		// If the URL contains .php, redirect to root
+		// If the URL contains .php, redirect to root BUT PRESERVE QUERY PARAMETERS
 		if ($page.url.pathname.includes('.php')) {
-			goto('/', { replaceState: true });
+			const queryString = $page.url.search; // Preserve ?start=events etc.
+			console.log('Layout redirect - preserving query string:', queryString);
+			goto(`/${queryString}`, { replaceState: true });
 		}
 	});
 </script>
