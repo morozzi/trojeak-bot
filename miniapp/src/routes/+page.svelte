@@ -1,4 +1,4 @@
-<!-- src/routes/+page.svelte - Clean version using CSS classes -->
+<!-- src/routes/+page.svelte - Complete version with ALL individual pages -->
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
@@ -131,6 +131,33 @@
 				address: 'BKK1, Phnom Penh',
 				featured: false,
 				description: 'Luxury karaoke with private rooms and premium sound systems.'
+			},
+			{
+				id: 'ven_003',
+				name: 'Otres Beach Club',
+				type: 'club' as const,
+				city: 'Sihanoukville',
+				address: 'Otres Beach, Sihanoukville',
+				featured: true,
+				description: 'Beachfront club with stunning ocean views and international DJs.'
+			},
+			{
+				id: 'ven_004',
+				name: 'Embargo Bar',
+				type: 'bar' as const,
+				city: 'Siem Reap',
+				address: 'Pub Street, Siem Reap',
+				featured: false,
+				description: 'Craft beer bar with local and international selections.'
+			},
+			{
+				id: 'ven_005',
+				name: 'Pontoon Club',
+				type: 'club' as const,
+				city: 'Phnom Penh',
+				address: 'Sisowath Quay, Phnom Penh',
+				featured: true,
+				description: 'Floating club on the Mekong River with live music and dancing.'
 			}
 		] as Venue[],
 		brands: [
@@ -147,6 +174,41 @@
 				type: 'spirits' as const,
 				featured: false,
 				description: 'Premium Swedish vodka'
+			},
+			{
+				id: 'brd_003',
+				name: 'Grey Goose',
+				type: 'spirits' as const,
+				featured: true,
+				description: 'Ultra-premium French vodka'
+			},
+			{
+				id: 'brd_004',
+				name: 'Heineken',
+				type: 'beer' as const,
+				featured: false,
+				description: 'International premium lager'
+			},
+			{
+				id: 'brd_005',
+				name: 'Corona',
+				type: 'beer' as const,
+				featured: true,
+				description: 'Mexican beach beer'
+			},
+			{
+				id: 'brd_006',
+				name: 'Craft IPA',
+				type: 'beer' as const,
+				featured: false,
+				description: 'Local craft India Pale Ale'
+			},
+			{
+				id: 'brd_007',
+				name: 'Bacardi',
+				type: 'spirits' as const,
+				featured: true,
+				description: 'Premium white rum'
 			}
 		] as Brand[]
 	};
@@ -161,6 +223,12 @@
 			.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
 	);
 
+	const filteredVenues = $derived(
+		MOCK_DATA.venues
+			.filter(v => typeFilter === 'all' || v.type === typeFilter)
+			.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
+	);
+
 	const selectedEvent = $derived(
 		selectedEventId ? MOCK_DATA.events.find(e => e.id === selectedEventId) : null
 	);
@@ -171,6 +239,14 @@
 
 	const selectedBrand = $derived(
 		selectedBrandId ? MOCK_DATA.brands.find(b => b.id === selectedBrandId) : null
+	);
+
+	const venueEvents = $derived(
+		selectedVenueId ? MOCK_DATA.events.filter(e => e.venue_id === selectedVenueId) : []
+	);
+
+	const brandEvents = $derived(
+		selectedBrandId ? MOCK_DATA.events.filter(e => e.brands.includes(selectedBrandId)) : []
 	);
 
 	// Navigation functions
@@ -292,6 +368,13 @@
 				<p class="error-hint">Try opening this in Telegram</p>
 			</div>
 		</div>
+	{:else if currentView === 'booking' && selectedEvent}
+		<!-- Booking flow would go here -->
+		<div class="content-container">
+			<h2 class="page-title gradient-text">Booking</h2>
+			<p class="page-subtitle">Booking for {selectedEvent.title}</p>
+			<button class="btn btn-primary" onclick={() => completeBooking()}>Complete Booking</button>
+		</div>
 	{:else if currentView === 'main'}
 		<div class="main-container animate-fade-in">
 			<!-- Hero Header -->
@@ -385,13 +468,189 @@
 				</div>
 			</div>
 		</div>
-	{:else}
-		<!-- Other views (events, venues, brands) -->
-		<div class="content-container">
-			<h2 class="page-title gradient-text">
-				{currentView.charAt(0).toUpperCase() + currentView.slice(1)}
-			</h2>
-			<p class="page-subtitle">Coming soon with the new design system!</p>
-		</div>
+
+	{:else if currentView === 'events'}
+		{#if viewMode === 'list'}
+			<div class="main-container animate-fade-in">
+				<h2 class="page-title gradient-text">Events</h2>
+				
+				<div style="margin-bottom: var(--space-6);">
+					<select bind:value={cityFilter} class="form-input form-select">
+						{#each cities as city}
+							<option value={city}>{city === 'all' ? 'All Cities' : city}</option>
+						{/each}
+					</select>
+				</div>
+
+				<div class="featured-grid">
+					{#each filteredEvents as event}
+						<button 
+							onclick={() => selectEvent(event.id)}
+							class="card"
+						>
+							{#if event.featured}
+								<div class="badge-featured" style="margin-bottom: var(--space-3);">Featured</div>
+							{/if}
+							<h3 style="font-size: var(--text-lg); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">{event.title}</h3>
+							<p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-2);">{event.venue_name} • {event.city}</p>
+							<p style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-3);">{event.date} • {event.price_range}</p>
+							<p style="font-size: var(--text-sm); color: var(--text-secondary);">{event.description}</p>
+						</button>
+					{/each}
+				</div>
+			</div>
+		{:else if selectedEvent}
+			<div class="main-container animate-fade-in">
+				<div class="card card-featured" style="margin-bottom: var(--space-6);">
+					<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
+						<h2 style="font-size: var(--text-2xl); font-weight: 700; color: var(--text-primary);">{selectedEvent.title}</h2>
+						{#if selectedEvent.featured}
+							<div class="badge-featured">Featured</div>
+						{/if}
+					</div>
+					
+					<div style="margin-bottom: var(--space-6);">
+						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Venue:</span> {selectedEvent.venue_name}</p>
+						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Location:</span> {selectedEvent.city}</p>
+						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Date:</span> {selectedEvent.date}</p>
+						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Price Range:</span> {selectedEvent.price_range}</p>
+					</div>
+					
+					<p style="color: var(--text-primary); margin-bottom: var(--space-6);">{selectedEvent.description}</p>
+					
+					<button class="btn btn-primary" onclick={() => startBooking(selectedEvent.id)}>
+						Book Now
+					</button>
+				</div>
+			</div>
+		{/if}
+
+	{:else if currentView === 'venues'}
+		{#if viewMode === 'list'}
+			<div class="main-container animate-fade-in">
+				<h2 class="page-title gradient-text">Venues</h2>
+				
+				<div style="margin-bottom: var(--space-6);">
+					<select bind:value={typeFilter} class="form-input form-select">
+						{#each types as type}
+							<option value={type}>{type === 'all' ? 'All Types' : type.charAt(0).toUpperCase() + type.slice(1)}</option>
+						{/each}
+					</select>
+				</div>
+
+				<div class="featured-grid">
+					{#each filteredVenues as venue}
+						<button 
+							onclick={() => selectVenue(venue.id)}
+							class="card"
+						>
+							{#if venue.featured}
+								<div class="badge-featured" style="margin-bottom: var(--space-3);">Featured</div>
+							{/if}
+							<h3 style="font-size: var(--text-lg); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">{venue.name}</h3>
+							<p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-2);">{venue.city} • {venue.type.charAt(0).toUpperCase() + venue.type.slice(1)}</p>
+							<p style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-3);">{venue.address}</p>
+							<p style="font-size: var(--text-sm); color: var(--text-secondary);">{venue.description}</p>
+						</button>
+					{/each}
+				</div>
+			</div>
+		{:else if selectedVenue}
+			<div class="main-container animate-fade-in">
+				<div class="card card-featured" style="margin-bottom: var(--space-6);">
+					<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
+						<h2 style="font-size: var(--text-2xl); font-weight: 700; color: var(--text-primary);">{selectedVenue.name}</h2>
+						{#if selectedVenue.featured}
+							<div class="badge-featured">Featured</div>
+						{/if}
+					</div>
+					
+					<div style="margin-bottom: var(--space-6);">
+						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Type:</span> {selectedVenue.type.charAt(0).toUpperCase() + selectedVenue.type.slice(1)}</p>
+						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Location:</span> {selectedVenue.city}</p>
+						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Address:</span> {selectedVenue.address}</p>
+					</div>
+					
+					<p style="color: var(--text-primary); margin-bottom: var(--space-6);">{selectedVenue.description}</p>
+				</div>
+
+				{#if venueEvents.length > 0}
+					<div class="card">
+						<h3 style="font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4);">Events at {selectedVenue.name}</h3>
+						<div style="display: flex; flex-direction: column; gap: var(--space-3);">
+							{#each venueEvents as event}
+								<button 
+									onclick={() => selectEvent(event.id)}
+									class="card"
+									style="text-align: left; padding: var(--space-4); border: 1px solid rgba(255, 255, 255, 0.1);"
+								>
+									<h4 style="font-weight: 600; color: var(--text-primary);">{event.title}</h4>
+									<p style="color: var(--text-secondary); font-size: var(--text-sm);">{event.date} • {event.price_range}</p>
+								</button>
+							{/each}
+						</div>
+					</div>
+				{/if}
+			</div>
+		{/if}
+
+	{:else if currentView === 'brands'}
+		{#if viewMode === 'list'}
+			<div class="main-container animate-fade-in">
+				<h2 class="page-title gradient-text">Brands</h2>
+				
+				<div class="featured-grid">
+					{#each MOCK_DATA.brands as brand}
+						<button 
+							onclick={() => selectBrand(brand.id)}
+							class="card"
+						>
+							{#if brand.featured}
+								<div class="badge-featured" style="margin-bottom: var(--space-3);">Featured</div>
+							{/if}
+							<h3 style="font-size: var(--text-lg); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">{brand.name}</h3>
+							<p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-2);">{brand.type.charAt(0).toUpperCase() + brand.type.slice(1)}</p>
+							<p style="font-size: var(--text-sm); color: var(--text-secondary);">{brand.description}</p>
+						</button>
+					{/each}
+				</div>
+			</div>
+		{:else if selectedBrand}
+			<div class="main-container animate-fade-in">
+				<div class="card card-featured" style="margin-bottom: var(--space-6);">
+					<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
+						<h2 style="font-size: var(--text-2xl); font-weight: 700; color: var(--text-primary);">{selectedBrand.name}</h2>
+						{#if selectedBrand.featured}
+							<div class="badge-featured">Featured</div>
+						{/if}
+					</div>
+					
+					<div style="margin-bottom: var(--space-6);">
+						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Type:</span> {selectedBrand.type.charAt(0).toUpperCase() + selectedBrand.type.slice(1)}</p>
+					</div>
+					
+					<p style="color: var(--text-primary); margin-bottom: var(--space-6);">{selectedBrand.description}</p>
+				</div>
+
+				{#if brandEvents.length > 0}
+					<div class="card">
+						<h3 style="font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4);">Events featuring {selectedBrand.name}</h3>
+						<div style="display: flex; flex-direction: column; gap: var(--space-3);">
+							{#each brandEvents as event}
+								<button 
+									onclick={() => selectEvent(event.id)}
+									class="card"
+									style="text-align: left; padding: var(--space-4); border: 1px solid rgba(255, 255, 255, 0.1);"
+								>
+									<h4 style="font-weight: 600; color: var(--text-primary);">{event.title}</h4>
+									<p style="color: var(--text-secondary); font-size: var(--text-sm);">{event.venue_name} • {event.city}</p>
+									<p style="color: var(--text-muted); font-size: var(--text-sm);">{event.date} • {event.price_range}</p>
+								</button>
+							{/each}
+						</div>
+					</div>
+				{/if}
+			</div>
+		{/if}
 	{/if}
 </main>
