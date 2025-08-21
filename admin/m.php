@@ -63,12 +63,14 @@ function handleChannelMessage(): void {
         
         $webAppUrl = 'https://' . BotConfig::WEBAPP_DOMAIN . '/miniapp.php';
         
+        // Use 'url' button for channel messages instead of 'web_app'
+        // web_app buttons are only supported in direct bot-user conversations
         $inlineKeyboard = [
             'inline_keyboard' => [
                 [
                     [
                         'text' => $buttonText,
-                        'web_app' => ['url' => $webAppUrl]
+                        'url' => $webAppUrl
                     ]
                 ]
             ]
@@ -108,7 +110,7 @@ function handleChannelMessage(): void {
         return;
     }
     
-    $content = '<h2>Send Channel Message with Web App Button</h2>';
+    $content = '<h2>Send Channel Message with Mini App Button</h2>';
     $content .= '<form method="POST">';
     $content .= '<div style="margin-bottom: 15px;">';
     $content .= '<label for="message_text"><strong>Message Text:</strong></label><br>';
@@ -119,8 +121,9 @@ function handleChannelMessage(): void {
     $content .= '<input type="text" name="button_text" id="button_text" size="30" required>';
     $content .= '</div>';
     $content .= '<div style="margin-bottom: 15px;">';
-    $content .= '<p><strong>Web App URL:</strong> https://' . BotConfig::WEBAPP_DOMAIN . '/miniapp.php</p>';
+    $content .= '<p><strong>Mini App URL:</strong> https://' . BotConfig::WEBAPP_DOMAIN . '/miniapp.php</p>';
     $content .= '<p><strong>Target Channel:</strong> ' . BotConfig::CHANNEL_ID . '</p>';
+    $content .= '<p><strong>Button Type:</strong> URL (web_app buttons not supported in channels)</p>';
     $content .= '</div>';
     $content .= '<button type="submit" style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px;">Send Message</button>';
     $content .= '</form>';

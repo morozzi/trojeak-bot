@@ -133,16 +133,19 @@ function getApiUrl(string $token, string $method): string {
 function sendMessage(string $token, int|string $chatId, string $text, array $additionalParams = []): array {
     global $container;
     
-    $userService = $container->get('user_service');
-    
-    if ($userService->isUserBlocked($chatId)) {
-        return [
-            'ok' => true,
-            'result' => [
-                'message_id' => 0,
-                'skipped' => true
-            ]
-        ];
+    // Only check user blocking for positive integer chat IDs (user IDs)
+    // Negative IDs are groups/channels, string IDs are channel usernames
+    if (is_int($chatId) && $chatId > 0) {
+        $userService = $container->get('user_service');
+        if ($userService->isUserBlocked($chatId)) {
+            return [
+                'ok' => true,
+                'result' => [
+                    'message_id' => 0,
+                    'skipped' => true
+                ]
+            ];
+        }
     }
     
     if (!Messages::validateMessageLength($text)) {
@@ -162,16 +165,19 @@ function sendMessage(string $token, int|string $chatId, string $text, array $add
 function sendPhoto(string $token, int|string $chatId, string $photo, array $additionalParams = []): array {
     global $container;
     
-    $userService = $container->get('user_service');
-    
-    if ($userService->isUserBlocked($chatId)) {
-        return [
-            'ok' => true,
-            'result' => [
-                'message_id' => 0,
-                'skipped' => true
-            ]
-        ];
+    // Only check user blocking for positive integer chat IDs (user IDs)
+    // Negative IDs are groups/channels, string IDs are channel usernames
+    if (is_int($chatId) && $chatId > 0) {
+        $userService = $container->get('user_service');
+        if ($userService->isUserBlocked($chatId)) {
+            return [
+                'ok' => true,
+                'result' => [
+                    'message_id' => 0,
+                    'skipped' => true
+                ]
+            ];
+        }
     }
     
     if (isset($additionalParams['caption']) && !Messages::validateMessageLength($additionalParams['caption'])) {
