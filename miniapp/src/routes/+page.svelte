@@ -1,7 +1,11 @@
-<!-- src/routes/+page.svelte - Fixed interactions and booking -->
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { Button } from '$lib/components/ui/button';
+	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import { Badge } from '$lib/components/ui/badge';
+	import { Skeleton } from '$lib/components/ui/skeleton';
+	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
 	import LoadingAnimation from '$lib/components/LoadingAnimation.svelte';
 	import BookingWizard from '$lib/components/BookingWizard.svelte';
 
@@ -36,7 +40,6 @@
 		description: string;
 	}
 
-	// State management
 	let currentView: 'main' | 'events' | 'venues' | 'brands' | 'booking' = $state('main');
 	let viewMode: 'list' | 'detail' = $state('list');
 	let selectedEventId: string | null = $state(null);
@@ -50,7 +53,6 @@
 	let error: string | null = $state(null);
 	let isLoading: boolean = $state(true);
 
-	// Mock data
 	const MOCK_DATA = {
 		events: [
 			{
@@ -100,268 +102,238 @@
 				price_range: '$8-18',
 				date: '2025-08-25',
 				description: 'Local and international craft beers with food pairings.'
-			},
-			{
-				id: 'evt_005',
-				title: 'Latin Night',
-				venue_id: 'ven_005',
-				venue_name: 'Pontoon Club',
-				city: 'Phnom Penh',
-				featured: true,
-				brands: ['brd_003', 'brd_007'],
-				price_range: '$18-30',
-				date: '2025-08-26',
-				description: 'Salsa dancing with authentic Latin cocktails and live music.'
 			}
-		] as Event[],
+		],
 		venues: [
 			{
 				id: 'ven_001',
 				name: 'Sky Bar Phnom Penh',
 				type: 'bar' as const,
 				city: 'Phnom Penh',
-				address: 'Riverside, Central Phnom Penh',
+				address: '123 Riverside Blvd',
 				featured: true,
-				description: 'Premium rooftop bar with panoramic city views and signature cocktails.'
+				description: 'Rooftop bar with stunning city views and premium cocktails.'
 			},
 			{
 				id: 'ven_002',
 				name: 'Golden KTV',
 				type: 'ktv' as const,
-				city: 'Phnom Penh', 
-				address: 'BKK1, Phnom Penh',
+				city: 'Phnom Penh',
+				address: '456 Entertainment District',
 				featured: false,
-				description: 'Luxury karaoke with private rooms and premium sound systems.'
+				description: 'Private karaoke rooms with premium sound systems.'
 			},
 			{
 				id: 'ven_003',
 				name: 'Otres Beach Club',
 				type: 'club' as const,
 				city: 'Sihanoukville',
-				address: 'Otres Beach, Sihanoukville',
+				address: '789 Beach Road',
 				featured: true,
-				description: 'Beachfront club with stunning ocean views and international DJs.'
+				description: 'Beachfront club with live DJs and tropical atmosphere.'
 			},
 			{
 				id: 'ven_004',
 				name: 'Embargo Bar',
 				type: 'bar' as const,
 				city: 'Siem Reap',
-				address: 'Pub Street, Siem Reap',
+				address: '101 Pub Street',
 				featured: false,
-				description: 'Craft beer bar with local and international selections.'
-			},
-			{
-				id: 'ven_005',
-				name: 'Pontoon Club',
-				type: 'club' as const,
-				city: 'Phnom Penh',
-				address: 'Sisowath Quay, Phnom Penh',
-				featured: true,
-				description: 'Floating club on the Mekong River with live music and dancing.'
+				description: 'Craft beer specialists with local and international selections.'
 			}
-		] as Venue[],
+		],
 		brands: [
 			{
 				id: 'brd_001',
-				name: 'Anchor Beer',
+				name: 'Angkor Beer',
 				type: 'beer' as const,
 				featured: true,
-				description: 'Cambodia\'s premium lager beer'
+				description: 'Cambodia\'s premium local beer'
 			},
 			{
 				id: 'brd_002',
+				name: 'Hennessy',
+				type: 'spirits' as const,
+				featured: true,
+				description: 'Premium cognac for special occasions'
+			},
+			{
+				id: 'brd_003',
 				name: 'Absolut Vodka',
 				type: 'spirits' as const,
 				featured: false,
 				description: 'Premium Swedish vodka'
 			},
 			{
-				id: 'brd_003',
-				name: 'Grey Goose',
-				type: 'spirits' as const,
-				featured: true,
-				description: 'Ultra-premium French vodka'
-			},
-			{
 				id: 'brd_004',
-				name: 'Heineken',
-				type: 'beer' as const,
-				featured: false,
-				description: 'International premium lager'
+				name: 'Moët & Chandon',
+				type: 'wine' as const,
+				featured: true,
+				description: 'Luxury champagne'
 			},
 			{
 				id: 'brd_005',
-				name: 'Corona',
+				name: 'Tiger Beer',
 				type: 'beer' as const,
-				featured: true,
-				description: 'Mexican beach beer'
+				featured: false,
+				description: 'Asia\'s premium beer'
 			},
 			{
 				id: 'brd_006',
-				name: 'Craft IPA',
+				name: 'Corona Extra',
 				type: 'beer' as const,
 				featured: false,
-				description: 'Local craft India Pale Ale'
-			},
-			{
-				id: 'brd_007',
-				name: 'Bacardi',
-				type: 'spirits' as const,
-				featured: true,
-				description: 'Premium white rum'
+				description: 'Mexican beach beer'
 			}
-		] as Brand[]
+		]
 	};
 
-	// Computed values
-	const cities = $derived(['all', ...Array.from(new Set(MOCK_DATA.events.map(e => e.city)))]);
-	const types = $derived(['all', 'bar', 'club', 'ktv']);
+	const filteredEvents = $derived(() => {
+		return MOCK_DATA.events.filter(event => 
+			(cityFilter === 'all' || event.city === cityFilter)
+		);
+	});
 
-	const filteredEvents = $derived(
-		MOCK_DATA.events
-			.filter(e => cityFilter === 'all' || e.city === cityFilter)
-			.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
-	);
+	const filteredVenues = $derived(() => {
+		return MOCK_DATA.venues.filter(venue => 
+			(cityFilter === 'all' || venue.city === cityFilter) &&
+			(typeFilter === 'all' || venue.type === typeFilter)
+		);
+	});
 
-	const filteredVenues = $derived(
-		MOCK_DATA.venues
-			.filter(v => typeFilter === 'all' || v.type === typeFilter)
-			.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
-	);
+	const filteredBrands = $derived(() => {
+		return MOCK_DATA.brands.filter(brand => 
+			(typeFilter === 'all' || brand.type === typeFilter)
+		);
+	});
 
-	const selectedEvent = $derived(
-		selectedEventId ? MOCK_DATA.events.find(e => e.id === selectedEventId) : null
-	);
+	const selectedEvent = $derived(() => {
+		return selectedEventId ? MOCK_DATA.events.find(e => e.id === selectedEventId) : null;
+	});
 
-	const selectedVenue = $derived(
-		selectedVenueId ? MOCK_DATA.venues.find(v => v.id === selectedVenueId) : null
-	);
+	const selectedVenue = $derived(() => {
+		return selectedVenueId ? MOCK_DATA.venues.find(v => v.id === selectedVenueId) : null;
+	});
 
-	const selectedBrand = $derived(
-		selectedBrandId ? MOCK_DATA.brands.find(b => b.id === selectedBrandId) : null
-	);
+	const selectedBrand = $derived(() => {
+		return selectedBrandId ? MOCK_DATA.brands.find(b => b.id === selectedBrandId) : null;
+	});
 
-	const venueEvents = $derived(
-		selectedVenueId ? MOCK_DATA.events.filter(e => e.venue_id === selectedVenueId) : []
-	);
+	const venueEvents = $derived(() => {
+		return selectedVenue ? MOCK_DATA.events.filter(e => e.venue_id === selectedVenue.id) : [];
+	});
 
-	const brandEvents = $derived(
-		selectedBrandId ? MOCK_DATA.events.filter(e => e.brands.includes(selectedBrandId)) : []
-	);
+	const cities = $derived(() => {
+		const uniqueCities = [...new Set([...MOCK_DATA.events.map(e => e.city), ...MOCK_DATA.venues.map(v => v.city)])];
+		return uniqueCities;
+	});
 
-	// Navigation functions - FIXED
-	function navigateBack() {
-		if (currentView === 'booking') {
-			if (selectedEventId) {
-				currentView = 'events';
-				viewMode = 'detail';
-			} else {
-				currentView = 'main';
-			}
-		} else if (viewMode === 'detail') {
+	function goToEvents() {
+		currentView = 'events';
+		viewMode = 'list';
+	}
+
+	function goToVenues() {
+		currentView = 'venues';
+		viewMode = 'list';
+	}
+
+	function goToBrands() {
+		currentView = 'brands';
+		viewMode = 'list';
+	}
+
+	function goBack() {
+		if (viewMode === 'detail') {
 			viewMode = 'list';
 			selectedEventId = null;
 			selectedVenueId = null;
 			selectedBrandId = null;
-		} else if (currentView !== 'main') {
-			currentView = 'main';
-			viewMode = 'list';
-		}
-	}
-
-	// FIXED: Clear navigation functions
-	function selectEvent(eventId: string) {
-		selectedEventId = eventId;
-		selectedVenueId = null;
-		selectedBrandId = null;
-		currentView = 'events';
-		viewMode = 'detail';
-	}
-
-	function selectVenue(venueId: string) {
-		selectedVenueId = venueId;
-		selectedEventId = null;
-		selectedBrandId = null;
-		currentView = 'venues';
-		viewMode = 'detail';
-	}
-
-	function selectBrand(brandId: string) {
-		selectedBrandId = brandId;
-		selectedEventId = null;
-		selectedVenueId = null;
-		currentView = 'brands';
-		viewMode = 'detail';
-	}
-
-	function startBooking(eventId: string) {
-		selectedEventId = eventId;
-		currentView = 'booking';
-	}
-
-	function completeBooking() {
-		currentView = 'main';
-		selectedEventId = null;
-		selectedVenueId = null;
-		selectedBrandId = null;
-		viewMode = 'list';
-	}
-
-	function cancelBooking() {
-		if (selectedEventId) {
-			currentView = 'events';
-			viewMode = 'detail';
 		} else {
 			currentView = 'main';
 		}
 	}
 
-	onMount(() => {
-		// Simulate loading time
-		setTimeout(() => {
-			isLoading = false;
-		}, 1500);
+	function selectEvent(eventId: string) {
+		selectedEventId = eventId;
+		viewMode = 'detail';
+	}
 
-		// Deep linking parameter handling
-		if (typeof window !== 'undefined') {
-			const currentUrl = window.location.pathname;
-			if (currentUrl !== '/' && !currentUrl.startsWith('/app/')) {
-				window.history.replaceState({}, '', '/');
-			}
+	function selectVenue(venueId: string) {
+		selectedVenueId = venueId;
+		viewMode = 'detail';
+	}
 
-			const urlParams = new URLSearchParams(window.location.search);
-			const startParam = urlParams.get('start');
-			
-			if (startParam === 'events') {
-				currentView = 'events';
-			} else if (startParam === 'venues') {
-				currentView = 'venues';
-			} else if (startParam === 'brands') {
-				currentView = 'brands';
-			}
-		}
+	function selectBrand(brandId: string) {
+		selectedBrandId = brandId;
+		viewMode = 'detail';
+	}
 
-		// Telegram WebApp initialization
+	function startBooking() {
+		currentView = 'booking';
+	}
+
+	function completeBooking() {
+		alert('Booking completed successfully!');
+		currentView = 'main';
+		viewMode = 'list';
+		selectedEventId = null;
+	}
+
+	function cancelBooking() {
+		currentView = 'events';
+		viewMode = 'detail';
+	}
+
+	onMount(async () => {
 		try {
+			const queryParams = new URLSearchParams($page.url.search);
+			const startParam = queryParams.get('start');
+			
 			if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
 				webApp = window.Telegram.WebApp;
-				
 				webApp.ready();
 				webApp.expand();
 				
-				if (webApp.initDataUnsafe?.user) {
-					userInfo = webApp.initDataUnsafe.user;
+				userInfo = webApp.initDataUnsafe?.user || {
+					id: 12345,
+					first_name: 'Demo',
+					last_name: 'User',
+					username: 'demouser'
+				};
+
+				webApp.BackButton.onClick(() => {
+					goBack();
+				});
+
+				if (startParam) {
+					switch(startParam) {
+						case 'events':
+							goToEvents();
+							break;
+						case 'venues':
+							goToVenues();
+							break;
+						case 'brands':
+							goToBrands();
+							break;
+					}
 				}
-				
-				webApp.BackButton.onClick(navigateBack);
-				isReady = true;
 			} else {
-				error = 'Telegram WebApp not available. Open this in Telegram.';
+				userInfo = {
+					id: 12345,
+					first_name: 'Demo',
+					last_name: 'User',
+					username: 'demouser'
+				};
 			}
+
+			isReady = true;
 		} catch (err) {
-			error = 'Failed to initialize Telegram WebApp';
-			console.error('WebApp initialization error:', err);
+			error = 'Failed to initialize application';
+			console.error('Initialization error:', err);
+		} finally {
+			isLoading = false;
 		}
 	});
 
@@ -376,328 +348,360 @@
 	});
 </script>
 
-<main style="min-height: 100vh;">
-	{#if isLoading}
-		<div class="loading-screen">
-			<LoadingAnimation size="lg" message="Welcome to Trojeak" />
-		</div>
-	{:else if error}
-		<div class="error-container">
-			<div class="error-card">
-				<div class="error-icon">⚠️</div>
-				<h2 class="error-title">Oops!</h2>
-				<p class="error-message">{error}</p>
-				<p class="error-hint">Try opening this in Telegram</p>
-			</div>
-		</div>
-	{:else if currentView === 'booking' && selectedEvent}
-		<!-- FIXED: Actual BookingWizard component -->
-		<BookingWizard 
-			event={selectedEvent}
-			availableBrands={MOCK_DATA.brands.filter(b => selectedEvent.brands.includes(b.id))}
-			onComplete={completeBooking}
-			onCancel={cancelBooking}
-		/>
-	{:else if currentView === 'main'}
-		<div class="main-container animate-fade-in">
-			<!-- Hero Header -->
-			<div class="hero-section">
-				<div class="hero-content">
-					<h1 class="hero-title">
-						<span class="gradient-text">🍺 Trojeak</span>
-					</h1>
-					<p class="hero-subtitle">Discover events and pre-order drinks</p>
-					{#if userInfo}
-						<div class="user-welcome">
-							<span class="welcome-text">Welcome back,</span>
-							<span class="user-name">{userInfo.first_name}!</span>
-						</div>
-					{/if}
-				</div>
-				<div class="hero-glow"></div>
-			</div>
-
-			<!-- Navigation Cards -->
-			<div class="nav-grid">
-				<button 
-					onclick={() => { currentView = 'events'; viewMode = 'list'; }}
-					class="nav-card animate-slide-up"
-					style="animation-delay: 0.1s"
-				>
-					<div class="nav-card-icon">🎉</div>
-					<div class="nav-card-content">
-						<h3 class="nav-card-title">Events</h3>
-						<p class="nav-card-description">Browse upcoming events and parties</p>
-						<div class="nav-card-stats">
-							<span class="stats-number">{filteredEvents.length}</span>
-							<span class="stats-label">events available</span>
-						</div>
-					</div>
-					<div class="nav-card-arrow">→</div>
-				</button>
-
-				<button 
-					onclick={() => { currentView = 'venues'; viewMode = 'list'; }}
-					class="nav-card animate-slide-up"
-					style="animation-delay: 0.2s"
-				>
-					<div class="nav-card-icon">🏢</div>
-					<div class="nav-card-content">
-						<h3 class="nav-card-title">Venues</h3>
-						<p class="nav-card-description">Discover bars, KTVs, and clubs</p>
-						<div class="nav-card-stats">
-							<span class="stats-number">{MOCK_DATA.venues.length}</span>
-							<span class="stats-label">venues available</span>
-						</div>
-					</div>
-					<div class="nav-card-arrow">→</div>
-				</button>
-
-				<button 
-					onclick={() => { currentView = 'brands'; viewMode = 'list'; }}
-					class="nav-card animate-slide-up"
-					style="animation-delay: 0.3s"
-				>
-					<div class="nav-card-icon">🥃</div>
-					<div class="nav-card-content">
-						<h3 class="nav-card-title">Brands</h3>
-						<p class="nav-card-description">Explore drink brands and promotions</p>
-						<div class="nav-card-stats">
-							<span class="stats-number">{MOCK_DATA.brands.length}</span>
-							<span class="stats-label">brands available</span>
-						</div>
-					</div>
-					<div class="nav-card-arrow">→</div>
-				</button>
-			</div>
-
-			<!-- Featured Section - FIXED onclick handlers -->
-			<div class="featured-section animate-slide-up" style="animation-delay: 0.4s">
-				<h2 class="section-title">
-					<span class="gradient-text">✨ Featured Tonight</span>
-				</h2>
-				<div class="featured-grid">
-					{#each filteredEvents.filter(e => e.featured).slice(0, 2) as event}
-						<button 
-							onclick={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								selectEvent(event.id);
-							}}
-							class="featured-card"
-						>
-							<div class="featured-badge">Featured</div>
-							<h4 class="featured-title">{event.title}</h4>
-							<p class="featured-venue">{event.venue_name}</p>
-							<p class="featured-price">{event.price_range}</p>
-						</button>
-					{/each}
-				</div>
-			</div>
-		</div>
-
-	{:else if currentView === 'events'}
-		{#if viewMode === 'list'}
-			<div class="main-container animate-fade-in">
-				<h2 class="page-title gradient-text">Events</h2>
+{#if isLoading}
+	<div class="flex items-center justify-center min-h-screen bg-background">
+		<LoadingAnimation size="lg" message="Loading Trojeak..." />
+	</div>
+{:else if error}
+	<div class="flex items-center justify-center min-h-screen p-6">
+		<Card class="max-w-md w-full">
+			<CardContent class="text-center p-8">
+				<div class="text-4xl mb-4">⚠️</div>
+				<h2 class="text-xl font-bold text-destructive mb-3">Application Error</h2>
+				<p class="text-muted-foreground mb-2">{error}</p>
+				<p class="text-sm text-muted-foreground">Please try refreshing the page</p>
+			</CardContent>
+		</Card>
+	</div>
+{:else if currentView === 'booking' && selectedEvent}
+	<BookingWizard 
+		event={selectedEvent}
+		availableBrands={MOCK_DATA.brands}
+		onComplete={completeBooking}
+		onCancel={cancelBooking}
+	/>
+{:else}
+	<div class="p-6 max-w-4xl mx-auto min-h-screen bg-background">
+		{#if currentView === 'main'}
+			<div class="text-center mb-8">
+				<h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+					Welcome to Trojeak
+				</h1>
+				<p class="text-xl text-muted-foreground mb-6">
+					Discover events and pre-order drinks across Cambodia
+				</p>
 				
-				<div style="margin-bottom: var(--space-6);">
-					<select bind:value={cityFilter} class="form-input form-select">
-						{#each cities as city}
-							<option value={city}>{city === 'all' ? 'All Cities' : city}</option>
-						{/each}
-					</select>
-				</div>
-
-				<div class="featured-grid">
-					{#each filteredEvents as event}
-						<button 
-							onclick={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								selectEvent(event.id);
-							}}
-							class="card"
-						>
-							{#if event.featured}
-								<div class="badge-featured" style="margin-bottom: var(--space-3);">Featured</div>
-							{/if}
-							<h3 style="font-size: var(--text-lg); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">{event.title}</h3>
-							<p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-2);">{event.venue_name} • {event.city}</p>
-							<p style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-3);">{event.date} • {event.price_range}</p>
-							<p style="font-size: var(--text-sm); color: var(--text-secondary);">{event.description}</p>
-						</button>
-					{/each}
-				</div>
+				{#if userInfo}
+					<div class="flex flex-col gap-1">
+						<p class="text-sm text-muted-foreground">Welcome back,</p>
+						<p class="text-lg font-semibold text-primary">
+							{userInfo.first_name} {userInfo.last_name}
+						</p>
+					</div>
+				{/if}
 			</div>
-		{:else if selectedEvent}
-			<div class="main-container animate-fade-in">
-				<div class="card card-featured" style="margin-bottom: var(--space-6);">
-					<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
-						<h2 style="font-size: var(--text-2xl); font-weight: 700; color: var(--text-primary);">{selectedEvent.title}</h2>
-						{#if selectedEvent.featured}
-							<div class="badge-featured">Featured</div>
-						{/if}
+
+			<div class="grid gap-6 mb-10">
+				<Button 
+					variant="default" 
+					size="lg" 
+					class="h-auto p-6 justify-start"
+					onclick={goToEvents}
+				>
+					<div class="flex items-center gap-4 w-full">
+						<div class="text-3xl">🎉</div>
+						<div class="flex-1 text-left">
+							<h3 class="text-xl font-bold">Browse Events</h3>
+							<p class="text-sm opacity-90">Discover parties, festivals, and nightlife</p>
+							<div class="flex items-baseline gap-2 mt-1">
+								<span class="text-lg font-bold text-primary">{MOCK_DATA.events.length}</span>
+								<span class="text-xs uppercase tracking-wide">Events Available</span>
+							</div>
+						</div>
+						<div class="text-xl">→</div>
 					</div>
-					
-					<div style="margin-bottom: var(--space-6);">
-						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Venue:</span> {selectedEvent.venue_name}</p>
-						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Location:</span> {selectedEvent.city}</p>
-						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Date:</span> {selectedEvent.date}</p>
-						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Price Range:</span> {selectedEvent.price_range}</p>
+				</Button>
+
+				<Button 
+					variant="outline" 
+					size="lg" 
+					class="h-auto p-6 justify-start"
+					onclick={goToVenues}
+				>
+					<div class="flex items-center gap-4 w-full">
+						<div class="text-3xl">🏢</div>
+						<div class="flex-1 text-left">
+							<h3 class="text-xl font-bold">Explore Venues</h3>
+							<p class="text-sm text-muted-foreground">Bars, KTVs, and clubs</p>
+							<div class="flex items-baseline gap-2 mt-1">
+								<span class="text-lg font-bold text-primary">{MOCK_DATA.venues.length}</span>
+								<span class="text-xs uppercase tracking-wide">Venues</span>
+							</div>
+						</div>
+						<div class="text-xl">→</div>
 					</div>
-					
-					<p style="color: var(--text-primary); margin-bottom: var(--space-6);">{selectedEvent.description}</p>
-					
-					<button class="btn btn-primary" onclick={() => startBooking(selectedEvent.id)}>
-						Book Now
-					</button>
+				</Button>
+
+				<Button 
+					variant="outline" 
+					size="lg" 
+					class="h-auto p-6 justify-start"
+					onclick={goToBrands}
+				>
+					<div class="flex items-center gap-4 w-full">
+						<div class="text-3xl">🍺</div>
+						<div class="flex-1 text-left">
+							<h3 class="text-xl font-bold">Browse Brands</h3>
+							<p class="text-sm text-muted-foreground">Premium drinks and beverages</p>
+							<div class="flex items-baseline gap-2 mt-1">
+								<span class="text-lg font-bold text-primary">{MOCK_DATA.brands.length}</span>
+								<span class="text-xs uppercase tracking-wide">Brands</span>
+							</div>
+						</div>
+						<div class="text-xl">→</div>
+					</div>
+				</Button>
+			</div>
+
+			<div class="space-y-6">
+				<h2 class="text-2xl font-bold text-center">Featured Events</h2>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					{#each MOCK_DATA.events.filter(e => e.featured) as event}
+						<Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectEvent(event.id)}>
+							<CardHeader>
+								<div class="flex justify-between items-start mb-2">
+									<CardTitle class="text-lg">{event.title}</CardTitle>
+									<Badge>Featured</Badge>
+								</div>
+								<p class="text-sm text-muted-foreground">{event.venue_name}</p>
+								<p class="text-sm text-muted-foreground">{event.city}</p>
+							</CardHeader>
+							<CardContent>
+								<p class="text-sm mb-2">{event.description}</p>
+								<p class="text-base font-semibold text-primary">{event.price_range}</p>
+							</CardContent>
+						</Card>
+					{/each}
 				</div>
 			</div>
 		{/if}
 
-	{:else if currentView === 'venues'}
-		{#if viewMode === 'list'}
-			<div class="main-container animate-fade-in">
-				<h2 class="page-title gradient-text">Venues</h2>
-				
-				<div style="margin-bottom: var(--space-6);">
-					<select bind:value={typeFilter} class="form-input form-select">
-						{#each types as type}
-							<option value={type}>{type === 'all' ? 'All Types' : type.charAt(0).toUpperCase() + type.slice(1)}</option>
+		{#if currentView === 'events'}
+			<div class="space-y-6">
+				{#if viewMode === 'list'}
+					<div class="flex justify-between items-center">
+						<h1 class="text-3xl font-bold">Events</h1>
+						<Select bind:value={cityFilter}>
+							<SelectTrigger class="w-40">
+								{cityFilter === 'all' ? 'All Cities' : cityFilter}
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="all">All Cities</SelectItem>
+								{#each cities as city}
+									<SelectItem value={city}>{city}</SelectItem>
+								{/each}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div class="grid gap-4">
+						{#each filteredEvents as event}
+							<Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectEvent(event.id)}>
+								<CardHeader>
+									<div class="flex justify-between items-start">
+										<CardTitle>{event.title}</CardTitle>
+										{#if event.featured}
+											<Badge>Featured</Badge>
+										{/if}
+									</div>
+									<p class="text-muted-foreground">{event.venue_name} • {event.city}</p>
+								</CardHeader>
+								<CardContent>
+									<p class="mb-2">{event.description}</p>
+									<p class="font-semibold text-primary">{event.price_range}</p>
+								</CardContent>
+							</Card>
 						{/each}
-					</select>
-				</div>
-
-				<div class="featured-grid">
-					{#each filteredVenues as venue}
-						<button 
-							onclick={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								selectVenue(venue.id);
-							}}
-							class="card"
-						>
-							{#if venue.featured}
-								<div class="badge-featured" style="margin-bottom: var(--space-3);">Featured</div>
+					</div>
+				{:else if selectedEvent}
+					<div class="space-y-6">
+						<div class="flex justify-between items-center">
+							<h1 class="text-3xl font-bold">{selectedEvent.title}</h1>
+							{#if selectedEvent.featured}
+								<Badge>Featured</Badge>
 							{/if}
-							<h3 style="font-size: var(--text-lg); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">{venue.name}</h3>
-							<p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-2);">{venue.city} • {venue.type.charAt(0).toUpperCase() + venue.type.slice(1)}</p>
-							<p style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-3);">{venue.address}</p>
-							<p style="font-size: var(--text-sm); color: var(--text-secondary);">{venue.description}</p>
-						</button>
-					{/each}
-				</div>
-			</div>
-		{:else if selectedVenue}
-			<div class="main-container animate-fade-in">
-				<div class="card card-featured" style="margin-bottom: var(--space-6);">
-					<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
-						<h2 style="font-size: var(--text-2xl); font-weight: 700; color: var(--text-primary);">{selectedVenue.name}</h2>
-						{#if selectedVenue.featured}
-							<div class="badge-featured">Featured</div>
-						{/if}
-					</div>
-					
-					<div style="margin-bottom: var(--space-6);">
-						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Type:</span> {selectedVenue.type.charAt(0).toUpperCase() + selectedVenue.type.slice(1)}</p>
-						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Location:</span> {selectedVenue.city}</p>
-						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Address:</span> {selectedVenue.address}</p>
-					</div>
-					
-					<p style="color: var(--text-primary); margin-bottom: var(--space-6);">{selectedVenue.description}</p>
-				</div>
-
-				{#if venueEvents.length > 0}
-					<div class="card">
-						<h3 style="font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4);">Events at {selectedVenue.name}</h3>
-						<div style="display: flex; flex-direction: column; gap: var(--space-3);">
-							{#each venueEvents as event}
-								<button 
-									onclick={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-										selectEvent(event.id);
-									}}
-									class="card"
-									style="text-align: left; padding: var(--space-4); border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer;"
-								>
-									<h4 style="font-weight: 600; color: var(--text-primary);">{event.title}</h4>
-									<p style="color: var(--text-secondary); font-size: var(--text-sm);">{event.date} • {event.price_range}</p>
-								</button>
-							{/each}
 						</div>
+						
+						<Card>
+							<CardContent class="p-6">
+								<div class="space-y-4">
+									<div>
+										<p class="text-muted-foreground"><span class="font-semibold">Venue:</span> {selectedEvent.venue_name}</p>
+										<p class="text-muted-foreground"><span class="font-semibold">Location:</span> {selectedEvent.city}</p>
+										<p class="text-muted-foreground"><span class="font-semibold">Date:</span> {selectedEvent.date}</p>
+										<p class="text-muted-foreground"><span class="font-semibold">Price Range:</span> {selectedEvent.price_range}</p>
+									</div>
+									<p>{selectedEvent.description}</p>
+									<Button onclick={startBooking} class="w-full">
+										Book This Event
+									</Button>
+								</div>
+							</CardContent>
+						</Card>
 					</div>
 				{/if}
 			</div>
 		{/if}
 
-	{:else if currentView === 'brands'}
-		{#if viewMode === 'list'}
-			<div class="main-container animate-fade-in">
-				<h2 class="page-title gradient-text">Brands</h2>
-				
-				<div class="featured-grid">
-					{#each MOCK_DATA.brands as brand}
-						<button 
-							onclick={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								selectBrand(brand.id);
-							}}
-							class="card"
-						>
-							{#if brand.featured}
-								<div class="badge-featured" style="margin-bottom: var(--space-3);">Featured</div>
-							{/if}
-							<h3 style="font-size: var(--text-lg); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">{brand.name}</h3>
-							<p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-2);">{brand.type.charAt(0).toUpperCase() + brand.type.slice(1)}</p>
-							<p style="font-size: var(--text-sm); color: var(--text-secondary);">{brand.description}</p>
-						</button>
-					{/each}
-				</div>
-			</div>
-		{:else if selectedBrand}
-			<div class="main-container animate-fade-in">
-				<div class="card card-featured" style="margin-bottom: var(--space-6);">
-					<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
-						<h2 style="font-size: var(--text-2xl); font-weight: 700; color: var(--text-primary);">{selectedBrand.name}</h2>
-						{#if selectedBrand.featured}
-							<div class="badge-featured">Featured</div>
-						{/if}
-					</div>
-					
-					<div style="margin-bottom: var(--space-6);">
-						<p style="color: var(--text-secondary); margin-bottom: var(--space-2);"><span style="font-weight: 600;">Type:</span> {selectedBrand.type.charAt(0).toUpperCase() + selectedBrand.type.slice(1)}</p>
-					</div>
-					
-					<p style="color: var(--text-primary); margin-bottom: var(--space-6);">{selectedBrand.description}</p>
-				</div>
-
-				{#if brandEvents.length > 0}
-					<div class="card">
-						<h3 style="font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4);">Events featuring {selectedBrand.name}</h3>
-						<div style="display: flex; flex-direction: column; gap: var(--space-3);">
-							{#each brandEvents as event}
-								<button 
-									onclick={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-										selectEvent(event.id);
-									}}
-									class="card"
-									style="text-align: left; padding: var(--space-4); border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer;"
-								>
-									<h4 style="font-weight: 600; color: var(--text-primary);">{event.title}</h4>
-									<p style="color: var(--text-secondary); font-size: var(--text-sm);">{event.venue_name} • {event.city}</p>
-									<p style="color: var(--text-muted); font-size: var(--text-sm);">{event.date} • {event.price_range}</p>
-								</button>
-							{/each}
+		{#if currentView === 'venues'}
+			<div class="space-y-6">
+				{#if viewMode === 'list'}
+					<div class="flex justify-between items-center">
+						<h1 class="text-3xl font-bold">Venues</h1>
+						<div class="flex gap-2">
+							<Select bind:value={cityFilter}>
+								<SelectTrigger class="w-40">
+									{cityFilter === 'all' ? 'All Cities' : cityFilter}
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">All Cities</SelectItem>
+									{#each cities as city}
+										<SelectItem value={city}>{city}</SelectItem>
+									{/each}
+								</SelectContent>
+							</Select>
+							<Select bind:value={typeFilter}>
+								<SelectTrigger class="w-32">
+									{typeFilter === 'all' ? 'All Types' : typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)}
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">All Types</SelectItem>
+									<SelectItem value="bar">Bars</SelectItem>
+									<SelectItem value="ktv">KTVs</SelectItem>
+									<SelectItem value="club">Clubs</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
+					</div>
+
+					<div class="grid gap-4">
+						{#each filteredVenues as venue}
+							<Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectVenue(venue.id)}>
+								<CardHeader>
+									<div class="flex justify-between items-start">
+										<CardTitle>{venue.name}</CardTitle>
+										<div class="flex gap-2">
+											<Badge variant="secondary">{venue.type.toUpperCase()}</Badge>
+											{#if venue.featured}
+												<Badge>Featured</Badge>
+											{/if}
+										</div>
+									</div>
+									<p class="text-muted-foreground">{venue.city} • {venue.address}</p>
+								</CardHeader>
+								<CardContent>
+									<p>{venue.description}</p>
+								</CardContent>
+							</Card>
+						{/each}
+					</div>
+				{:else if selectedVenue}
+					<div class="space-y-6">
+						<div class="flex justify-between items-start">
+							<h1 class="text-3xl font-bold">{selectedVenue.name}</h1>
+							<div class="flex gap-2">
+								<Badge variant="secondary">{selectedVenue.type.toUpperCase()}</Badge>
+								{#if selectedVenue.featured}
+									<Badge>Featured</Badge>
+								{/if}
+							</div>
+						</div>
+						
+						<Card>
+							<CardContent class="p-6">
+								<div class="space-y-4">
+									<div>
+										<p class="text-muted-foreground"><span class="font-semibold">Type:</span> {selectedVenue.type.charAt(0).toUpperCase() + selectedVenue.type.slice(1)}</p>
+										<p class="text-muted-foreground"><span class="font-semibold">Location:</span> {selectedVenue.city}</p>
+										<p class="text-muted-foreground"><span class="font-semibold">Address:</span> {selectedVenue.address}</p>
+									</div>
+									<p>{selectedVenue.description}</p>
+								</div>
+							</CardContent>
+						</Card>
+
+						{#if venueEvents.length > 0}
+							<Card>
+								<CardHeader>
+									<CardTitle>Events at {selectedVenue.name}</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<div class="space-y-3">
+										{#each venueEvents as event}
+											<Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectEvent(event.id)}>
+												<CardContent class="p-4">
+													<h4 class="font-semibold">{event.title}</h4>
+													<p class="text-sm text-muted-foreground">{event.date} • {event.price_range}</p>
+												</CardContent>
+											</Card>
+										{/each}
+									</div>
+								</CardContent>
+							</Card>
+						{/if}
 					</div>
 				{/if}
 			</div>
 		{/if}
-	{/if}
-</main>
+
+		{#if currentView === 'brands'}
+			<div class="space-y-6">
+				{#if viewMode === 'list'}
+					<div class="flex justify-between items-center">
+						<h1 class="text-3xl font-bold">Brands</h1>
+						<Select bind:value={typeFilter}>
+							<SelectTrigger class="w-40">
+								{typeFilter === 'all' ? 'All Types' : typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)}
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="all">All Types</SelectItem>
+								<SelectItem value="beer">Beer</SelectItem>
+								<SelectItem value="wine">Wine</SelectItem>
+								<SelectItem value="spirits">Spirits</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div class="grid gap-4">
+						{#each filteredBrands as brand}
+							<Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectBrand(brand.id)}>
+								<CardHeader>
+									<div class="flex justify-between items-start">
+										<CardTitle>{brand.name}</CardTitle>
+										<div class="flex gap-2">
+											<Badge variant="secondary">{brand.type.toUpperCase()}</Badge>
+											{#if brand.featured}
+												<Badge>Featured</Badge>
+											{/if}
+										</div>
+									</div>
+								</CardHeader>
+								<CardContent>
+									<p>{brand.description}</p>
+								</CardContent>
+							</Card>
+						{/each}
+					</div>
+				{:else if selectedBrand}
+					<div class="space-y-6">
+						<div class="flex justify-between items-start">
+							<h1 class="text-3xl font-bold">{selectedBrand.name}</h1>
+							<div class="flex gap-2">
+								<Badge variant="secondary">{selectedBrand.type.toUpperCase()}</Badge>
+								{#if selectedBrand.featured}
+									<Badge>Featured</Badge>
+								{/if}
+							</div>
+						</div>
+						
+						<Card>
+							<CardContent class="p-6">
+								<p>{selectedBrand.description}</p>
+							</CardContent>
+						</Card>
+					</div>
+				{/if}
+			</div>
+		{/if}
+	</div>
+{/if}

@@ -1,13 +1,18 @@
-<!-- miniapp/src/lib/components/LoadingAnimation.svelte -->
 <script lang="ts">
-  export let size: 'sm' | 'md' | 'lg' = 'md';
-  export let message: string = 'Loading...';
-  export let showMessage: boolean = true;
+  import { Skeleton } from '$lib/components/ui/skeleton';
+  
+  interface Props {
+    size?: 'sm' | 'md' | 'lg';
+    message?: string;
+    showMessage?: boolean;
+  }
+  
+  let { size = 'md', message = 'Loading...', showMessage = true }: Props = $props();
   
   const sizeClasses = {
-    sm: 'w-6 h-6',
-    md: 'w-10 h-10', 
-    lg: 'w-16 h-16'
+    sm: 'h-4 w-16',
+    md: 'h-6 w-24', 
+    lg: 'h-8 w-32'
   };
   
   const textSizeClasses = {
@@ -17,14 +22,14 @@
   };
 </script>
 
-<div class="loading-container">
-  <!-- Neon Loading Spinner -->
-  <div class="loading-spinner-wrapper">
-    <div class="loading-spinner {sizeClasses[size]}"></div>
-    <div class="loading-pulse-ring {sizeClasses[size]}"></div>
+<div class="flex flex-col items-center justify-center gap-4 p-8">
+  <div class="flex flex-col items-center gap-2">
+    <Skeleton class={sizeClasses[size]} />
+    <Skeleton class="h-3 w-20" />
+    <Skeleton class="h-3 w-16" />
   </div>
   
   {#if showMessage}
-    <p class="loading-message {textSizeClasses[size]}">{message}</p>
+    <p class="text-muted-foreground text-center font-medium {textSizeClasses[size]}">{message}</p>
   {/if}
 </div>

@@ -1,5 +1,15 @@
-<!-- miniapp/src/lib/components/BookingWizard.svelte -->
 <script lang="ts">
+	import { Button } from '$lib/components/ui/button';
+	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import { RadioGroup, RadioGroupItem } from '$lib/components/ui/radio-group';
+	import { Progress } from '$lib/components/ui/progress';
+	import { Separator } from '$lib/components/ui/separator';
+	import { Badge } from '$lib/components/ui/badge';
+	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
+
 	interface Event {
 		id: string;
 		title: string;
@@ -21,17 +31,15 @@
 		description: string;
 	}
 
-	interface BookingWizardProps {
+	interface Props {
 		event: Event;
 		availableBrands: Brand[];
 		onComplete: () => void;
 		onCancel: () => void;
 	}
 
-	// Use $props() instead of export let for Svelte 5
-	const { event, availableBrands, onComplete, onCancel }: BookingWizardProps = $props();
+	const { event, availableBrands, onComplete, onCancel }: Props = $props();
 
-	// Booking state
 	let currentStep = $state(1);
 	let selectedBrands = $state<{[key: string]: number}>({});
 	let guestCount = $state(2);
@@ -40,13 +48,13 @@
 	let paymentMethod = $state<'aba' | 'ipay88' | null>(null);
 	let isProcessing = $state(false);
 
-	// Computed values
 	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
-	const estimatedTotal = $derived(totalItems * 12); // Rough estimate
+	const estimatedTotal = $derived(totalItems * 12);
 	const canProceedFromStep1 = $derived(totalItems > 0);
 	const canProceedFromStep2 = $derived(guestCount > 0 && phoneNumber.length > 4);
 	const canProceedFromStep3 = $derived(comment.length <= 200);
 	const canCompleteBooking = $derived(paymentMethod !== null);
+	const progressPercentage = $derived((currentStep / 4) * 100);
 
 	function updateBrandQuantity(brandId: string, quantity: number) {
 		if (quantity === 0) {
@@ -70,290 +78,224 @@
 		}
 	}
 
-	function handleCompleteBooking() {
+	async function handleCompleteBooking() {
 		isProcessing = true;
-		
-		// Simulate payment processing
-		setTimeout(() => {
-			isProcessing = false;
-			onComplete();
-		}, 2000);
+		await new Promise(resolve => setTimeout(resolve, 2000));
+		isProcessing = false;
+		onComplete();
 	}
 
-	function formatPhoneNumber(value: string) {
-		// Basic Cambodia phone formatting
-		let cleaned = value.replace(/\D/g, '');
-		if (!cleaned.startsWith('855')) {
-			cleaned = '855' + cleaned.replace(/^0+/, '');
-		}
-		return '+' + cleaned;
-	}
-
-	function handlePhoneInput(event: any) {
-		phoneNumber = formatPhoneNumber(event.target.value);
-	}
+	const stepTitles = ['Select Drinks', 'Guest Details', 'Additional Info', 'Payment'];
 </script>
 
-<div class="booking-container">
-	<!-- Header -->
-	<div class="booking-header">
-		<h2 class="booking-title gradient-text">Book Your Experience</h2>
-		<p class="booking-subtitle">{event.title} at {event.venue_name}</p>
+<div class="min-h-screen bg-background p-6 max-w-2xl mx-auto">
+	<Card>
+		<CardHeader class="text-center">
+			<CardTitle class="text-2xl font-bold">Book Your Event</CardTitle>
+			<p class="text-muted-foreground">{event.title} at {event.venue_name}</p>
+		</CardHeader>
 		
-		<!-- Progress Steps -->
-		<div class="progress-container">
-			{#each [1, 2, 3, 4] as step}
-				<div class="progress-step" class:active={currentStep >= step}>
-					<div class="step-number">{step}</div>
-					<div class="step-label">
-						{#if step === 1}Drinks
-						{:else if step === 2}Details  
-						{:else if step === 3}Review
-						{:else}Payment
-						{/if}
-					</div>
-				</div>
-			{/each}
-		</div>
-	</div>
-
-	<!-- Step Content -->
-	<div class="booking-content">
-		{#if currentStep === 1}
-			<!-- Step 1: Select Drinks -->
-			<div class="step-content animate-fade-in">
-				<h3 class="step-title">Select Your Drinks</h3>
-				<p class="step-description">Choose from available brands for this event</p>
-				
-				<div class="brands-grid">
-					{#each availableBrands as brand}
-						<div class="brand-card">
-							<div class="brand-info">
-								<h4 class="brand-name">{brand.name}</h4>
-								<p class="brand-type">{brand.type}</p>
-								<p class="brand-description">{brand.description}</p>
+		<CardContent class="space-y-6">
+			<div class="space-y-3">
+				<div class="flex justify-between items-center">
+					{#each stepTitles as title, index}
+						<div class="flex flex-col items-center gap-2 flex-1">
+							<div class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm
+								{currentStep > index + 1 ? 'bg-primary text-primary-foreground' : 
+								 currentStep === index + 1 ? 'bg-primary text-primary-foreground' : 
+								 'bg-muted text-muted-foreground'}">
+								{index + 1}
 							</div>
-							
-							<div class="quantity-controls">
-								<button 
-									class="qty-btn"
-									onclick={() => updateBrandQuantity(brand.id, Math.max(0, (selectedBrands[brand.id] || 0) - 1))}
-									disabled={!selectedBrands[brand.id]}
-								>
-									-
-								</button>
-								<span class="quantity">{selectedBrands[brand.id] || 0}</span>
-								<button 
-									class="qty-btn"
-									onclick={() => updateBrandQuantity(brand.id, (selectedBrands[brand.id] || 0) + 1)}
-								>
-									+
-								</button>
-							</div>
+							<span class="text-xs text-center {currentStep === index + 1 ? 'text-foreground font-medium' : 'text-muted-foreground'}">{title}</span>
 						</div>
 					{/each}
 				</div>
-
-				{#if totalItems > 0}
-					<div class="selection-summary">
-						<div class="summary-item">
-							<span>Total items: {totalItems}</span>
-							<span>Estimated: ${estimatedTotal}</span>
-						</div>
-					</div>
-				{/if}
+				<Progress value={progressPercentage} class="h-2" />
 			</div>
-		{:else if currentStep === 2}
-			<!-- Step 2: Guest Details -->
-			<div class="step-content animate-fade-in">
-				<h3 class="step-title">Booking Details</h3>
-				<p class="step-description">Tell us about your group</p>
-				
-				<div class="form-group">
-					<label for="guests">Number of Guests</label>
-					<input 
-						type="number" 
-						id="guests"
-						bind:value={guestCount}
-						min="1" 
-						max="20"
-						class="form-input"
-					/>
-				</div>
 
-				<div class="form-group">
-					<label for="phone">Phone Number</label>
-					<input 
-						type="tel" 
-						id="phone"
-						value={phoneNumber}
-						oninput={handlePhoneInput}
-						placeholder="+855 12 345 678"
-						class="form-input"
-					/>
-				</div>
-			</div>
-		{:else if currentStep === 3}
-			<!-- Step 3: Additional Details -->
-			<div class="step-content animate-fade-in">
-				<h3 class="step-title">Additional Information</h3>
-				<p class="step-description">Any special requests or comments?</p>
-				
-				<div class="form-group">
-					<label for="comment">Comments (Optional)</label>
-					<textarea 
-						id="comment"
-						bind:value={comment}
-						placeholder="Special requests, dietary restrictions, etc."
-						maxlength="200"
-						rows="4"
-						class="form-textarea"
-					></textarea>
-					<div class="char-count">
-						{comment.length}/200 characters
+			<Separator />
+
+			{#if currentStep === 1}
+				<div class="space-y-4">
+					<h3 class="text-lg font-semibold">Select Your Drinks</h3>
+					<div class="grid gap-4">
+						{#each availableBrands as brand}
+							<Card class="p-4">
+								<div class="flex justify-between items-start">
+									<div class="flex-1">
+										<h4 class="font-medium">{brand.name}</h4>
+										<p class="text-sm text-muted-foreground">{brand.description}</p>
+										<Badge variant="secondary" class="mt-2">{brand.type}</Badge>
+									</div>
+									<div class="flex items-center gap-2">
+										<Button 
+											variant="outline" 
+											size="sm"
+											onclick={() => updateBrandQuantity(brand.id, Math.max(0, (selectedBrands[brand.id] || 0) - 1))}
+										>
+											-
+										</Button>
+										<span class="w-8 text-center">{selectedBrands[brand.id] || 0}</span>
+										<Button 
+											variant="outline" 
+											size="sm"
+											onclick={() => updateBrandQuantity(brand.id, (selectedBrands[brand.id] || 0) + 1)}
+										>
+											+
+										</Button>
+									</div>
+								</div>
+							</Card>
+						{/each}
 					</div>
 				</div>
+			{/if}
 
-				<!-- Booking Summary -->
-				<div class="booking-summary">
-					<h4 class="summary-title">Booking Summary</h4>
-					<div class="summary-details">
-						<div class="summary-item">
-							<span>Event:</span>
-							<span>{event.title}</span>
+			{#if currentStep === 2}
+				<div class="space-y-4">
+					<h3 class="text-lg font-semibold">Guest Details</h3>
+					<div class="space-y-4">
+						<div class="space-y-2">
+							<Label for="guestCount">Number of Guests</Label>
+							<Select bind:value={guestCount}>
+								<SelectTrigger>
+									{guestCount} Guest{guestCount > 1 ? 's' : ''}
+								</SelectTrigger>
+								<SelectContent>
+									{#each Array(10) as _, i}
+										<SelectItem value={i + 1}>{i + 1} Guest{i > 0 ? 's' : ''}</SelectItem>
+									{/each}
+								</SelectContent>
+							</Select>
 						</div>
-						<div class="summary-item">
-							<span>Venue:</span>
-							<span>{event.venue_name}</span>
-						</div>
-						<div class="summary-item">
-							<span>Date:</span>
-							<span>{event.date}</span>
-						</div>
-						<div class="summary-item">
-							<span>Guests:</span>
-							<span>{guestCount}</span>
-						</div>
-						<div class="summary-item">
-							<span>Phone:</span>
-							<span>{phoneNumber}</span>
+						
+						<div class="space-y-2">
+							<Label for="phone">Phone Number</Label>
+							<Input 
+								id="phone"
+								bind:value={phoneNumber}
+								placeholder="+855 12 345 678"
+								type="tel"
+							/>
 						</div>
 					</div>
-					
-					{#if totalItems > 0}
-						<div class="drinks-summary">
-							<h5>Selected Drinks:</h5>
-							{#each Object.entries(selectedBrands) as [brandId, qty]}
+				</div>
+			{/if}
+
+			{#if currentStep === 3}
+				<div class="space-y-4">
+					<h3 class="text-lg font-semibold">Additional Information</h3>
+					<div class="space-y-2">
+						<Label for="comment">Special Requests or Comments (Optional)</Label>
+						<Textarea 
+							id="comment"
+							bind:value={comment}
+							placeholder="Any special requests, dietary restrictions, or seating preferences..."
+							class="min-h-[100px]"
+						/>
+						<p class="text-xs text-muted-foreground">{comment.length}/200 characters</p>
+					</div>
+				</div>
+			{/if}
+
+			{#if currentStep === 4}
+				<div class="space-y-4">
+					<h3 class="text-lg font-semibold">Payment Method</h3>
+					<RadioGroup bind:value={paymentMethod}>
+						<div class="space-y-3">
+							<div class="flex items-center space-x-2">
+								<RadioGroupItem value="aba" id="aba" />
+								<Label for="aba" class="flex-1 cursor-pointer">
+									<Card class="p-4">
+										<div class="flex items-center gap-3">
+											<div class="text-2xl">🏦</div>
+											<div>
+												<h4 class="font-medium">ABA QR Pay</h4>
+												<p class="text-sm text-muted-foreground">Pay with ABA Bank mobile app</p>
+											</div>
+										</div>
+									</Card>
+								</Label>
+							</div>
+							
+							<div class="flex items-center space-x-2">
+								<RadioGroupItem value="ipay88" id="ipay88" />
+								<Label for="ipay88" class="flex-1 cursor-pointer">
+									<Card class="p-4">
+										<div class="flex items-center gap-3">
+											<div class="text-2xl">💳</div>
+											<div>
+												<h4 class="font-medium">iPay88</h4>
+												<p class="text-sm text-muted-foreground">Credit card, bank transfer, mobile banking</p>
+											</div>
+										</div>
+									</Card>
+								</Label>
+							</div>
+						</div>
+					</RadioGroup>
+
+					<Separator />
+
+					<Card class="p-4">
+						<h4 class="font-medium mb-3">Order Summary</h4>
+						<div class="space-y-2">
+							{#each Object.entries(selectedBrands) as [brandId, quantity]}
 								{@const brand = availableBrands.find(b => b.id === brandId)}
 								{#if brand}
-									<div class="drink-item">
-										<span>{brand.name}</span>
-										<span>×{qty}</span>
+									<div class="flex justify-between text-sm">
+										<span>{brand.name} × {quantity}</span>
+										<span>${quantity * 12}</span>
 									</div>
 								{/if}
 							{/each}
-						</div>
-					{/if}
-				</div>
-			</div>
-		{:else if currentStep === 4}
-			<!-- Step 4: Payment -->
-			<div class="step-content animate-fade-in">
-				<h3 class="step-title">Choose Payment Method</h3>
-				<p class="step-description">How would you like to pay?</p>
-				
-				<div class="payment-methods">
-					<label class="payment-option">
-						<input 
-							type="radio" 
-							name="payment"
-							value="aba"
-							onchange={() => paymentMethod = 'aba'}
-							checked={paymentMethod === 'aba'}
-						/>
-						<div class="payment-card">
-							<div class="payment-info">
-								<h4>ABA QR Pay</h4>
-								<p>Pay with ABA mobile banking</p>
-							</div>
-							<div class="payment-logo">🏦</div>
-						</div>
-					</label>
-
-					<label class="payment-option">
-						<input 
-							type="radio" 
-							name="payment"
-							value="ipay88"
-							onchange={() => paymentMethod = 'ipay88'}
-							checked={paymentMethod === 'ipay88'}
-						/>
-						<div class="payment-card">
-							<div class="payment-info">
-								<h4>iPay88</h4>
-								<p>Credit/Debit cards & online banking</p>
-							</div>
-							<div class="payment-logo">💳</div>
-						</div>
-					</label>
-				</div>
-
-				{#if totalItems > 0}
-					<div class="final-total">
-						<div class="total-breakdown">
-							<div class="total-item">
-								<span>Drinks ({totalItems} items)</span>
+							<Separator />
+							<div class="flex justify-between font-medium">
+								<span>Total ({totalItems} items)</span>
 								<span>${estimatedTotal}</span>
 							</div>
-							<div class="total-item final">
-								<span>Total</span>
-								<span class="total-amount">${estimatedTotal}</span>
-							</div>
 						</div>
-					</div>
-				{/if}
-			</div>
-		{/if}
-	</div>
+					</Card>
+				</div>
+			{/if}
 
-	<!-- Navigation Buttons -->
-	<div class="booking-actions">
-		<button class="btn btn-outline" onclick={onCancel}>
-			Cancel
-		</button>
-		
-		<div class="action-buttons">
-			{#if currentStep > 1}
-				<button class="btn btn-outline" onclick={prevStep}>
-					Back
-				</button>
-			{/if}
-			
-			{#if currentStep < 4}
-				<button 
-					class="btn btn-primary"
-					onclick={nextStep}
-					disabled={
-						(currentStep === 1 && !canProceedFromStep1) ||
-						(currentStep === 2 && !canProceedFromStep2) ||
-						(currentStep === 3 && !canProceedFromStep3)
-					}
-				>
-					Continue
-				</button>
-			{:else}
-				<button 
-					class="btn btn-primary"
-					onclick={handleCompleteBooking}
-					disabled={!canCompleteBooking || isProcessing}
-				>
-					{#if isProcessing}
-						Processing...
-					{:else}
-						Complete Booking
+			<div class="flex justify-between pt-4">
+				<Button variant="outline" onclick={onCancel}>
+					Cancel
+				</Button>
+				
+				<div class="flex gap-2">
+					{#if currentStep > 1}
+						<Button variant="outline" onclick={prevStep}>
+							Back
+						</Button>
 					{/if}
-				</button>
-			{/if}
-		</div>
-	</div>
+					
+					{#if currentStep < 4}
+						<Button 
+							onclick={nextStep}
+							disabled={
+								(currentStep === 1 && !canProceedFromStep1) ||
+								(currentStep === 2 && !canProceedFromStep2) ||
+								(currentStep === 3 && !canProceedFromStep3)
+							}
+						>
+							Continue
+						</Button>
+					{:else}
+						<Button 
+							onclick={handleCompleteBooking}
+							disabled={!canCompleteBooking || isProcessing}
+						>
+							{#if isProcessing}
+								Processing...
+							{:else}
+								Complete Booking
+							{/if}
+						</Button>
+					{/if}
+				</div>
+			</div>
+		</CardContent>
+	</Card>
 </div>
