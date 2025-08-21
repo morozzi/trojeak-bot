@@ -61,16 +61,14 @@ function handleChannelMessage(): void {
             return;
         }
         
-        $webAppUrl = 'https://' . BotConfig::WEBAPP_DOMAIN . '/miniapp.php';
+        $miniAppUrl = 'https://t.me/' . BotConfig::USERNAME . '/trojeak';
         
-        // Use 'url' button for channel messages instead of 'web_app'
-        // web_app buttons are only supported in direct bot-user conversations
         $inlineKeyboard = [
             'inline_keyboard' => [
                 [
                     [
                         'text' => $buttonText,
-                        'url' => $webAppUrl
+                        'url' => $miniAppUrl
                     ]
                 ]
             ]
@@ -121,9 +119,9 @@ function handleChannelMessage(): void {
     $content .= '<input type="text" name="button_text" id="button_text" size="30" required>';
     $content .= '</div>';
     $content .= '<div style="margin-bottom: 15px;">';
-    $content .= '<p><strong>Mini App URL:</strong> https://' . BotConfig::WEBAPP_DOMAIN . '/miniapp.php</p>';
+    $content .= '<p><strong>Mini App URL:</strong> https://t.me/' . BotConfig::USERNAME . '/trojeak</p>';
     $content .= '<p><strong>Target Channel:</strong> ' . BotConfig::CHANNEL_ID . '</p>';
-    $content .= '<p><strong>Button Type:</strong> URL (web_app buttons not supported in channels)</p>';
+    $content .= '<p><strong>Flow:</strong> One Click → Direct Mini App Launch</p>';
     $content .= '</div>';
     $content .= '<button type="submit" style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px;">Send Message</button>';
     $content .= '</form>';
