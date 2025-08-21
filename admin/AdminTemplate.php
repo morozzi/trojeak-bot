@@ -128,6 +128,7 @@ final class AdminTemplate {
         $html .= '<ul>';
         $html .= '<li><a href="?action=setup" style="color: green; font-weight: bold;">Setup Database</a> - Create tables and set webhook</li>';
         $html .= '<li><a href="?action=webhook" style="color: blue; font-weight: bold;">Set Webhook Only</a> - Connect Telegram without database changes</li>';
+        $html .= '<li><a href="?action=channel_message" style="color: purple; font-weight: bold;">Send Channel Message</a> - Send pinned message with Web App button</li>';
         $html .= '<li><a href="?action=flush" style="color: orange; font-weight: bold;">Flush Tables</a> - Empty all data but keep structure</li>';
         $html .= '<li><a href="?action=drop" style="color: red; font-weight: bold;">Drop Tables</a> - Delete all tables</li>';
         $html .= '<li><a href="?action=clearcache" style="color: blue; font-weight: bold;">Clear Cache</a> - Clear APCu cache</li>';

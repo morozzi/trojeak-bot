@@ -44,8 +44,89 @@ function handleAction(string $action, bool $confirm, Database $db): void {
         'flush' => $confirm ? handleFlush($db) : null,
         'drop' => $confirm ? handleDrop($db) : null,
         'clearcache' => $confirm ? handleClearCache() : null,
+        'channel_message' => handleChannelMessage(),
         default => displayDashboard($db)
     };
+}
+
+function handleChannelMessage(): void {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $messageText = htmlspecialchars($_POST['message_text'] ?? '');
+        $buttonText = htmlspecialchars($_POST['button_text'] ?? '');
+        
+        if (empty($messageText) || empty($buttonText)) {
+            $content = AdminTemplate::errorDiv('Message text and button text are required.');
+            $content .= AdminTemplate::backToDashboard();
+            echo AdminTemplate::layout('Channel Message Error', $content);
+            return;
+        }
+        
+        $webAppUrl = 'https://' . BotConfig::WEBAPP_DOMAIN . '/miniapp.php';
+        
+        $inlineKeyboard = [
+            'inline_keyboard' => [
+                [
+                    [
+                        'text' => $buttonText,
+                        'web_app' => ['url' => $webAppUrl]
+                    ]
+                ]
+            ]
+        ];
+        
+        $response = sendMessage(
+            BotConfig::TOKEN,
+            BotConfig::CHANNEL_ID,
+            $messageText,
+            [
+                'parse_mode' => 'HTML',
+                'reply_markup' => json_encode($inlineKeyboard)
+            ]
+        );
+        
+        if (isset($response['ok']) && $response['ok']) {
+            $messageId = $response['result']['message_id'];
+            
+            $pinResponse = pinChatMessage(BotConfig::TOKEN, BotConfig::CHANNEL_ID, $messageId);
+            
+            if (isset($pinResponse['ok']) && $pinResponse['ok']) {
+                $content = AdminTemplate::successDiv('Message sent and pinned successfully!');
+                $content .= '<p><strong>Message ID:</strong> ' . $messageId . '</p>';
+                $content .= '<p><strong>Channel:</strong> ' . BotConfig::CHANNEL_ID . '</p>';
+            } else {
+                $content = AdminTemplate::errorDiv('Message sent but failed to pin.');
+                $content .= '<p><strong>Message ID:</strong> ' . $messageId . '</p>';
+                $content .= '<p><strong>Pin Error:</strong> ' . json_encode($pinResponse) . '</p>';
+            }
+        } else {
+            $content = AdminTemplate::errorDiv('Failed to send message.');
+            $content .= '<p><strong>Error:</strong> ' . json_encode($response) . '</p>';
+        }
+        
+        $content .= AdminTemplate::backToDashboard();
+        echo AdminTemplate::layout('Channel Message Result', $content);
+        return;
+    }
+    
+    $content = '<h2>Send Channel Message with Web App Button</h2>';
+    $content .= '<form method="POST">';
+    $content .= '<div style="margin-bottom: 15px;">';
+    $content .= '<label for="message_text"><strong>Message Text:</strong></label><br>';
+    $content .= '<textarea name="message_text" id="message_text" rows="8" cols="60" required></textarea>';
+    $content .= '</div>';
+    $content .= '<div style="margin-bottom: 15px;">';
+    $content .= '<label for="button_text"><strong>Button Text:</strong></label><br>';
+    $content .= '<input type="text" name="button_text" id="button_text" size="30" required>';
+    $content .= '</div>';
+    $content .= '<div style="margin-bottom: 15px;">';
+    $content .= '<p><strong>Web App URL:</strong> https://' . BotConfig::WEBAPP_DOMAIN . '/miniapp.php</p>';
+    $content .= '<p><strong>Target Channel:</strong> ' . BotConfig::CHANNEL_ID . '</p>';
+    $content .= '</div>';
+    $content .= '<button type="submit" style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px;">Send Message</button>';
+    $content .= '</form>';
+    $content .= AdminTemplate::backToDashboard();
+    
+    echo AdminTemplate::layout('Send Channel Message', $content);
 }
 
 function handleTestDataGeneration(Database $db): string {
