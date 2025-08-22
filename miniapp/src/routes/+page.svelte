@@ -10,6 +10,18 @@
 	import Brands from '$lib/components/Brands.svelte';
 	import BookingWizard from '$lib/components/BookingWizard.svelte';
 
+	interface TelegramWebApp {
+		ready(): void;
+		initDataUnsafe?: { user?: TelegramUser };
+	}
+
+	interface TelegramUser {
+		id: number;
+		first_name: string;
+		last_name?: string;
+		username?: string;
+	}
+
 	interface Event {
 		id: string;
 		title: string;
@@ -25,8 +37,8 @@
 	let selectedEventId: string | undefined = $state();
 	let selectedEvent: Event | undefined = $state();
 	let previousView: string = $state('main');
-	let webApp: any = $state(null);
-	let userInfo: any = $state(null);
+	let webApp: TelegramWebApp | null = $state(null);
+	let userInfo: TelegramUser | null = $state(null);
 	let isLoading: boolean = $state(true);
 	let error: string | null = $state(null);
 
