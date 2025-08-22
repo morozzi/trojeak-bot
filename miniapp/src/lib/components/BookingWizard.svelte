@@ -8,7 +8,7 @@
 	import { Progress } from '$lib/components/ui/progress';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
+	import * as Select from '$lib/components/ui/select/index.js';
 
 	interface Event {
 		id: string;
@@ -42,16 +42,23 @@
 
 	let currentStep = $state(1);
 	let selectedBrands = $state<{[key: string]: number}>({});
-	let guestCount = $state(2);
+	let guestCount = $state(1);
+	let guestCountString = $state("1");
 	let phoneNumber = $state('+855');
 	let comment = $state('');
 	let paymentMethod = $state<'aba' | 'ipay88' | null>(null);
 	let isProcessing = $state(false);
 
+	$effect(() => {
+		if (guestCountString && !isNaN(parseInt(guestCountString))) {
+			guestCount = parseInt(guestCountString);
+		}
+	});
+
 	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
 	const estimatedTotal = $derived(totalItems * 12);
 	const canProceedFromStep1 = $derived(totalItems > 0);
-	const canProceedFromStep2 = $derived(guestCount > 0 && phoneNumber.length > 4);
+	const canProceedFromStep2 = $derived(guestCount >= 1 && phoneNumber.length > 4);
 	const canProceedFromStep3 = $derived(comment.length <= 200);
 	const canCompleteBooking = $derived(paymentMethod !== null);
 	const progressPercentage = $derived((currentStep / 4) * 100);
@@ -157,16 +164,16 @@
 					<div class="space-y-4">
 						<div class="space-y-2">
 							<Label for="guestCount">Number of Guests</Label>
-							<Select bind:value={guestCount}>
-								<SelectTrigger>
+							<Select.Root type="single" bind:value={guestCountString}>
+								<Select.Trigger>
 									{guestCount} Guest{guestCount > 1 ? 's' : ''}
-								</SelectTrigger>
-								<SelectContent>
+								</Select.Trigger>
+								<Select.Content>
 									{#each Array(10) as _, i}
-										<SelectItem value={i + 1}>{i + 1} Guest{i > 0 ? 's' : ''}</SelectItem>
+										<Select.Item value={(i + 1).toString()}>{i + 1} Guest{i > 0 ? 's' : ''}</Select.Item>
 									{/each}
-								</SelectContent>
-							</Select>
+								</Select.Content>
+							</Select.Root>
 						</div>
 						
 						<div class="space-y-2">
@@ -234,9 +241,12 @@
 							</div>
 						</div>
 					</RadioGroup>
+				</div>
+			{/if}
 
+			{#if totalItems > 0}
+				<div class="space-y-4">
 					<Separator />
-
 					<Card class="p-4">
 						<h4 class="font-medium mb-3">Order Summary</h4>
 						<div class="space-y-2">

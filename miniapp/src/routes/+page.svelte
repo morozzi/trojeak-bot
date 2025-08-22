@@ -67,20 +67,6 @@
 			type: 'spirits' as const,
 			featured: true,
 			description: 'World-renowned cognac for sophisticated evenings.'
-		},
-		{
-			id: 'brd_003',
-			name: 'Grey Goose',
-			type: 'spirits' as const,
-			featured: false,
-			description: 'Premium French vodka crafted from the finest wheat.'
-		},
-		{
-			id: 'brd_004',
-			name: 'Johnnie Walker',
-			type: 'spirits' as const,
-			featured: true,
-			description: 'Iconic Scotch whisky with rich heritage and bold flavors.'
 		}
 	];
 
@@ -212,7 +198,7 @@
 								<h3 class="text-xl font-bold">Browse Brands</h3>
 								<p class="text-sm text-muted-foreground">Premium drinks and beverages</p>
 								<div class="flex items-baseline gap-2 mt-1">
-									<span class="text-lg font-bold text-primary">4</span>
+									<span class="text-lg font-bold text-primary">2</span>
 									<span class="text-xs uppercase tracking-wide">Brands</span>
 								</div>
 							</div>
@@ -254,7 +240,7 @@
 				event={{
 					...selectedEvent,
 					venue_id: 'ven_001',
-					brands: ['brd_001', 'brd_002', 'brd_003', 'brd_004']
+					brands: ['brd_001', 'brd_002']
 				}}
 				availableBrands={availableBrands}
 				onComplete={goToPreviousBookingView}
