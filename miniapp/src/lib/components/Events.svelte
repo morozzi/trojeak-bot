@@ -15,10 +15,15 @@
 		description: string;
 	}
 
-	let { initialEventId }: { initialEventId?: string } = $props();
+	interface Props {
+		initialEventId?: string;
+	}
+
+	const { initialEventId }: Props = $props();
 
 	const dispatch = createEventDispatcher<{
 		goBack: void;
+		startBooking: { event: Event };
 	}>();
 
 	let viewMode: 'list' | 'detail' = $state(initialEventId ? 'detail' : 'list');
@@ -74,11 +79,11 @@
 
 <div class="space-y-6">
 	{#if viewMode === 'list'}
-		<div class="flex justify-between items-center">
-			<h1 class="text-3xl font-bold">Events ({events.length})</h1>
+		<div class="space-y-4">
 			<Button variant="outline" onclick={goBack}>
 				← Back to Main
 			</Button>
+			<h1 class="text-3xl font-bold">Events ({events.length})</h1>
 		</div>
 		
 		<div class="grid gap-4">
@@ -125,7 +130,7 @@
 								<p class="text-muted-foreground"><span class="font-semibold">Price Range:</span> {selectedEvent.price_range}</p>
 							</div>
 							<p>{selectedEvent.description}</p>
-							<Button class="w-full">
+							<Button class="w-full" onclick={() => dispatch('startBooking', { event: selectedEvent })}>
 								Book This Event
 							</Button>
 						</div>

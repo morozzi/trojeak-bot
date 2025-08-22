@@ -67,11 +67,11 @@
 
 <div class="space-y-6">
 	{#if viewMode === 'list'}
-		<div class="flex justify-between items-center">
-			<h1 class="text-3xl font-bold">Brands ({brands.length})</h1>
+		<div class="space-y-4">
 			<Button variant="outline" onclick={goBack}>
 				← Back to Main
 			</Button>
+			<h1 class="text-3xl font-bold">Brands ({brands.length})</h1>
 		</div>
 		
 		<div class="grid gap-4">

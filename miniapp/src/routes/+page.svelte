@@ -8,9 +8,23 @@
 	import Events from '$lib/components/Events.svelte';
 	import Venues from '$lib/components/Venues.svelte';
 	import Brands from '$lib/components/Brands.svelte';
+	import BookingWizard from '$lib/components/BookingWizard.svelte';
 
-	let currentView: 'main' | 'events' | 'venues' | 'brands' = $state('main');
+	interface Event {
+		id: string;
+		title: string;
+		venue_name: string;
+		city: string;
+		featured: boolean;
+		price_range: string;
+		date: string;
+		description: string;
+	}
+
+	let currentView: 'main' | 'events' | 'venues' | 'brands' | 'booking' = $state('main');
 	let selectedEventId: string | undefined = $state();
+	let selectedEvent: Event | undefined = $state();
+	let previousView: string = $state('main');
 	let webApp: any = $state(null);
 	let userInfo: any = $state(null);
 	let isLoading: boolean = $state(true);
@@ -39,6 +53,37 @@
 		}
 	];
 
+	const availableBrands = [
+		{
+			id: 'brd_001',
+			name: 'Angkor Beer',
+			type: 'beer' as const,
+			featured: true,
+			description: 'Cambodia\'s premium beer brand with crisp, refreshing taste.'
+		},
+		{
+			id: 'brd_002',
+			name: 'Hennessy',
+			type: 'spirits' as const,
+			featured: true,
+			description: 'World-renowned cognac for sophisticated evenings.'
+		},
+		{
+			id: 'brd_003',
+			name: 'Grey Goose',
+			type: 'spirits' as const,
+			featured: false,
+			description: 'Premium French vodka crafted from the finest wheat.'
+		},
+		{
+			id: 'brd_004',
+			name: 'Johnnie Walker',
+			type: 'spirits' as const,
+			featured: true,
+			description: 'Iconic Scotch whisky with rich heritage and bold flavors.'
+		}
+	];
+
 	onMount(() => {
 		try {
 			webApp = window.Telegram?.WebApp;
@@ -64,7 +109,7 @@
 	});
 
 	function goToEvents(eventId?: string): void {
-		selectedEventId = eventId; // This will be undefined if no argument passed
+		selectedEventId = eventId;
 		currentView = 'events';
 	}
 
@@ -79,6 +124,16 @@
 	function goToMain(): void {
 		selectedEventId = undefined;
 		currentView = 'main';
+	}
+
+	function handleStartBooking(event: CustomEvent<{event: Event}>) {
+		selectedEvent = event.detail.event;
+		previousView = currentView;
+		currentView = 'booking';
+	}
+
+	function goToPreviousBookingView() {
+		currentView = previousView;
 	}
 </script>
 
@@ -189,11 +244,22 @@
 				</div>
 			</div>
 		{:else if currentView === 'events'}
-			<Events initialEventId={selectedEventId} on:goBack={goToMain} />
+			<Events initialEventId={selectedEventId} on:goBack={goToMain} on:startBooking={handleStartBooking} />
 		{:else if currentView === 'venues'}
 			<Venues on:goBack={goToMain} />
 		{:else if currentView === 'brands'}
 			<Brands on:goBack={goToMain} />
+		{:else if currentView === 'booking'}
+			<BookingWizard 
+				event={{
+					...selectedEvent,
+					venue_id: 'ven_001',
+					brands: ['brd_001', 'brd_002', 'brd_003', 'brd_004']
+				}}
+				availableBrands={availableBrands}
+				onComplete={goToPreviousBookingView}
+				onCancel={goToPreviousBookingView}
+			/>
 		{/if}
 	</div>
 {/if}
