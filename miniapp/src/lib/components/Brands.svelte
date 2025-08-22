@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import * as Button from '$lib/components/ui/button/index.js';
+	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Badge from '$lib/components/ui/badge/index.js';
 	import { createEventDispatcher } from 'svelte';
 
 	interface Brand {
@@ -68,30 +68,30 @@
 <div class="space-y-6">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<Button variant="outline" onclick={goBack}>
+			<Button.Button variant="outline" onclick={goBack}>
 				← Back to Main
-			</Button>
+			</Button.Button>
 			<h1 class="text-3xl font-bold">Brands ({brands.length})</h1>
 		</div>
 		
 		<div class="grid gap-4">
 			{#each brands as brand}
-				<Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectBrand(brand.id)}>
-					<CardHeader>
+				<Card.Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectBrand(brand.id)}>
+					<Card.CardHeader>
 						<div class="flex justify-between items-start">
-							<CardTitle>{brand.name}</CardTitle>
+							<Card.CardTitle>{brand.name}</Card.CardTitle>
 							<div class="flex gap-2">
-								<Badge variant="secondary">{brand.type.toUpperCase()}</Badge>
+								<Badge.Badge variant="secondary">{brand.type.toUpperCase()}</Badge.Badge>
 								{#if brand.featured}
-									<Badge>Featured</Badge>
+									<Badge.Badge>Featured</Badge.Badge>
 								{/if}
 							</div>
 						</div>
-					</CardHeader>
-					<CardContent>
+					</Card.CardHeader>
+					<Card.CardContent>
 						<p>{brand.description}</p>
-					</CardContent>
-				</Card>
+					</Card.CardContent>
+				</Card.Card>
 			{/each}
 		</div>
 	{:else if viewMode === 'detail' && selectedBrandId}
@@ -99,24 +99,24 @@
 		{#if selectedBrand}
 			<div class="space-y-6">
 				<div class="flex justify-between items-center">
-					<Button variant="outline" onclick={goToList}>
+					<Button.Button variant="outline" onclick={goToList}>
 						← Back to Brands
-					</Button>
+					</Button.Button>
 					<div class="flex gap-2">
-						<Badge variant="secondary">{selectedBrand.type.toUpperCase()}</Badge>
+						<Badge.Badge variant="secondary">{selectedBrand.type.toUpperCase()}</Badge.Badge>
 						{#if selectedBrand.featured}
-							<Badge>Featured</Badge>
+							<Badge.Badge>Featured</Badge.Badge>
 						{/if}
 					</div>
 				</div>
 
 				<h1 class="text-3xl font-bold">{selectedBrand.name}</h1>
 				
-				<Card>
-					<CardContent class="p-6">
+				<Card.Card>
+					<Card.CardContent class="p-6">
 						<p>{selectedBrand.description}</p>
-					</CardContent>
-				</Card>
+					</Card.CardContent>
+				</Card.Card>
 			</div>
 		{/if}
 	{/if}

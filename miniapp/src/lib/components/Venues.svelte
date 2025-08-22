@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import * as Button from '$lib/components/ui/button/index.js';
+	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Badge from '$lib/components/ui/badge/index.js';
 	import { createEventDispatcher } from 'svelte';
 
 	interface Venue {
@@ -69,31 +69,31 @@
 <div class="space-y-6">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<Button variant="outline" onclick={goBack}>
+			<Button.Button variant="outline" onclick={goBack}>
 				← Back to Main
-			</Button>
+			</Button.Button>
 			<h1 class="text-3xl font-bold">Venues ({venues.length})</h1>
 		</div>
 		
 		<div class="grid gap-4">
 			{#each venues as venue}
-				<Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectVenue(venue.id)}>
-					<CardHeader>
+				<Card.Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectVenue(venue.id)}>
+					<Card.CardHeader>
 						<div class="flex justify-between items-start">
-							<CardTitle>{venue.name}</CardTitle>
+							<Card.CardTitle>{venue.name}</Card.CardTitle>
 							<div class="flex gap-2">
-								<Badge variant="secondary">{venue.type.toUpperCase()}</Badge>
+								<Badge.Badge variant="secondary">{venue.type.toUpperCase()}</Badge.Badge>
 								{#if venue.featured}
-									<Badge>Featured</Badge>
+									<Badge.Badge>Featured</Badge.Badge>
 								{/if}
 							</div>
 						</div>
 						<p class="text-muted-foreground">{venue.city} • {venue.address}</p>
-					</CardHeader>
-					<CardContent>
+					</Card.CardHeader>
+					<Card.CardContent>
 						<p>{venue.description}</p>
-					</CardContent>
-				</Card>
+					</Card.CardContent>
+				</Card.Card>
 			{/each}
 		</div>
 	{:else if viewMode === 'detail' && selectedVenueId}
@@ -101,21 +101,21 @@
 		{#if selectedVenue}
 			<div class="space-y-6">
 				<div class="flex justify-between items-center">
-					<Button variant="outline" onclick={goToList}>
+					<Button.Button variant="outline" onclick={goToList}>
 						← Back to Venues
-					</Button>
+					</Button.Button>
 					<div class="flex gap-2">
-						<Badge variant="secondary">{selectedVenue.type.toUpperCase()}</Badge>
+						<Badge.Badge variant="secondary">{selectedVenue.type.toUpperCase()}</Badge.Badge>
 						{#if selectedVenue.featured}
-							<Badge>Featured</Badge>
+							<Badge.Badge>Featured</Badge.Badge>
 						{/if}
 					</div>
 				</div>
 
 				<h1 class="text-3xl font-bold">{selectedVenue.name}</h1>
 				
-				<Card>
-					<CardContent class="p-6">
+				<Card.Card>
+					<Card.CardContent class="p-6">
 						<div class="space-y-4">
 							<div>
 								<p class="text-muted-foreground"><span class="font-semibold">Type:</span> {selectedVenue.type.charAt(0).toUpperCase() + selectedVenue.type.slice(1)}</p>
@@ -124,8 +124,8 @@
 							</div>
 							<p>{selectedVenue.description}</p>
 						</div>
-					</CardContent>
-				</Card>
+					</Card.CardContent>
+				</Card.Card>
 			</div>
 		{/if}
 	{/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Skeleton } from '$lib/components/ui/skeleton';
+  import * as Skeleton from '$lib/components/ui/skeleton/index.js';
   
   interface Props {
     size?: 'sm' | 'md' | 'lg';
@@ -24,9 +24,9 @@
 
 <div class="flex flex-col items-center justify-center gap-4 p-8">
   <div class="flex flex-col items-center gap-2">
-    <Skeleton class={sizeClasses[size]} />
-    <Skeleton class="h-3 w-20" />
-    <Skeleton class="h-3 w-16" />
+    <Skeleton.Skeleton class={sizeClasses[size]} />
+    <Skeleton.Skeleton class="h-3 w-20" />
+    <Skeleton.Skeleton class="h-3 w-16" />
   </div>
   
   {#if showMessage}

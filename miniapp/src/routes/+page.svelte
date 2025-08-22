@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button } from '$lib/components/ui/button';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import * as Button from '$lib/components/ui/button/index.js';
+	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Badge from '$lib/components/ui/badge/index.js';
 	import LoadingAnimation from '$lib/components/LoadingAnimation.svelte';
 	import Events from '$lib/components/Events.svelte';
 	import Venues from '$lib/components/Venues.svelte';
@@ -127,12 +127,12 @@
 	<LoadingAnimation message="Loading Trojeak..." />
 {:else if error}
 	<div class="flex items-center justify-center min-h-screen">
-		<Card class="w-full max-w-md mx-4">
-			<CardContent class="p-6 text-center">
+		<Card.Card class="w-full max-w-md mx-4">
+			<Card.CardContent class="p-6 text-center">
 				<h2 class="text-xl font-semibold mb-2">Connection Error</h2>
 				<p class="text-muted-foreground">{error}</p>
-			</CardContent>
-		</Card>
+			</Card.CardContent>
+		</Card.Card>
 	</div>
 {:else}
 	<div class="container mx-auto p-4 max-w-2xl">
@@ -146,7 +146,7 @@
 				</div>
 
 				<div class="grid gap-4">
-					<Button 
+					<Button.Button 
 						variant="default" 
 						size="lg" 
 						class="h-auto p-6 justify-start"
@@ -164,9 +164,9 @@
 							</div>
 							<div class="text-xl">→</div>
 						</div>
-					</Button>
+					</Button.Button>
 
-					<Button 
+					<Button.Button 
 						variant="outline" 
 						size="lg" 
 						class="h-auto p-6 justify-start"
@@ -184,9 +184,9 @@
 							</div>
 							<div class="text-xl">→</div>
 						</div>
-					</Button>
+					</Button.Button>
 
-					<Button 
+					<Button.Button 
 						variant="outline" 
 						size="lg" 
 						class="h-auto p-6 justify-start"
@@ -204,27 +204,27 @@
 							</div>
 							<div class="text-xl">→</div>
 						</div>
-					</Button>
+					</Button.Button>
 				</div>
 
 				<div class="space-y-6">
 					<h2 class="text-2xl font-bold text-center">Featured Events</h2>
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						{#each featuredEvents as event}
-							<Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvents(event.id)}>
-								<CardHeader>
+							<Card.Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvents(event.id)}>
+								<Card.CardHeader>
 									<div class="flex justify-between items-start mb-2">
-										<CardTitle class="text-lg">{event.title}</CardTitle>
-										<Badge>Featured</Badge>
+										<Card.CardTitle class="text-lg">{event.title}</Card.CardTitle>
+										<Badge.Badge>Featured</Badge.Badge>
 									</div>
 									<p class="text-sm text-muted-foreground">{event.venue_name}</p>
 									<p class="text-sm text-muted-foreground">{event.city}</p>
-								</CardHeader>
-								<CardContent>
+								</Card.CardHeader>
+								<Card.CardContent>
 									<p class="text-sm mb-2">{event.description}</p>
 									<p class="text-base font-semibold text-primary">{event.price_range}</p>
-								</CardContent>
-							</Card>
+								</Card.CardContent>
+							</Card.Card>
 						{/each}
 					</div>
 				</div>

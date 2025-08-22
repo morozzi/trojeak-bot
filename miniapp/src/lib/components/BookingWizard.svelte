@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { RadioGroup, RadioGroupItem } from '$lib/components/ui/radio-group';
-	import { Progress } from '$lib/components/ui/progress';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Badge } from '$lib/components/ui/badge';
+	import * as Button from '$lib/components/ui/button/index.js';
+	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Input from '$lib/components/ui/input/index.js';
+	import * as Label from '$lib/components/ui/label/index.js';
+	import * as Textarea from '$lib/components/ui/textarea/index.js';
+	import * as RadioGroup from '$lib/components/ui/radio-group/index.js';
+	import * as Progress from '$lib/components/ui/progress/index.js';
+	import * as Separator from '$lib/components/ui/separator/index.js';
+	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 
 	interface Event {
@@ -96,13 +96,13 @@
 </script>
 
 <div class="min-h-screen bg-background p-6 max-w-2xl mx-auto">
-	<Card>
-		<CardHeader class="text-center">
-			<CardTitle class="text-2xl font-bold">Book Your Event</CardTitle>
+	<Card.Card>
+		<Card.CardHeader class="text-center">
+			<Card.CardTitle class="text-2xl font-bold">Book Your Event</Card.CardTitle>
 			<p class="text-muted-foreground">{event.title} at {event.venue_name}</p>
-		</CardHeader>
+		</Card.CardHeader>
 		
-		<CardContent class="space-y-6">
+		<Card.CardContent class="space-y-6">
 			<div class="space-y-3">
 				<div class="flex justify-between items-center">
 					{#each stepTitles as title, index}
@@ -117,42 +117,42 @@
 						</div>
 					{/each}
 				</div>
-				<Progress value={progressPercentage} class="h-2" />
+				<Progress.Progress value={progressPercentage} class="h-2" />
 			</div>
 
-			<Separator />
+			<Separator.Separator />
 
 			{#if currentStep === 1}
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Select Your Drinks</h3>
 					<div class="grid gap-4">
 						{#each availableBrands as brand}
-							<Card class="p-4">
+							<Card.Card class="p-4">
 								<div class="flex justify-between items-start">
 									<div class="flex-1">
 										<h4 class="font-medium">{brand.name}</h4>
 										<p class="text-sm text-muted-foreground">{brand.description}</p>
-										<Badge variant="secondary" class="mt-2">{brand.type}</Badge>
+										<Badge.Badge variant="secondary" class="mt-2">{brand.type}</Badge.Badge>
 									</div>
 									<div class="flex items-center gap-2">
-										<Button 
+										<Button.Button 
 											variant="outline" 
 											size="sm"
 											onclick={() => updateBrandQuantity(brand.id, Math.max(0, (selectedBrands[brand.id] || 0) - 1))}
 										>
 											-
-										</Button>
+										</Button.Button>
 										<span class="w-8 text-center">{selectedBrands[brand.id] || 0}</span>
-										<Button 
+										<Button.Button 
 											variant="outline" 
 											size="sm"
 											onclick={() => updateBrandQuantity(brand.id, (selectedBrands[brand.id] || 0) + 1)}
 										>
 											+
-										</Button>
+										</Button.Button>
 									</div>
 								</div>
-							</Card>
+							</Card.Card>
 						{/each}
 					</div>
 				</div>
@@ -163,7 +163,7 @@
 					<h3 class="text-lg font-semibold">Guest Details</h3>
 					<div class="space-y-4">
 						<div class="space-y-2">
-							<Label for="guestCount">Number of Guests</Label>
+							<Label.Label for="guestCount">Number of Guests</Label.Label>
 							<Select.Root type="single" bind:value={guestCountString}>
 								<Select.Trigger>
 									{guestCount} Guest{guestCount > 1 ? 's' : ''}
@@ -177,8 +177,8 @@
 						</div>
 						
 						<div class="space-y-2">
-							<Label for="phone">Phone Number</Label>
-							<Input 
+							<Label.Label for="phone">Phone Number</Label.Label>
+							<Input.Input 
 								id="phone"
 								bind:value={phoneNumber}
 								placeholder="+855 12 345 678"
@@ -193,8 +193,8 @@
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Additional Information</h3>
 					<div class="space-y-2">
-						<Label for="comment">Special Requests or Comments (Optional)</Label>
-						<Textarea 
+						<Label.Label for="comment">Special Requests or Comments (Optional)</Label.Label>
+						<Textarea.Textarea 
 							id="comment"
 							bind:value={comment}
 							placeholder="Any special requests, dietary restrictions, or seating preferences..."
@@ -208,12 +208,12 @@
 			{#if currentStep === 4}
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Payment Method</h3>
-					<RadioGroup bind:value={paymentMethod}>
+					<RadioGroup.RadioGroup bind:value={paymentMethod}>
 						<div class="space-y-3">
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem value="aba" id="aba" />
-								<Label for="aba" class="flex-1 cursor-pointer">
-									<Card class="p-4">
+								<RadioGroup.RadioGroupItem value="aba" id="aba" />
+								<Label.Label for="aba" class="flex-1 cursor-pointer">
+									<Card.Card class="p-4">
 										<div class="flex items-center gap-3">
 											<div class="text-2xl">🏦</div>
 											<div>
@@ -221,14 +221,14 @@
 												<p class="text-sm text-muted-foreground">Pay with ABA Bank mobile app</p>
 											</div>
 										</div>
-									</Card>
-								</Label>
+									</Card.Card>
+								</Label.Label>
 							</div>
 							
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem value="ipay88" id="ipay88" />
-								<Label for="ipay88" class="flex-1 cursor-pointer">
-									<Card class="p-4">
+								<RadioGroup.RadioGroupItem value="ipay88" id="ipay88" />
+								<Label.Label for="ipay88" class="flex-1 cursor-pointer">
+									<Card.Card class="p-4">
 										<div class="flex items-center gap-3">
 											<div class="text-2xl">💳</div>
 											<div>
@@ -236,18 +236,18 @@
 												<p class="text-sm text-muted-foreground">Credit card, bank transfer, mobile banking</p>
 											</div>
 										</div>
-									</Card>
-								</Label>
+									</Card.Card>
+								</Label.Label>
 							</div>
 						</div>
-					</RadioGroup>
+					</RadioGroup.RadioGroup>
 				</div>
 			{/if}
 
 			{#if totalItems > 0}
 				<div class="space-y-4">
-					<Separator />
-					<Card class="p-4">
+					<Separator.Separator />
+					<Card.Card class="p-4">
 						<h4 class="font-medium mb-3">Order Summary</h4>
 						<div class="space-y-2">
 							{#each Object.entries(selectedBrands) as [brandId, quantity]}
@@ -259,30 +259,30 @@
 									</div>
 								{/if}
 							{/each}
-							<Separator />
+							<Separator.Separator />
 							<div class="flex justify-between font-medium">
 								<span>Total ({totalItems} items)</span>
 								<span>${estimatedTotal}</span>
 							</div>
 						</div>
-					</Card>
+					</Card.Card>
 				</div>
 			{/if}
 
 			<div class="flex justify-between pt-4">
-				<Button variant="outline" onclick={onCancel}>
+				<Button.Button variant="outline" onclick={onCancel}>
 					Cancel
-				</Button>
+				</Button.Button>
 				
 				<div class="flex gap-2">
 					{#if currentStep > 1}
-						<Button variant="outline" onclick={prevStep}>
+						<Button.Button variant="outline" onclick={prevStep}>
 							Back
-						</Button>
+						</Button.Button>
 					{/if}
 					
 					{#if currentStep < 4}
-						<Button 
+						<Button.Button 
 							onclick={nextStep}
 							disabled={
 								(currentStep === 1 && !canProceedFromStep1) ||
@@ -291,9 +291,9 @@
 							}
 						>
 							Continue
-						</Button>
+						</Button.Button>
 					{:else}
-						<Button 
+						<Button.Button 
 							onclick={handleCompleteBooking}
 							disabled={!canCompleteBooking || isProcessing}
 						>
@@ -302,10 +302,10 @@
 							{:else}
 								Complete Booking
 							{/if}
-						</Button>
+						</Button.Button>
 					{/if}
 				</div>
 			</div>
-		</CardContent>
-	</Card>
+		</Card.CardContent>
+	</Card.Card>
 </div>
