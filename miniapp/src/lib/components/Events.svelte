@@ -37,7 +37,7 @@
 			city: 'Phnom Penh',
 			featured: true,
 			price_range: '$15-25',
-			date: '2025-08-22',
+			date: 'August 22, 2025',
 			description: 'Ultimate rooftop party with city views and premium cocktails.'
 		},
 		{
@@ -47,7 +47,7 @@
 			city: 'Phnom Penh',
 			featured: false,
 			price_range: '$10-20',
-			date: '2025-08-23',
+			date: 'August 23, 2025',
 			description: 'Private rooms with premium sound system and drink promotions.'
 		},
 		{
@@ -57,7 +57,7 @@
 			city: 'Sihanoukville',
 			featured: true,
 			price_range: '$12-22',
-			date: '2025-08-24',
+			date: 'August 24, 2025',
 			description: 'Beachfront party with live DJ and tropical cocktails.'
 		}
 	];

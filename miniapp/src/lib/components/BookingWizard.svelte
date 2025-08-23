@@ -92,7 +92,7 @@
 		onComplete();
 	}
 
-	const stepTitles = ['Select Drinks', 'Guest Details', 'Additional Info', 'Payment'];
+	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 </script>
 
 <div class="min-h-screen bg-background p-6 max-w-2xl mx-auto">
@@ -193,14 +193,13 @@
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Additional Information</h3>
 					<div class="space-y-2">
-						<Label.Label for="comment">Special Requests or Comments (Optional)</Label.Label>
+						<Label.Label for="comment">Special Requests (optional)</Label.Label>
 						<Textarea.Textarea 
 							id="comment"
 							bind:value={comment}
-							placeholder="Any special requests, dietary restrictions, or seating preferences..."
+							placeholder="Any dietary restrictions, seating preferences..."
 							class="min-h-[100px]"
 						/>
-						<p class="text-xs text-muted-foreground">{comment.length}/200 characters</p>
 					</div>
 				</div>
 			{/if}
@@ -261,7 +260,7 @@
 							{/each}
 							<Separator.Separator />
 							<div class="flex justify-between font-medium">
-								<span>Total ({totalItems} items)</span>
+								<span>Total x {totalItems}</span>
 								<span>${estimatedTotal}</span>
 							</div>
 						</div>

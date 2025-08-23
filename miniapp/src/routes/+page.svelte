@@ -71,14 +71,14 @@
 			name: 'Angkor Beer',
 			type: 'beer' as const,
 			featured: true,
-			description: 'Cambodia\'s premium beer brand with crisp, refreshing taste.'
+			description: 'Cambodia\'s premium beer.'
 		},
 		{
 			id: 'brd_002',
 			name: 'Hennessy',
 			type: 'spirits' as const,
 			featured: true,
-			description: 'World-renowned cognac for sophisticated evenings.'
+			description: 'World-renowned cognac.'
 		}
 	];
 
@@ -159,7 +159,7 @@
 
 				<div class="grid gap-4">
 					<Button.Button 
-						variant="default" 
+						variant="outline" 
 						size="lg" 
 						class="h-auto p-6 justify-start"
 						onclick={() => goToEvents()}
