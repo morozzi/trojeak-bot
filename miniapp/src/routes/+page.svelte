@@ -152,9 +152,9 @@
 			<div class="space-y-8">
 				<div class="text-center space-y-4">
 					<h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-						Welcome to Trojeak
+						Let's Trojeak
 					</h1>
-					<p class="text-lg text-muted-foreground">Discover Cambodia's best nightlife events and venues</p>
+					<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
 				</div>
 
 				<div class="grid gap-4">
@@ -168,10 +168,10 @@
 							<div class="text-3xl">🎉</div>
 							<div class="flex-1 text-left">
 								<h3 class="text-xl font-bold">Discover Events</h3>
-								<p class="text-sm text-primary-foreground/80">Live music, parties, and entertainment</p>
+								<p class="text-sm text-muted-foreground">Live music, parties, and entertainment</p>
 								<div class="flex items-baseline gap-2 mt-1">
-									<span class="text-lg font-bold text-primary-foreground">3</span>
-									<span class="text-xs uppercase tracking-wide">Events Available</span>
+									<span class="text-lg font-bold text-primary">3</span>
+									<span class="text-xs uppercase tracking-wide">Events</span>
 								</div>
 							</div>
 							<div class="text-xl">→</div>
