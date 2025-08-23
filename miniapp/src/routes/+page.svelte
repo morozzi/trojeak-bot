@@ -87,6 +87,7 @@
 			webApp = window.Telegram?.WebApp;
 			if (webApp) {
 				webApp.ready();
+				webApp.expand();
 				userInfo = webApp.initDataUnsafe?.user;
 			}
 
@@ -139,7 +140,7 @@
 	<LoadingAnimation message="Loading Trojeak..." />
 {:else if error}
 	<div class="flex items-center justify-center min-h-screen">
-		<Card.Card class="w-full max-w-md mx-4">
+		<Card.Card class="w-full max-w-2xl mx-auto">
 			<Card.CardContent class="p-6 text-center">
 				<h2 class="text-xl font-semibold mb-2">Connection Error</h2>
 				<p class="text-muted-foreground">{error}</p>
@@ -157,7 +158,7 @@
 					<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
 				</div>
 
-				<div class="grid gap-4">
+				<div class="grid grid-cols-1 gap-4">
 					<Button.Button 
 						variant="outline" 
 						size="lg" 

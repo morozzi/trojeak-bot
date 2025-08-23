@@ -95,7 +95,7 @@
 	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 </script>
 
-<div class="min-h-screen bg-background p-6 max-w-2xl mx-auto">
+<div class="container p-4 max-w-2xl mx-auto">
 	<Card.Card>
 		<Card.CardHeader class="text-center">
 			<Card.CardTitle class="text-2xl font-bold">Book Your Event</Card.CardTitle>
