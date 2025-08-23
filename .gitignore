@@ -1,13 +1,26 @@
-# Environment Configuration
-.env
-.env.local
-.env.*.local
+# TROJEAK - Optimized .gitignore for App-Centric Architecture
 
-# Log Files
+# Environment & Security
+.env*
+
+# Built Mini App files are COMMITTED (needed by dev/prod servers)
+# index.html and /app/ folder are kept in repository
+
+# Development Source (src/ folder)
+src/.svelte-kit/
+src/build/
+src/node_modules/
+src/vite.config.*.timestamp-*
+
+# System Logs & Cache
 /logs/
 *.log
+/cache/
+/tmp/
+/temp/
+session_*
 
-# Temporary Files
+# Temporary & Backup Files  
 *.tmp
 *.temp
 *.bak
@@ -16,8 +29,7 @@
 *~
 
 # System Files
-.DS_Store
-.DS_Store?
+.DS_Store*
 ._*
 .Spotlight-V100
 .Trashes
@@ -25,31 +37,45 @@ ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# IDE and Editor Files
+# IDE & Editors
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
+*.sublime-*
 .project
 .buildpath
 .settings/
 
-# Cache and Session Files
-/cache/
-/tmp/
-/temp/
-session_*
-
-# Database Dumps and Backups
+# Database & Backups
 *.sql
 *.dump
 *.backup
 *.db
 
-# Project-specific Exclusions
+# Project Content (Always Ignored)
 /a/
 /pic/
 
-# Web Files (not needed for Telegram bot)
-robots.txt
-sitemap.xml
+# Development Tools
+coverage/
+*.lcov
+test-results/
+playwright-report/
+playwright/.cache/
+.eslintcache
+.cache
+.parcel-cache
+pids
+*.pid*
+.npm
+.rpt2_cache*/
+.rts2_cache*/
+
+# Build Outputs
+.out
+.storybook-out
+storybook-static
+
+# Package Manager (Optional - uncomment to ignore)
+# src/package-lock.json
+# src/yarn.lock  
+# src/pnpm-lock.yaml
