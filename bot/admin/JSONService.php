@@ -1,8 +1,8 @@
 <?php
-// admin/JSONService.php - JSON validation logic
+// bot/admin/JSONService.php - JSON validation logic
 
 final class JSONService {
-    private const string JSON_DIR = __DIR__ . '/../json/';
+    private const string JSON_DIR = __DIR__ . '/../../json/';
     
     public static function validateAllFiles(): array {
         $files = [

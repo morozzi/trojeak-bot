@@ -1,5 +1,5 @@
 <?php
-// handlers/MemberUpdateHandler.php
+// bot/handlers/MemberUpdateHandler.php
 
 class MemberUpdateHandler {
     

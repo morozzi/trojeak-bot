@@ -1,11 +1,10 @@
 <?php
-// webhook.php - Main webhook handler
+// bot/webhook.php - Main webhook handler
 
-require_once __DIR__ . '/config.php';
-
-require_once __DIR__ . '/telegram_api.php';
-require_once __DIR__ . '/services/SecurityServices.php';
-require_once __DIR__ . '/services/AuthMiddleware.php';
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../telegram_api.php';
+require_once __DIR__ . '/../services/SecurityServices.php';
+require_once __DIR__ . '/../services/AuthMiddleware.php';
 require_once __DIR__ . '/handlers/MessageHandler.php';
 require_once __DIR__ . '/handlers/CallbackHandler.php';
 require_once __DIR__ . '/handlers/MemberUpdateHandler.php';

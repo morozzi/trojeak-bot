@@ -1,5 +1,5 @@
 <?php
-// handlers/MessageHandler.php
+// bot/handlers/MessageHandler.php
 
 class MessageHandler {
     

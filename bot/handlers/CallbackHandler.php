@@ -1,5 +1,5 @@
 <?php
-// handlers/CallbackHandler.php
+// bot/handlers/CallbackHandler.php
 
 class CallbackHandler {
     

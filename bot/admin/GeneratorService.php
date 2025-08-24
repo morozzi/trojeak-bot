@@ -1,5 +1,5 @@
 <?php
-// admin/GeneratorService.php - Test data generation logic
+// bot/admin/GeneratorService.php - Test data generation logic
 
 final class GeneratorService {
     public const int DEFAULT_TEST_USERS = 100;

@@ -1,5 +1,5 @@
 <?php
-// admin/APCuService.php - APCu diagnostics logic
+// bot/admin/APCuService.php - APCu diagnostics logic
 
 final class APCuService {
     public static function getDiagnostics(): array {

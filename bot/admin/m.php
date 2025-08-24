@@ -1,8 +1,8 @@
 <?php
-// admin/m.php - Single entry point admin router
+// bot/admin/m.php - Single entry point admin router
 
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../telegram_api.php';
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../../telegram_api.php';
 require_once __DIR__ . '/AdminTemplate.php';
 require_once __DIR__ . '/APCuService.php';
 require_once __DIR__ . '/AdminLogService.php';

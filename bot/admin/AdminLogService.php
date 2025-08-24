@@ -1,8 +1,8 @@
 <?php
-// admin/AdminLogService.php - Log analysis logic
+// bot/admin/AdminLogService.php - Log analysis logic
 
 final class AdminLogService {
-    private const string LOGS_DIRECTORY = __DIR__ . '/../logs/';
+    private const string LOGS_DIRECTORY = __DIR__ . '/../../logs/';
     private const int MAX_FILE_SIZE = 50 * 1024 * 1024;
     
     public static function getAvailableFiles(): array {

@@ -1,5 +1,5 @@
 <?php
-// admin/AdminTemplate.php - Pure HTML/CSS rendering methods
+// bot/admin/AdminTemplate.php - Pure HTML/CSS rendering methods
 
 final class AdminTemplate {
     public static function layout(string $title, string $content): string {
