@@ -148,7 +148,7 @@ class MessageHandler {
         
         $result = $this->deps->userService->createUser($telegramId, $username, $firstName, $lastName, $userLanguage);
         
-        if ($result['success']) {
+        if ($result > 0) {
             $this->deps->logService->info($this->deps->errorLogService->getMessage('bot', 'new_user_created', [$userInfo]));
             
             $welcomeMessage = Messages::get('welcome', [], $userLanguage);

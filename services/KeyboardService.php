@@ -108,7 +108,7 @@ class KeyboardService {
         
         return [
             'inline_keyboard' => [[
-                ['text' => $buttonText, 'web_app' => ['url' => 'https://' . BotConfig::WEBAPP_DOMAIN . "/miniapp.php?start={$type}"]]
+                ['text' => $buttonText, 'web_app' => ['url' => 'https://' . BotConfig::WEBAPP_DOMAIN . "/?start={$type}"]]
             ]]
         ];
     }
