@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build && npm run deploy",
-    "deploy": "cp build/index.html ../ && cp -r build/app ../ && rm -rf build && echo 'Build deployed to root and cleaned up'",
+    "deploy": "rm -rf ../app && cp build/index.html ../ && cp -r build/app ../ && rm -rf build && echo 'Build deployed to root and cleaned up'",
     "preview": "vite preview"
   },
   "devDependencies": {
@@ -34,6 +34,6 @@
     "i18next": "^25.4.1",
     "shadcn-svelte": "^1.0.7",
     "tailwind-merge": "^3.3.1",
-    "zod": "^4.1.0"
+    "zod": "^4.1.1"
   }
 }
