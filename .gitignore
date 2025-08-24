@@ -1,10 +1,7 @@
-# TROJEAK - Optimized .gitignore for App-Centric Architecture
+# Optimized .gitignore for App-Centric Architecture
 
 # Environment & Security
 .env*
-
-# Built Mini App files are COMMITTED (needed by dev/prod servers)
-# index.html and /app/ folder are kept in repository
 
 # Development Source (src/ folder)
 src/.svelte-kit/
