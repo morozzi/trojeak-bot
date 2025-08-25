@@ -4,6 +4,9 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Badge from '$lib/components/ui/badge/index.js';
+	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import * as Select from '$lib/components/ui/select/index.js';
 	import LoadingAnimation from '$lib/components/LoadingAnimation.svelte';
 	import Events from '$lib/components/Events.svelte';
 	import Venues from '$lib/components/Venues.svelte';
@@ -41,6 +44,8 @@
 	let userInfo: TelegramUser | null = $state(null);
 	let isLoading: boolean = $state(true);
 	let error: string | null = $state(null);
+
+	const userInitials = "JD";
 
 	const featuredEvents = [
 		{
@@ -149,6 +154,53 @@
 	</div>
 {:else}
 	<div class="container mx-auto p-4 max-w-2xl">
+		<div class="flex items-center justify-between p-4 border-b">
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					{#snippet child({ props })}
+						<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
+							<Avatar.Fallback>{userInitials}</Avatar.Fallback>
+						</Avatar.Root>
+					{/snippet}
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content class="w-56" align="start">
+					<DropdownMenu.Label>My Account</DropdownMenu.Label>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Item onclick={() => {}}>
+						⚙️ Account Settings
+					</DropdownMenu.Item>
+					<DropdownMenu.Item onclick={() => {}}>
+						📢 Channel Subscription
+					</DropdownMenu.Item>
+					<DropdownMenu.Item onclick={() => {}}>
+						📋 My Bookings
+					</DropdownMenu.Item>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Item onclick={() => {}}>
+						💬 Support
+					</DropdownMenu.Item>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+
+			<Select.Root>
+				<Select.Trigger class="w-16">PP</Select.Trigger>
+				<Select.Content>
+					<Select.Item value="pp">Phnom Penh</Select.Item>
+					<Select.Item value="shv">Sihanoukville</Select.Item>
+					<Select.Item value="sr">Siem Reap</Select.Item>
+					<Select.Item value="btb">Battambang</Select.Item>
+				</Select.Content>
+			</Select.Root>
+
+			<Select.Root>
+				<Select.Trigger class="w-10">🇺🇸</Select.Trigger>
+				<Select.Content>
+					<Select.Item value="en">🇺🇸 English</Select.Item>
+					<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
+				</Select.Content>
+			</Select.Root>
+		</div>
+
 		{#if currentView === 'main'}
 			<div class="space-y-8">
 				<div class="text-center space-y-4">
@@ -260,5 +312,14 @@
 				onCancel={goToPreviousBookingView}
 			/>
 		{/if}
+
+		<div class="flex justify-between p-4 border-t mt-8">
+			<Button.Root variant="outline" onclick={() => {}}>
+				📱 Add to Home
+			</Button.Root>
+			<Button.Root variant="outline" onclick={() => {}}>
+				📤 Share
+			</Button.Root>
+		</div>
 	</div>
 {/if}
