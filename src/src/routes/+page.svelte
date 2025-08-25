@@ -13,16 +13,35 @@
 	import Brands from '$lib/components/Brands.svelte';
 	import BookingWizard from '$lib/components/BookingWizard.svelte';
 
-	interface TelegramWebApp {
-		ready(): void;
-		initDataUnsafe?: { user?: TelegramUser };
-	}
-
 	interface TelegramUser {
 		id: number;
 		first_name: string;
 		last_name?: string;
 		username?: string;
+		photo_url?: string;
+	}
+
+	interface BottomButton {
+		setParams(params: any): void;
+		onClick(callback: () => void): void;
+	}
+
+	interface ThemeParams {
+		button_color?: string;
+		button_text_color?: string;
+		bottom_bar_bg_color?: string;
+		header_bg_color?: string;
+	}
+
+	interface TelegramWebApp {
+		ready(): void;
+		expand(): void;
+		setHeaderColor(color: string): void;
+		setBottomBarColor(color: string): void;
+		MainButton: BottomButton;
+		SecondaryButton: BottomButton;
+		themeParams: ThemeParams;
+		initDataUnsafe?: { user?: TelegramUser };
 	}
 
 	interface Event {
@@ -45,7 +64,13 @@
 	let isLoading: boolean = $state(true);
 	let error: string | null = $state(null);
 
-	const userInitials = "JD";
+	let headerTheme = $state({
+		backgroundColor: '#f9fafb',
+		textColor: '#1f2937'
+	});
+
+	let selectedCity = $state("pp");
+	let selectedLanguage = $state("en");
 
 	const featuredEvents = [
 		{
@@ -87,6 +112,10 @@
 		}
 	];
 
+	const userInitials = $derived(userInfo 
+		? userInfo.first_name[0] + (userInfo.last_name?.[0] || '')
+		: "JD");
+
 	onMount(() => {
 		try {
 			webApp = window.Telegram?.WebApp;
@@ -94,6 +123,34 @@
 				webApp.ready();
 				webApp.expand();
 				userInfo = webApp.initDataUnsafe?.user;
+
+				webApp.MainButton.setParams({
+					text: "📱 Add to Home",
+					color: webApp.themeParams.button_color || "#6366f1",
+					text_color: webApp.themeParams.button_text_color || "#ffffff",
+					is_active: true,
+					is_visible: true
+				});
+
+				webApp.SecondaryButton.setParams({
+					text: "📤 Share",
+					color: webApp.themeParams.bottom_bar_bg_color || "#6b7280",
+					position: "left",
+					is_active: true,
+					is_visible: true
+				});
+
+				webApp.MainButton.onClick(() => {});
+				webApp.SecondaryButton.onClick(() => {});
+
+				if (webApp.themeParams) {
+					headerTheme = {
+						backgroundColor: webApp.themeParams.header_bg_color || '#f9fafb',
+						textColor: '#1f2937'
+					};
+					webApp.setHeaderColor(headerTheme.backgroundColor);
+					webApp.setBottomBarColor(webApp.themeParams.bottom_bar_bg_color || '#f9fafb');
+				}
 			}
 
 			const startParam = $page.url.searchParams.get('start');
@@ -159,6 +216,9 @@
 				<DropdownMenu.Trigger>
 					{#snippet child({ props })}
 						<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
+							{#if userInfo?.photo_url}
+								<Avatar.Image src={userInfo.photo_url} alt="User" />
+							{/if}
 							<Avatar.Fallback>{userInitials}</Avatar.Fallback>
 						</Avatar.Root>
 					{/snippet}
@@ -182,8 +242,10 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 
-			<Select.Root>
-				<Select.Trigger class="w-16">PP</Select.Trigger>
+			<Select.Root type="single" bind:value={selectedCity}>
+				<Select.Trigger class="w-20">
+					{selectedCity.toUpperCase()}
+				</Select.Trigger>
 				<Select.Content>
 					<Select.Item value="pp">Phnom Penh</Select.Item>
 					<Select.Item value="shv">Sihanoukville</Select.Item>
@@ -192,8 +254,10 @@
 				</Select.Content>
 			</Select.Root>
 
-			<Select.Root>
-				<Select.Trigger class="w-10">🇺🇸</Select.Trigger>
+			<Select.Root type="single" bind:value={selectedLanguage}>
+				<Select.Trigger class="w-14">
+					{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
+				</Select.Trigger>
 				<Select.Content>
 					<Select.Item value="en">🇺🇸 English</Select.Item>
 					<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
@@ -201,125 +265,118 @@
 			</Select.Root>
 		</div>
 
-		{#if currentView === 'main'}
-			<div class="space-y-8">
-				<div class="text-center space-y-4">
-					<h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-						Let's Trojeak
-					</h1>
-					<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
-				</div>
+		<div class="pt-6">
+			{#if currentView === 'main'}
+				<div class="space-y-8">
+					<div class="text-center space-y-4">
+						<h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+							Let's Trojeak
+						</h1>
+						<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
+					</div>
 
-				<div class="grid grid-cols-1 gap-4">
-					<Button.Button 
-						variant="outline" 
-						size="lg" 
-						class="h-auto p-6 justify-start"
-						onclick={() => goToEvents()}
-					>
-						<div class="flex items-center gap-4 w-full">
-							<div class="text-3xl">🎉</div>
-							<div class="flex-1 text-left">
-								<h3 class="text-xl font-bold">Discover Events</h3>
-								<p class="text-sm text-muted-foreground">Live music, parties, and entertainment</p>
-								<div class="flex items-baseline gap-2 mt-1">
-									<span class="text-lg font-bold text-primary">3</span>
-									<span class="text-xs uppercase tracking-wide">Events</span>
-								</div>
-							</div>
-							<div class="text-xl">→</div>
-						</div>
-					</Button.Button>
-
-					<Button.Button 
-						variant="outline" 
-						size="lg" 
-						class="h-auto p-6 justify-start"
-						onclick={goToVenues}
-					>
-						<div class="flex items-center gap-4 w-full">
-							<div class="text-3xl">🏢</div>
-							<div class="flex-1 text-left">
-								<h3 class="text-xl font-bold">Explore Venues</h3>
-								<p class="text-sm text-muted-foreground">Bars, KTVs, and clubs</p>
-								<div class="flex items-baseline gap-2 mt-1">
-									<span class="text-lg font-bold text-primary">3</span>
-									<span class="text-xs uppercase tracking-wide">Venues</span>
-								</div>
-							</div>
-							<div class="text-xl">→</div>
-						</div>
-					</Button.Button>
-
-					<Button.Button 
-						variant="outline" 
-						size="lg" 
-						class="h-auto p-6 justify-start"
-						onclick={goToBrands}
-					>
-						<div class="flex items-center gap-4 w-full">
-							<div class="text-3xl">🍺</div>
-							<div class="flex-1 text-left">
-								<h3 class="text-xl font-bold">Browse Brands</h3>
-								<p class="text-sm text-muted-foreground">Premium drinks and beverages</p>
-								<div class="flex items-baseline gap-2 mt-1">
-									<span class="text-lg font-bold text-primary">2</span>
-									<span class="text-xs uppercase tracking-wide">Brands</span>
-								</div>
-							</div>
-							<div class="text-xl">→</div>
-						</div>
-					</Button.Button>
-				</div>
-
-				<div class="space-y-6">
-					<h2 class="text-2xl font-bold text-center">Featured Events</h2>
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-						{#each featuredEvents as event}
-							<Card.Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvents(event.id)}>
-								<Card.CardHeader>
-									<div class="flex justify-between items-start mb-2">
-										<Card.CardTitle class="text-lg">{event.title}</Card.CardTitle>
-										<Badge.Badge>Featured</Badge.Badge>
+					<div class="grid grid-cols-1 gap-4">
+						<Button.Button 
+							variant="outline" 
+							size="lg" 
+							class="h-auto p-6 justify-start"
+							onclick={() => goToEvents()}
+						>
+							<div class="flex items-center gap-4 w-full">
+								<div class="text-3xl">🎉</div>
+								<div class="flex-1 text-left">
+									<h3 class="text-xl font-bold">Discover Events</h3>
+									<p class="text-sm text-muted-foreground">Live music, parties, and entertainment</p>
+									<div class="flex items-baseline gap-2 mt-1">
+										<span class="text-lg font-bold text-primary">3</span>
+										<span class="text-xs uppercase tracking-wide">Events</span>
 									</div>
-									<p class="text-sm text-muted-foreground">{event.venue_name}</p>
-									<p class="text-sm text-muted-foreground">{event.city}</p>
-								</Card.CardHeader>
-								<Card.CardContent>
-									<p class="text-sm mb-2">{event.description}</p>
-									<p class="text-base font-semibold text-primary">{event.price_range}</p>
-								</Card.CardContent>
-							</Card.Card>
-						{/each}
+								</div>
+								<div class="text-xl">→</div>
+							</div>
+						</Button.Button>
+
+						<Button.Button 
+							variant="outline" 
+							size="lg" 
+							class="h-auto p-6 justify-start"
+							onclick={goToVenues}
+						>
+							<div class="flex items-center gap-4 w-full">
+								<div class="text-3xl">🏢</div>
+								<div class="flex-1 text-left">
+									<h3 class="text-xl font-bold">Explore Venues</h3>
+									<p class="text-sm text-muted-foreground">Bars, KTVs, and clubs</p>
+									<div class="flex items-baseline gap-2 mt-1">
+										<span class="text-lg font-bold text-primary">3</span>
+										<span class="text-xs uppercase tracking-wide">Venues</span>
+									</div>
+								</div>
+								<div class="text-xl">→</div>
+							</div>
+						</Button.Button>
+
+						<Button.Button 
+							variant="outline" 
+							size="lg" 
+							class="h-auto p-6 justify-start"
+							onclick={goToBrands}
+						>
+							<div class="flex items-center gap-4 w-full">
+								<div class="text-3xl">🍺</div>
+								<div class="flex-1 text-left">
+									<h3 class="text-xl font-bold">Browse Brands</h3>
+									<p class="text-sm text-muted-foreground">Premium drinks and beverages</p>
+									<div class="flex items-baseline gap-2 mt-1">
+										<span class="text-lg font-bold text-primary">2</span>
+										<span class="text-xs uppercase tracking-wide">Brands</span>
+									</div>
+								</div>
+								<div class="text-xl">→</div>
+							</div>
+						</Button.Button>
+					</div>
+
+					<div class="space-y-6">
+						<h2 class="text-2xl font-bold text-center">Featured Events</h2>
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							{#each featuredEvents as event}
+								<Card.Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvents(event.id)}>
+									<Card.CardHeader>
+										<div class="flex justify-between items-start mb-2">
+											<Card.CardTitle class="text-lg">{event.title}</Card.CardTitle>
+											<Badge.Badge>Featured</Badge.Badge>
+										</div>
+										<p class="text-sm text-muted-foreground">{event.venue_name}</p>
+										<p class="text-sm text-muted-foreground">{event.city}</p>
+									</Card.CardHeader>
+									<Card.CardContent>
+										<p class="text-sm mb-2">{event.description}</p>
+										<p class="text-base font-semibold text-primary">{event.price_range}</p>
+									</Card.CardContent>
+								</Card.Card>
+							{/each}
+						</div>
 					</div>
 				</div>
-			</div>
-		{:else if currentView === 'events'}
-			<Events initialEventId={selectedEventId} on:goBack={goToMain} on:startBooking={handleStartBooking} />
-		{:else if currentView === 'venues'}
-			<Venues on:goBack={goToMain} />
-		{:else if currentView === 'brands'}
-			<Brands on:goBack={goToMain} />
-		{:else if currentView === 'booking'}
-			<BookingWizard 
-				event={{
-					...selectedEvent,
-					venue_id: 'ven_001',
-					brands: ['brd_001', 'brd_002']
-				}}
-				availableBrands={availableBrands}
-				onComplete={goToPreviousBookingView}
-				onCancel={goToPreviousBookingView}
-			/>
-		{/if}
-
-		<div class="flex justify-between p-4 border-t mt-8">
-			<Button.Root variant="outline" onclick={() => {}}>
-				📱 Add to Home
-			</Button.Root>
-			<Button.Root variant="outline" onclick={() => {}}>
-				📤 Share
-			</Button.Root>
+			{:else if currentView === 'events'}
+				<Events initialEventId={selectedEventId} on:goBack={goToMain} on:startBooking={handleStartBooking} />
+			{:else if currentView === 'venues'}
+				<Venues on:goBack={goToMain} />
+			{:else if currentView === 'brands'}
+				<Brands on:goBack={goToMain} />
+			{:else if currentView === 'booking'}
+				<BookingWizard 
+					event={{
+						...selectedEvent,
+						venue_id: 'ven_001',
+						brands: ['brd_001', 'brd_002']
+					}}
+					availableBrands={availableBrands}
+					onComplete={goToPreviousBookingView}
+					onCancel={goToPreviousBookingView}
+				/>
+			{/if}
 		</div>
 	</div>
 {/if}
