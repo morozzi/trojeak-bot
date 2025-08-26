@@ -10,7 +10,7 @@
 	import * as Separator from '$lib/components/ui/separator/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
-	import { Share2 } from 'lucide-svelte';
+	import { Share2 } from '@lucide/svelte';
 	import LoadingAnimation from '$lib/components/LoadingAnimation.svelte';
 	import Events from '$lib/components/Events.svelte';
 	import Venues from '$lib/components/Venues.svelte';
@@ -345,7 +345,7 @@
 											</div>
 											
 											<div class="text-sm">
-												🏢 <a href="#" class="underline" onclick|stopPropagation={() => {}}>{event.venue_name}</a>
+												🏢 {event.venue_name}
 											</div>
 											
 											<div class="text-sm">🎵 Artist Name</div>
