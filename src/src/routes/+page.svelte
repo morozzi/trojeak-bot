@@ -282,7 +282,7 @@
 									</div>
 								</AspectRatio.Root>
 								
-								<Card.CardContent class="p-4 space-y-4">
+								<Card.CardContent class="p-4 pb-6 space-y-4">
 									<div class="text-sm text-muted-foreground">
 										📅 August 24, 2025 • 📍 {event.city}
 									</div>
