@@ -7,10 +7,6 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import * as Separator from '$lib/components/ui/separator/index.js';
-	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
-	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
-	import { Share2 } from 'lucide-svelte';
 	import LoadingAnimation from '$lib/components/LoadingAnimation.svelte';
 	import Events from '$lib/components/Events.svelte';
 	import Venues from '$lib/components/Venues.svelte';
@@ -25,7 +21,15 @@
 		photo_url?: string;
 	}
 
+	interface BottomButton {
+		setParams(params: any): void;
+		onClick(callback: () => void): void;
+	}
+
 	interface ThemeParams {
+		button_color?: string;
+		button_text_color?: string;
+		bottom_bar_bg_color?: string;
 		header_bg_color?: string;
 	}
 
@@ -33,6 +37,9 @@
 		ready(): void;
 		expand(): void;
 		setHeaderColor(color: string): void;
+		setBottomBarColor(color: string): void;
+		MainButton: BottomButton;
+		SecondaryButton: BottomButton;
 		themeParams: ThemeParams;
 		initDataUnsafe?: { user?: TelegramUser };
 	}
@@ -117,12 +124,32 @@
 				webApp.expand();
 				userInfo = webApp.initDataUnsafe?.user;
 
+				webApp.MainButton.setParams({
+					text: "📱 Add to Home",
+					color: webApp.themeParams.button_color || "#6366f1",
+					text_color: webApp.themeParams.button_text_color || "#ffffff",
+					is_active: true,
+					is_visible: true
+				});
+
+				webApp.SecondaryButton.setParams({
+					text: "📤 Share",
+					color: webApp.themeParams.bottom_bar_bg_color || "#6b7280",
+					position: "left",
+					is_active: true,
+					is_visible: true
+				});
+
+				webApp.MainButton.onClick(() => {});
+				webApp.SecondaryButton.onClick(() => {});
+
 				if (webApp.themeParams) {
 					headerTheme = {
 						backgroundColor: webApp.themeParams.header_bg_color || '#f9fafb',
 						textColor: '#1f2937'
 					};
 					webApp.setHeaderColor(headerTheme.backgroundColor);
+					webApp.setBottomBarColor(webApp.themeParams.bottom_bar_bg_color || '#f9fafb');
 				}
 			}
 
@@ -142,10 +169,22 @@
 		}
 	});
 
-	function goToPage(page: typeof currentView, eventId?: string): void {
-		if (page === 'events') selectedEventId = eventId;
-		if (page === 'main') selectedEventId = undefined;
-		currentView = page;
+	function goToEvents(eventId?: string): void {
+		selectedEventId = eventId;
+		currentView = 'events';
+	}
+
+	function goToVenues(): void {
+		currentView = 'venues';
+	}
+
+	function goToBrands(): void {
+		currentView = 'brands';
+	}
+
+	function goToMain(): void {
+		selectedEventId = undefined;
+		currentView = 'main';
 	}
 
 	function handleStartBooking(event: CustomEvent<{event: Event}>) {
@@ -172,73 +211,61 @@
 	</div>
 {:else}
 	<div class="container mx-auto p-4 max-w-2xl">
-		<div class="flex items-center justify-between py-4">
-			<div class="flex items-center gap-3">
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger>
-						{#snippet child({ props })}
-							<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
-								{#if userInfo?.photo_url}
-									<Avatar.Image src={userInfo.photo_url} alt="User" />
-								{/if}
-								<Avatar.Fallback>{userInitials}</Avatar.Fallback>
-							</Avatar.Root>
-						{/snippet}
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content class="w-56" align="start">
-						<DropdownMenu.Label>My Account</DropdownMenu.Label>
-						<DropdownMenu.Separator />
-						<DropdownMenu.Item onclick={() => {}}>
-							⚙️ Account Settings
-						</DropdownMenu.Item>
-						<DropdownMenu.Item onclick={() => {}}>
-							📢 Channel Subscription
-						</DropdownMenu.Item>
-						<DropdownMenu.Item onclick={() => {}}>
-							📋 My Bookings
-						</DropdownMenu.Item>
-						<DropdownMenu.Separator />
-						<DropdownMenu.Item onclick={() => {}}>
-							💬 Support
-						</DropdownMenu.Item>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
+		<div class="flex items-center justify-between p-4 border-b">
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					{#snippet child({ props })}
+						<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
+							{#if userInfo?.photo_url}
+								<Avatar.Image src={userInfo.photo_url} alt="User" />
+							{/if}
+							<Avatar.Fallback>{userInitials}</Avatar.Fallback>
+						</Avatar.Root>
+					{/snippet}
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content class="w-56" align="start">
+					<DropdownMenu.Label>My Account</DropdownMenu.Label>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Item onclick={() => {}}>
+						⚙️ Account Settings
+					</DropdownMenu.Item>
+					<DropdownMenu.Item onclick={() => {}}>
+						📢 Channel Subscription
+					</DropdownMenu.Item>
+					<DropdownMenu.Item onclick={() => {}}>
+						📋 My Bookings
+					</DropdownMenu.Item>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Item onclick={() => {}}>
+						💬 Support
+					</DropdownMenu.Item>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
 
-				<Select.Root type="single" bind:value={selectedCity}>
-					<Select.Trigger class="w-20">
-						{selectedCity.toUpperCase()}
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Item value="pp">Phnom Penh</Select.Item>
-						<Select.Item value="shv">Sihanoukville</Select.Item>
-						<Select.Item value="sr">Siem Reap</Select.Item>
-						<Select.Item value="btb">Battambang</Select.Item>
-					</Select.Content>
-				</Select.Root>
-			</div>
+			<Select.Root type="single" bind:value={selectedCity}>
+				<Select.Trigger class="w-20">
+					{selectedCity.toUpperCase()}
+				</Select.Trigger>
+				<Select.Content>
+					<Select.Item value="pp">Phnom Penh</Select.Item>
+					<Select.Item value="shv">Sihanoukville</Select.Item>
+					<Select.Item value="sr">Siem Reap</Select.Item>
+					<Select.Item value="btb">Battambang</Select.Item>
+				</Select.Content>
+			</Select.Root>
 
-			<Button.Button variant="ghost" size="sm" onclick={() => {}}>📱</Button.Button>
-
-			<div class="flex items-center gap-3">
-				<Select.Root type="single" bind:value={selectedLanguage}>
-					<Select.Trigger class="w-16">
-						{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Item value="en">🇺🇸 English</Select.Item>
-						<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
-					</Select.Content>
-				</Select.Root>
-
-				<Button.Button variant="ghost" size="sm" onclick={() => {}}>
-					<Share2 size={16} />
-				</Button.Button>
-			</div>
+			<Select.Root type="single" bind:value={selectedLanguage}>
+				<Select.Trigger class="w-14">
+					{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
+				</Select.Trigger>
+				<Select.Content>
+					<Select.Item value="en">🇺🇸 English</Select.Item>
+					<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
+				</Select.Content>
+			</Select.Root>
 		</div>
 
-		<Separator.Separator />
-
-		<div class="pt-6 pb-20">
+		<div class="pt-6">
 			{#if currentView === 'main'}
 				<div class="space-y-8">
 					<div class="text-center space-y-4">
@@ -253,7 +280,7 @@
 							variant="outline" 
 							size="lg" 
 							class="h-auto p-6 justify-start"
-							onclick={() => goToPage('events')}
+							onclick={() => goToEvents()}
 						>
 							<div class="flex items-center gap-4 w-full">
 								<div class="text-3xl">🎉</div>
@@ -273,7 +300,7 @@
 							variant="outline" 
 							size="lg" 
 							class="h-auto p-6 justify-start"
-							onclick={() => goToPage('venues')}
+							onclick={goToVenues}
 						>
 							<div class="flex items-center gap-4 w-full">
 								<div class="text-3xl">🏢</div>
@@ -293,7 +320,7 @@
 							variant="outline" 
 							size="lg" 
 							class="h-auto p-6 justify-start"
-							onclick={() => goToPage('brands')}
+							onclick={goToBrands}
 						>
 							<div class="flex items-center gap-4 w-full">
 								<div class="text-3xl">🍺</div>
@@ -313,91 +340,31 @@
 					<div class="space-y-6">
 						<h2 class="text-2xl font-bold text-center">Featured Events</h2>
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-							{#if featuredEvents.length === 0}
-								<Card.Card>
-									<Skeleton.Skeleton class="h-16 w-full" />
-									<Card.CardContent class="p-4 space-y-2">
-										<Skeleton.Skeleton class="h-4 w-full" />
-										<Skeleton.Skeleton class="h-4 w-3/4" />
-										<Skeleton.Skeleton class="h-4 w-1/2" />
+							{#each featuredEvents as event}
+								<Card.Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvents(event.id)}>
+									<Card.CardHeader>
+										<div class="flex justify-between items-start mb-2">
+											<Card.CardTitle class="text-lg">{event.title}</Card.CardTitle>
+											<Badge.Badge>Featured</Badge.Badge>
+										</div>
+										<p class="text-sm text-muted-foreground">{event.venue_name}</p>
+										<p class="text-sm text-muted-foreground">{event.city}</p>
+									</Card.CardHeader>
+									<Card.CardContent>
+										<p class="text-sm mb-2">{event.description}</p>
+										<p class="text-base font-semibold text-primary">{event.price_range}</p>
 									</Card.CardContent>
 								</Card.Card>
-								<Card.Card>
-									<Skeleton.Skeleton class="h-16 w-full" />
-									<Card.CardContent class="p-4 space-y-2">
-										<Skeleton.Skeleton class="h-4 w-full" />
-										<Skeleton.Skeleton class="h-4 w-3/4" />
-										<Skeleton.Skeleton class="h-4 w-1/2" />
-									</Card.CardContent>
-								</Card.Card>
-							{:else}
-								{#each featuredEvents as event}
-									<Card.Card class="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
-										<AspectRatio.Root ratio={16/4}>
-											<div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white flex items-center justify-center font-medium h-full">
-												[Featured Event Banner - Full Width]
-											</div>
-										</AspectRatio.Root>
-										
-										<Card.CardContent class="p-4 space-y-2">
-											<div class="text-sm text-muted-foreground">
-												📅 August 24, 2025 • 📍 {event.city}
-											</div>
-											
-											<div class="text-sm">
-												🏢 <a href="#" class="underline" onclick|stopPropagation={() => {}}>{event.venue_name}</a>
-											</div>
-											
-											<div class="text-sm">🎵 Artist Name</div>
-											
-											<div class="flex gap-2 items-center">
-												<Avatar.Root class="w-8 h-8 rounded-lg">
-													<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
-												</Avatar.Root>
-												<Avatar.Root class="w-8 h-8 rounded-lg">
-													<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
-												</Avatar.Root>
-												<Avatar.Root class="w-8 h-8 rounded-lg">
-													<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
-												</Avatar.Root>
-												<span class="text-sm text-muted-foreground ml-2">Brand Logos</span>
-											</div>
-											
-											<div class="text-sm">💰 12+2 Schema</div>
-										</Card.CardContent>
-									</Card.Card>
-								{/each}
-							{/if}
-						</div>
-					</div>
-				</div>
-
-				<div class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-40">
-					<div class="container mx-auto max-w-2xl">
-						<div class="flex justify-around py-3">
-							<Button.Button variant="ghost" size="sm" onclick={() => goToPage('events')} class="flex flex-col items-center gap-1">
-								<span class="text-xl">🎉</span>
-								<span class="text-xs">Events</span>
-							</Button.Button>
-							
-							<Button.Button variant="ghost" size="sm" onclick={() => goToPage('venues')} class="flex flex-col items-center gap-1">
-								<span class="text-xl">🏢</span>
-								<span class="text-xs">Venues</span>
-							</Button.Button>
-							
-							<Button.Button variant="ghost" size="sm" onclick={() => goToPage('brands')} class="flex flex-col items-center gap-1">
-								<span class="text-xl">🍺</span>
-								<span class="text-xs">Brands</span>
-							</Button.Button>
+							{/each}
 						</div>
 					</div>
 				</div>
 			{:else if currentView === 'events'}
-				<Events initialEventId={selectedEventId} on:goBack={() => goToPage('main')} on:startBooking={handleStartBooking} />
+				<Events initialEventId={selectedEventId} on:goBack={goToMain} on:startBooking={handleStartBooking} />
 			{:else if currentView === 'venues'}
-				<Venues on:goBack={() => goToPage('main')} />
+				<Venues on:goBack={goToMain} />
 			{:else if currentView === 'brands'}
-				<Brands on:goBack={() => goToPage('main')} />
+				<Brands on:goBack={goToMain} />
 			{:else if currentView === 'booking'}
 				<BookingWizard 
 					event={{
