@@ -177,7 +177,7 @@
 		</Card.Card>
 	</div>
 {:else}
-	<div class="container mx-auto px-4 pt-4 pb-30 max-w-2xl">
+	<div class="container mx-auto px-4 pt-4 pb-28 max-w-2xl">
 		<div class="flex items-center justify-between pb-4">
 			<div class="flex items-center gap-5">
 				<DropdownMenu.Root>
@@ -294,6 +294,7 @@
 									<div class="text-sm">🎵 Artist Name</div>
 									
 									<div class="flex gap-2 items-center">
+										<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
 										<Avatar.Root class="w-8 h-8 rounded-lg">
 											<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
 										</Avatar.Root>
@@ -303,10 +304,7 @@
 										<Avatar.Root class="w-8 h-8 rounded-lg">
 											<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
 										</Avatar.Root>
-										<span class="text-sm text-muted-foreground ml-2">Brand Logos</span>
 									</div>
-									
-									<div class="text-sm">💰 12+2 Schema</div>
 								</Card.CardContent>
 							</Card.Card>
 						{/each}
