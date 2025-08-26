@@ -177,7 +177,7 @@
 		</Card.Card>
 	</div>
 {:else}
-	<div class="container mx-auto px-4 pt-4 pb-32 max-w-2xl">
+	<div class="container mx-auto px-4 pt-4 pb-30 max-w-2xl">
 		<div class="flex items-center justify-between pb-4">
 			<div class="flex items-center gap-5">
 				<DropdownMenu.Root>
@@ -251,7 +251,7 @@
 					<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
 				</div>
 
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 					{#if featuredEvents.length === 0}
 						<Card.Card>
 							<Skeleton.Skeleton class="h-16 w-full" />
@@ -335,7 +335,7 @@
 
 	<div class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-40">
 		<div class="container mx-auto max-w-2xl">
-			<div class="flex justify-around pt-2 pb-4">
+			<div class="flex justify-around pt-4 pb-8">
 				<Button.Button variant="outline" size="sm" onclick={() => goToPage('events')} class="flex flex-col items-center gap-1 px-4 py-2">
 					<span class="text-sm font-medium">Events</span>
 				</Button.Button>
