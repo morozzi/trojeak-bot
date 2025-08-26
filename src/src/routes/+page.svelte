@@ -271,18 +271,18 @@
 						</Card.Card>
 					{:else}
 						{#each featuredEvents as event}
-							<Card.Card class="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
-								<div class="p-4 pb-2">
-									<h3 class="text-lg font-semibold">{event.title}</h3>
-								</div>
+							<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
+								<Card.CardHeader class="gap-0 pb-4">
+									<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
+								</Card.CardHeader>
 								
-								<AspectRatio.Root ratio={16/9}>
+								<AspectRatio.Root class="pb-2" ratio={16/9}>
 									<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
 										Featured Event Banner
 									</div>
 								</AspectRatio.Root>
 								
-								<Card.CardContent class="p-4 space-y-3">
+								<Card.CardContent class="p-4 space-y-4">
 									<div class="text-sm text-muted-foreground">
 										📅 August 24, 2025 • 📍 {event.city}
 									</div>
