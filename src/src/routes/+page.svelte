@@ -121,32 +121,12 @@
 				webApp.expand();
 				userInfo = webApp.initDataUnsafe?.user;
 
-				webApp.MainButton.setParams({
-					text: '📱 Add to Home',
-					color: webApp.themeParams.button_color || '#6366f1',
-					text_color: webApp.themeParams.button_text_color || '#ffffff',
-					is_active: true,
-					is_visible: true
-				});
-
-				webApp.SecondaryButton.setParams({
-					text: '📤 Share',
-					color: webApp.themeParams.bottom_bar_bg_color || '#6b7280',
-					position: 'left',
-					is_active: true,
-					is_visible: true
-				});
-
-				webApp.MainButton.onClick(() => {});
-				webApp.SecondaryButton.onClick(() => {});
-
 				if (webApp.themeParams) {
 					themeParams = {
 						backgroundColor: webApp.themeParams.header_bg_color || '#f9fafb',
 						textColor: '#1f2937'
 					};
 					webApp.setHeaderColor(themeParams.backgroundColor);
-					webApp.setBottomBarColor(webApp.themeParams.bottom_bar_bg_color || '#f9fafb');
 				}
 			}
 
@@ -198,71 +178,71 @@
 	</div>
 {:else}
 	<div class="container mx-auto px-4 pt-6 pb-24 max-w-2xl">
-		{#if currentView === 'main'}
-			<div class="flex items-center justify-between pb-6">
-				<div class="flex items-center gap-3">
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger>
-							{#snippet child({ props })}
-								<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
-									{#if userInfo?.photo_url}
-										<Avatar.Image src={userInfo.photo_url} alt="User" />
-									{/if}
-									<Avatar.Fallback>{userInitials}</Avatar.Fallback>
-								</Avatar.Root>
-							{/snippet}
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content class="w-56" align="start">
-							<DropdownMenu.Label>My Account</DropdownMenu.Label>
-							<DropdownMenu.Separator />
-							<DropdownMenu.Item onclick={() => {}}>
-								⚙️ Account Settings
-							</DropdownMenu.Item>
-							<DropdownMenu.Item onclick={() => {}}>
-								📢 Channel Subscription
-							</DropdownMenu.Item>
-							<DropdownMenu.Item onclick={() => {}}>
-								📋 My Bookings
-							</DropdownMenu.Item>
-							<DropdownMenu.Separator />
-							<DropdownMenu.Item onclick={() => {}}>
-								💬 Support
-							</DropdownMenu.Item>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
+		<div class="flex items-center justify-between pb-6">
+			<div class="flex items-center gap-3">
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						{#snippet child({ props })}
+							<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
+								{#if userInfo?.photo_url}
+									<Avatar.Image src={userInfo.photo_url} alt="User" />
+								{/if}
+								<Avatar.Fallback>{userInitials}</Avatar.Fallback>
+							</Avatar.Root>
+						{/snippet}
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content class="w-56" align="start">
+						<DropdownMenu.Label>My Account</DropdownMenu.Label>
+						<DropdownMenu.Separator />
+						<DropdownMenu.Item onclick={() => {}}>
+							⚙️ Account Settings
+						</DropdownMenu.Item>
+						<DropdownMenu.Item onclick={() => {}}>
+							📢 Channel Subscription
+						</DropdownMenu.Item>
+						<DropdownMenu.Item onclick={() => {}}>
+							📋 My Bookings
+						</DropdownMenu.Item>
+						<DropdownMenu.Separator />
+						<DropdownMenu.Item onclick={() => {}}>
+							💬 Support
+						</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
 
-					<Select.Root type="single" bind:value={selectedCity}>
-						<Select.Trigger class="w-20">
-							{selectedCity.toUpperCase()}
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="pp">Phnom Penh</Select.Item>
-							<Select.Item value="shv">Sihanoukville</Select.Item>
-							<Select.Item value="sr">Siem Reap</Select.Item>
-							<Select.Item value="btb">Battambang</Select.Item>
-						</Select.Content>
-					</Select.Root>
-				</div>
-
-				<div class="flex items-center gap-3">
-					<Select.Root type="single" bind:value={selectedLanguage}>
-						<Select.Trigger class="w-16">
-							{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="en">🇺🇸 English</Select.Item>
-							<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
-						</Select.Content>
-					</Select.Root>
-
-					<Button.Button variant="ghost" size="sm" onclick={() => {}}>
-						<Share2 size={16} />
-					</Button.Button>
-				</div>
+				<Select.Root type="single" bind:value={selectedCity}>
+					<Select.Trigger class="w-20">
+						{selectedCity.toUpperCase()}
+					</Select.Trigger>
+					<Select.Content>
+						<Select.Item value="pp">Phnom Penh</Select.Item>
+						<Select.Item value="shv">Sihanoukville</Select.Item>
+						<Select.Item value="sr">Siem Reap</Select.Item>
+						<Select.Item value="btb">Battambang</Select.Item>
+					</Select.Content>
+				</Select.Root>
 			</div>
 
-			<Separator.Separator />
+			<div class="flex items-center gap-3">
+				<Select.Root type="single" bind:value={selectedLanguage}>
+					<Select.Trigger class="w-16">
+						{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
+					</Select.Trigger>
+					<Select.Content>
+						<Select.Item value="en">🇺🇸 English</Select.Item>
+						<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
+					</Select.Content>
+				</Select.Root>
 
+				<Button.Button variant="ghost" size="sm" onclick={() => {}}>
+					<Share2 size={16} />
+				</Button.Button>
+			</div>
+		</div>
+
+		<Separator.Separator />
+
+		{#if currentView === 'main'}
 			<div class="space-y-8 pt-6">
 				<div class="text-center space-y-4">
 					<h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -271,87 +251,66 @@
 					<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
 				</div>
 
-				<div class="space-y-6">
-					<h2 class="text-2xl font-bold text-center">Featured Events</h2>
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-						{#if featuredEvents.length === 0}
-							<Card.Card>
-								<Skeleton.Skeleton class="h-16 w-full" />
-								<Card.CardContent class="p-4 space-y-2">
-									<Skeleton.Skeleton class="h-4 w-full" />
-									<Skeleton.Skeleton class="h-4 w-3/4" />
-									<Skeleton.Skeleton class="h-4 w-1/2" />
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					{#if featuredEvents.length === 0}
+						<Card.Card>
+							<Skeleton.Skeleton class="h-16 w-full" />
+							<Card.CardContent class="p-4 space-y-2">
+								<Skeleton.Skeleton class="h-4 w-full" />
+								<Skeleton.Skeleton class="h-4 w-3/4" />
+								<Skeleton.Skeleton class="h-4 w-1/2" />
+							</Card.CardContent>
+						</Card.Card>
+						<Card.Card>
+							<Skeleton.Skeleton class="h-16 w-full" />
+							<Card.CardContent class="p-4 space-y-2">
+								<Skeleton.Skeleton class="h-4 w-full" />
+								<Skeleton.Skeleton class="h-4 w-3/4" />
+								<Skeleton.Skeleton class="h-4 w-1/2" />
+							</Card.CardContent>
+						</Card.Card>
+					{:else}
+						{#each featuredEvents as event}
+							<Card.Card class="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
+								<div class="p-4 pb-2">
+									<h3 class="text-lg font-semibold">{event.title}</h3>
+								</div>
+								
+								<AspectRatio.Root ratio={16/9}>
+									<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+										Featured Event Banner
+									</div>
+								</AspectRatio.Root>
+								
+								<Card.CardContent class="p-4 space-y-3">
+									<div class="text-sm text-muted-foreground">
+										📅 August 24, 2025 • 📍 {event.city}
+									</div>
+									
+									<div class="text-sm">
+										🏢 {event.venue_name}
+									</div>
+									
+									<div class="text-sm">🎵 Artist Name</div>
+									
+									<div class="flex gap-2 items-center">
+										<Avatar.Root class="w-8 h-8 rounded-lg">
+											<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
+										</Avatar.Root>
+										<Avatar.Root class="w-8 h-8 rounded-lg">
+											<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
+										</Avatar.Root>
+										<Avatar.Root class="w-8 h-8 rounded-lg">
+											<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
+										</Avatar.Root>
+										<span class="text-sm text-muted-foreground ml-2">Brand Logos</span>
+									</div>
+									
+									<div class="text-sm">💰 12+2 Schema</div>
 								</Card.CardContent>
 							</Card.Card>
-							<Card.Card>
-								<Skeleton.Skeleton class="h-16 w-full" />
-								<Card.CardContent class="p-4 space-y-2">
-									<Skeleton.Skeleton class="h-4 w-full" />
-									<Skeleton.Skeleton class="h-4 w-3/4" />
-									<Skeleton.Skeleton class="h-4 w-1/2" />
-								</Card.CardContent>
-							</Card.Card>
-						{:else}
-							{#each featuredEvents as event}
-								<Card.Card class="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
-									<Card.CardHeader class="pb-2">
-										<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
-									</Card.CardHeader>
-									
-									<AspectRatio.Root ratio={16/4}>
-										<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
-											Featured Event Banner
-										</div>
-									</AspectRatio.Root>
-									
-									<Card.CardContent class="p-4 space-y-1">
-										<div class="text-sm text-muted-foreground">
-											📅 August 24, 2025 • 📍 {event.city}
-										</div>
-										
-										<div class="text-sm">
-											🏢 {event.venue_name}
-										</div>
-										
-										<div class="text-sm">🎵 Artist Name</div>
-										
-										<div class="flex gap-2 items-center">
-											<Avatar.Root class="w-8 h-8 rounded-lg">
-												<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
-											</Avatar.Root>
-											<Avatar.Root class="w-8 h-8 rounded-lg">
-												<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
-											</Avatar.Root>
-											<Avatar.Root class="w-8 h-8 rounded-lg">
-												<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
-											</Avatar.Root>
-											<span class="text-sm text-muted-foreground ml-2">Brand Logos</span>
-										</div>
-										
-										<div class="text-sm">💰 12+2 Schema</div>
-									</Card.CardContent>
-								</Card.Card>
-							{/each}
-						{/if}
-					</div>
-				</div>
-			</div>
-
-			<div class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-40">
-				<div class="container mx-auto max-w-2xl">
-					<div class="flex justify-around py-4">
-						<Button.Button variant="outline" size="sm" onclick={() => goToPage('events')} class="flex flex-col items-center gap-1 px-4 py-2">
-							<span class="text-sm font-medium">Events</span>
-						</Button.Button>
-						
-						<Button.Button variant="outline" size="sm" onclick={() => goToPage('venues')} class="flex flex-col items-center gap-1 px-4 py-2">
-							<span class="text-sm font-medium">Venues</span>
-						</Button.Button>
-						
-						<Button.Button variant="outline" size="sm" onclick={() => goToPage('brands')} class="flex flex-col items-center gap-1 px-4 py-2">
-							<span class="text-sm font-medium">Brands</span>
-						</Button.Button>
-					</div>
+						{/each}
+					{/if}
 				</div>
 			</div>
 		{:else if currentView === 'events'}
@@ -372,5 +331,23 @@
 				onCancel={goToPreviousBookingView}
 			/>
 		{/if}
+	</div>
+
+	<div class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-40">
+		<div class="container mx-auto max-w-2xl">
+			<div class="flex justify-around py-4">
+				<Button.Button variant="outline" size="sm" onclick={() => goToPage('events')} class="flex flex-col items-center gap-1 px-4 py-2">
+					<span class="text-sm font-medium">Events</span>
+				</Button.Button>
+				
+				<Button.Button variant="outline" size="sm" onclick={() => goToPage('venues')} class="flex flex-col items-center gap-1 px-4 py-2">
+					<span class="text-sm font-medium">Venues</span>
+				</Button.Button>
+				
+				<Button.Button variant="outline" size="sm" onclick={() => goToPage('brands')} class="flex flex-col items-center gap-1 px-4 py-2">
+					<span class="text-sm font-medium">Brands</span>
+				</Button.Button>
+			</div>
+		</div>
 	</div>
 {/if}
