@@ -261,14 +261,6 @@
 								<Skeleton.Skeleton class="h-4 w-1/2" />
 							</Card.CardContent>
 						</Card.Card>
-						<Card.Card>
-							<Skeleton.Skeleton class="h-16 w-full" />
-							<Card.CardContent class="p-4 space-y-2">
-								<Skeleton.Skeleton class="h-4 w-full" />
-								<Skeleton.Skeleton class="h-4 w-3/4" />
-								<Skeleton.Skeleton class="h-4 w-1/2" />
-							</Card.CardContent>
-						</Card.Card>
 					{:else}
 						{#each featuredEvents as event}
 							<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
