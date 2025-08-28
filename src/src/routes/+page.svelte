@@ -112,6 +112,18 @@
 		userInfo.first_name[0] + (userInfo.last_name?.[0] || '') : 
 		'JD'
 	);
+	
+	function handleShareToStory() {
+		if (!webApp?.shareToStory) return;
+		
+		webApp.shareToStory('https://trojeak.morozzi.com', {
+			text: 'Check out Trojeak - Cambodia #1 event app!',
+			widget_link: {
+				url: 'https://trojeak.morozzi.com',
+				name: 'Book Events'
+			}
+		});
+	}
 
 	onMount(() => {
 		try {
@@ -234,7 +246,7 @@
 					</Select.Content>
 				</Select.Root>
 
-				<Button.Button variant="ghost" size="sm" onclick={() => {}}>
+				<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
 					<Share2 size={16} />
 				</Button.Button>
 			</div>
@@ -303,6 +315,24 @@
 					{/if}
 				</div>
 			</div>
+			
+			<div class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-40">
+				<div class="container mx-auto max-w-2xl">
+					<div class="flex justify-around pt-4 pb-8">
+						<Button.Button variant="outline" size="sm" onclick={() => goToPage('events')} class="flex flex-col items-center gap-1 px-4 py-2">
+							<span class="text-sm font-medium">Events</span>
+						</Button.Button>
+				
+						<Button.Button variant="outline" size="sm" onclick={() => goToPage('venues')} class="flex flex-col items-center gap-1 px-4 py-2">
+							<span class="text-sm font-medium">Venues</span>
+						</Button.Button>
+				
+						<Button.Button variant="outline" size="sm" onclick={() => goToPage('brands')} class="flex flex-col items-center gap-1 px-4 py-2">
+							<span class="text-sm font-medium">Brands</span>
+						</Button.Button>
+					</div>
+				</div>
+			</div>
 		{:else if currentView === 'events'}
 			<Events initialEventId={selectedEventId} on:goBack={() => goToPage('main')} on:startBooking={handleStartBooking} />
 		{:else if currentView === 'venues'}
@@ -321,23 +351,5 @@
 				onCancel={goToPreviousBookingView}
 			/>
 		{/if}
-	</div>
-
-	<div class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-40">
-		<div class="container mx-auto max-w-2xl">
-			<div class="flex justify-around pt-4 pb-8">
-				<Button.Button variant="outline" size="sm" onclick={() => goToPage('events')} class="flex flex-col items-center gap-1 px-4 py-2">
-					<span class="text-sm font-medium">Events</span>
-				</Button.Button>
-				
-				<Button.Button variant="outline" size="sm" onclick={() => goToPage('venues')} class="flex flex-col items-center gap-1 px-4 py-2">
-					<span class="text-sm font-medium">Venues</span>
-				</Button.Button>
-				
-				<Button.Button variant="outline" size="sm" onclick={() => goToPage('brands')} class="flex flex-col items-center gap-1 px-4 py-2">
-					<span class="text-sm font-medium">Brands</span>
-				</Button.Button>
-			</div>
-		</div>
 	</div>
 {/if}
