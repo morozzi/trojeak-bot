@@ -318,18 +318,28 @@
 			
 			<div class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-40">
 				<div class="container mx-auto max-w-2xl">
-					<div class="flex justify-around pt-4 pb-8">
-						<Button.Button variant="outline" size="sm" onclick={() => goToPage('events')} class="flex flex-col items-center gap-1 px-4 py-2">
-							<span class="text-sm font-medium">Events</span>
-						</Button.Button>
-				
-						<Button.Button variant="outline" size="sm" onclick={() => goToPage('venues')} class="flex flex-col items-center gap-1 px-4 py-2">
-							<span class="text-sm font-medium">Venues</span>
-						</Button.Button>
-				
-						<Button.Button variant="outline" size="sm" onclick={() => goToPage('brands')} class="flex flex-col items-center gap-1 px-4 py-2">
-							<span class="text-sm font-medium">Brands</span>
-						</Button.Button>
+					<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
+					
+						<!-- Left slot (empty for this page; add items later) -->
+      			<div class="flex items-center gap-4 justify-start"></div>
+      			
+						<!-- Center slot (always centered) -->
+      			<div class="flex items-center gap-4 justify-center">
+      				<Button.Button variant="outline" size="sm" onclick={() => goToPage('events')} class="flex flex-col items-center gap-1 px-4 py-2">
+          			<span class="text-sm font-medium">Events</span>
+        			</Button.Button>
+        			
+      				<Button.Button variant="outline" size="sm" onclick={() => goToPage('venues')} class="flex flex-col items-center gap-1 px-4 py-2">
+								<span class="text-sm font-medium">Venues</span>
+							</Button.Button>
+							
+							<Button.Button variant="outline" size="sm" onclick={() => goToPage('brands')} class="flex flex-col items-center gap-1 px-4 py-2">
+								<span class="text-sm font-medium">Brands</span>
+							</Button.Button>
+      			</div>
+						
+						<!-- Right slot (empty for this page; add items later) -->
+      			<div class="flex items-center gap-4 justify-end"></div>
 					</div>
 				</div>
 			</div>
