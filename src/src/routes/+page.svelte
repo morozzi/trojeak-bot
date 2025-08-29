@@ -252,10 +252,10 @@
 			</div>
 		</div>
 
-		<Separator.Separator />
+		<Separator.Separator class="mb-6" />
 
 		{#if currentView === 'main'}
-			<div class="space-y-8 pt-6">
+			<div class="space-y-8">
 				<div class="text-center space-y-4">
 					<h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
 						Let's Trojeak
