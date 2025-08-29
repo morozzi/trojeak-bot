@@ -320,11 +320,11 @@
 				<div class="container mx-auto max-w-2xl">
 					<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 					
-						<!-- Left slot (empty for this page; add items later) -->
-      			<div class="flex items-center gap-4 justify-start"></div>
+						<!-- Left slot (always left; empty for this page) -->
+      			<div class="flex items-center gap-6 justify-start"></div>
       			
 						<!-- Center slot (always centered) -->
-      			<div class="flex items-center gap-4 justify-center">
+      			<div class="flex items-center gap-6 justify-center">
       				<Button.Button variant="outline" size="sm" onclick={() => goToPage('events')} class="flex flex-col items-center gap-1 px-4 py-2">
           			<span class="text-sm font-medium">Events</span>
         			</Button.Button>
@@ -338,8 +338,8 @@
 							</Button.Button>
       			</div>
 						
-						<!-- Right slot (empty for this page; add items later) -->
-      			<div class="flex items-center gap-4 justify-end"></div>
+						<!-- Right slot (always right; empty for this page) -->
+      			<div class="flex items-center gap-6 justify-end"></div>
 					</div>
 				</div>
 			</div>
