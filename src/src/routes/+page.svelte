@@ -276,7 +276,7 @@
 			</div>
 		</header>
 
-		<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)]">
+		<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)] mb-8">
 			{#if currentView === 'main'}
 				<div class="space-y-8">
 					<div class="text-center space-y-4">
