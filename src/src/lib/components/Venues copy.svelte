@@ -48,6 +48,15 @@
 			address: 'Otres Beach, Sihanoukville',
 			featured: true,
 			description: 'Beachfront club with live music and tropical atmosphere.'
+		},
+		{
+			id: 'ven_004',
+			name: 'Temple Club',
+			type: 'club',
+			city: 'Siem Reap',
+			address: 'Pub Street, Siem Reap',
+			featured: false,
+			description: 'Historic venue with traditional Khmer architecture and modern amenities.'
 		}
 	];
 
@@ -66,12 +75,9 @@
 	}
 </script>
 
-<div class="space-y-6">
+<div class="space-y-8">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<Button.Button variant="outline" onclick={goBack}>
-				← Back to Main
-			</Button.Button>
 			<h1 class="text-3xl font-bold">Venues ({venues.length})</h1>
 		</div>
 		
@@ -88,10 +94,13 @@
 								{/if}
 							</div>
 						</div>
-						<p class="text-muted-foreground">{venue.city} • {venue.address}</p>
 					</Card.CardHeader>
 					<Card.CardContent>
-						<p>{venue.description}</p>
+						<div class="space-y-2">
+							<p class="text-sm text-muted-foreground">📍 {venue.address}</p>
+							<p class="text-sm text-muted-foreground">🏙️ {venue.city}</p>
+							<p>{venue.description}</p>
+						</div>
 					</Card.CardContent>
 				</Card.Card>
 			{/each}
@@ -99,11 +108,8 @@
 	{:else if viewMode === 'detail' && selectedVenueId}
 		{@const selectedVenue = venues.find(v => v.id === selectedVenueId)}
 		{#if selectedVenue}
-			<div class="space-y-6">
+			<div class="space-y-8">
 				<div class="flex justify-between items-center">
-					<Button.Button variant="outline" onclick={goToList}>
-						← Back to Venues
-					</Button.Button>
 					<div class="flex gap-2">
 						<Badge.Badge variant="secondary">{selectedVenue.type.toUpperCase()}</Badge.Badge>
 						{#if selectedVenue.featured}
@@ -115,18 +121,44 @@
 				<h1 class="text-3xl font-bold">{selectedVenue.name}</h1>
 				
 				<Card.Card>
-					<Card.CardContent class="p-6">
-						<div class="space-y-4">
-							<div>
-								<p class="text-muted-foreground"><span class="font-semibold">Type:</span> {selectedVenue.type.charAt(0).toUpperCase() + selectedVenue.type.slice(1)}</p>
-								<p class="text-muted-foreground"><span class="font-semibold">Location:</span> {selectedVenue.city}</p>
-								<p class="text-muted-foreground"><span class="font-semibold">Address:</span> {selectedVenue.address}</p>
-							</div>
-							<p>{selectedVenue.description}</p>
+					<Card.CardContent class="p-6 space-y-4">
+						<div class="space-y-2">
+							<p class="text-sm text-muted-foreground">📍 {selectedVenue.address}</p>
+							<p class="text-sm text-muted-foreground">🏙️ {selectedVenue.city}</p>
 						</div>
+						<p>{selectedVenue.description}</p>
+					</Card.CardContent>
+				</Card.Card>
+
+				<Card.Card>
+					<Card.CardHeader>
+						<Card.CardTitle>Upcoming Events</Card.CardTitle>
+					</Card.CardHeader>
+					<Card.CardContent>
+						<p class="text-muted-foreground">No upcoming events at this venue.</p>
 					</Card.CardContent>
 				</Card.Card>
 			</div>
 		{/if}
 	{/if}
 </div>
+
+<nav class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
+	<div class="mx-auto w-full max-w-2xl px-4">
+		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
+			<div class="flex items-center justify-start">
+				{#if viewMode === 'list'}
+					<Button.Button variant="outline" onclick={goBack}>
+						← Back to Main
+					</Button.Button>
+				{:else}
+					<Button.Button variant="outline" onclick={goToList}>
+						← Back to Venues
+					</Button.Button>
+				{/if}
+			</div>
+			<div class="flex items-center justify-center"></div>
+			<div class="flex items-center justify-end"></div>
+		</div>
+	</div>
+</nav>

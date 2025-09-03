@@ -75,14 +75,15 @@
 	function goBack(): void {
 		dispatch('goBack');
 	}
+
+	function startBooking(event: Event): void {
+		dispatch('startBooking', { event });
+	}
 </script>
 
-<div class="space-y-6">
+<div class="space-y-8">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<Button.Button variant="outline" onclick={goBack}>
-				← Back to Main
-			</Button.Button>
 			<h1 class="text-3xl font-bold">Events ({events.length})</h1>
 		</div>
 		
@@ -92,15 +93,21 @@
 					<Card.CardHeader>
 						<div class="flex justify-between items-start">
 							<Card.CardTitle>{event.title}</Card.CardTitle>
-							{#if event.featured}
-								<Badge.Badge>Featured</Badge.Badge>
-							{/if}
+							<div class="flex gap-2">
+								<Badge.Badge variant="secondary">{event.city}</Badge.Badge>
+								{#if event.featured}
+									<Badge.Badge>Featured</Badge.Badge>
+								{/if}
+							</div>
 						</div>
-						<p class="text-muted-foreground">{event.venue_name} • {event.city}</p>
 					</Card.CardHeader>
 					<Card.CardContent>
-						<p class="mb-2">{event.description}</p>
-						<p class="font-semibold text-primary">{event.price_range}</p>
+						<div class="space-y-2">
+							<p class="text-sm text-muted-foreground">📍 {event.venue_name}</p>
+							<p class="text-sm text-muted-foreground">💰 {event.price_range}</p>
+							<p class="text-sm text-muted-foreground">📅 {event.date}</p>
+							<p>{event.description}</p>
+						</div>
 					</Card.CardContent>
 				</Card.Card>
 			{/each}
@@ -108,35 +115,52 @@
 	{:else if viewMode === 'detail' && selectedEventId}
 		{@const selectedEvent = events.find(e => e.id === selectedEventId)}
 		{#if selectedEvent}
-			<div class="space-y-6">
+			<div class="space-y-8">
 				<div class="flex justify-between items-center">
-					<Button.Button variant="outline" onclick={goToList}>
-						← Back to Events
-					</Button.Button>
-					{#if selectedEvent.featured}
-						<Badge.Badge>Featured</Badge.Badge>
-					{/if}
+					<div class="flex gap-2">
+						<Badge.Badge variant="secondary">{selectedEvent.city}</Badge.Badge>
+						{#if selectedEvent.featured}
+							<Badge.Badge>Featured</Badge.Badge>
+						{/if}
+					</div>
 				</div>
 
 				<h1 class="text-3xl font-bold">{selectedEvent.title}</h1>
 				
 				<Card.Card>
-					<Card.CardContent class="p-6">
-						<div class="space-y-4">
-							<div>
-								<p class="text-muted-foreground"><span class="font-semibold">Venue:</span> {selectedEvent.venue_name}</p>
-								<p class="text-muted-foreground"><span class="font-semibold">Location:</span> {selectedEvent.city}</p>
-								<p class="text-muted-foreground"><span class="font-semibold">Date:</span> {selectedEvent.date}</p>
-								<p class="text-muted-foreground"><span class="font-semibold">Price Range:</span> {selectedEvent.price_range}</p>
-							</div>
-							<p>{selectedEvent.description}</p>
-							<Button.Button class="w-full" onclick={() => dispatch('startBooking', { event: selectedEvent })}>
-								Book This Event
-							</Button.Button>
+					<Card.CardContent class="p-6 space-y-4">
+						<div class="space-y-2">
+							<p class="text-sm text-muted-foreground">📍 {selectedEvent.venue_name}</p>
+							<p class="text-sm text-muted-foreground">💰 {selectedEvent.price_range}</p>
+							<p class="text-sm text-muted-foreground">📅 {selectedEvent.date}</p>
 						</div>
+						<p>{selectedEvent.description}</p>
+						<Button.Button onclick={() => startBooking(selectedEvent)} class="w-full">
+							Book This Event
+						</Button.Button>
 					</Card.CardContent>
 				</Card.Card>
 			</div>
 		{/if}
 	{/if}
 </div>
+
+<nav class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
+	<div class="mx-auto w-full max-w-2xl px-4">
+		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
+			<div class="flex items-center justify-start">
+				{#if viewMode === 'list'}
+					<Button.Button variant="outline" onclick={goBack}>
+						← Back to Main
+					</Button.Button>
+				{:else}
+					<Button.Button variant="outline" onclick={goToList}>
+						← Back to Events
+					</Button.Button>
+				{/if}
+			</div>
+			<div class="flex items-center justify-center"></div>
+			<div class="flex items-center justify-end"></div>
+		</div>
+	</div>
+</nav>

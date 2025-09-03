@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import type { WebApp } from '@twa-dev/sdk';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
@@ -210,75 +209,73 @@
 			</Card.Card>
 		</div>
 	{:else}
-		{#if currentView !== 'booking'}
-			<header class="mx-auto w-full max-w-2xl px-4 pt-4 pb-4">
-				<div class="grid grid-cols-[1fr_auto_1fr] items-center pb-4">
-					<div class="flex items-center gap-5 justify-start">
-						<DropdownMenu.Root>
-							<DropdownMenu.Trigger>
-								{#snippet child({ props })}
-									<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
-										{#if userInfo?.photo_url}
-											<Avatar.Image src={userInfo.photo_url} alt="User" />
-										{/if}
-										<Avatar.Fallback>{userInitials}</Avatar.Fallback>
-									</Avatar.Root>
-								{/snippet}
-							</DropdownMenu.Trigger>
-							<DropdownMenu.Content class="w-56 z-[60]" align="start">
-								<DropdownMenu.Label>My Account</DropdownMenu.Label>
-								<DropdownMenu.Separator />
-								<DropdownMenu.Item onclick={() => {}}>
-									⚙️ Account Settings
-								</DropdownMenu.Item>
-								<DropdownMenu.Item onclick={() => {}}>
-									📢 Channel Subscription
-								</DropdownMenu.Item>
-								<DropdownMenu.Item onclick={() => {}}>
-									📋 My Bookings
-								</DropdownMenu.Item>
-								<DropdownMenu.Separator />
-								<DropdownMenu.Item onclick={() => {}}>
-									💬 Support
-								</DropdownMenu.Item>
-							</DropdownMenu.Content>
-						</DropdownMenu.Root>
+		<header class="mx-auto w-full max-w-2xl px-4 pt-4 pb-4">
+			<div class="grid grid-cols-[1fr_auto_1fr] items-center pb-4">
+				<div class="flex items-center gap-5 justify-start">
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger>
+							{#snippet child({ props })}
+								<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
+									{#if userInfo?.photo_url}
+										<Avatar.Image src={userInfo.photo_url} alt="User" />
+									{/if}
+									<Avatar.Fallback>{userInitials}</Avatar.Fallback>
+								</Avatar.Root>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content class="w-56 z-[60]" align="start">
+							<DropdownMenu.Label>My Account</DropdownMenu.Label>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item onclick={() => {}}>
+								⚙️ Account Settings
+							</DropdownMenu.Item>
+							<DropdownMenu.Item onclick={() => {}}>
+								📢 Channel Subscription
+							</DropdownMenu.Item>
+							<DropdownMenu.Item onclick={() => {}}>
+								📋 My Bookings
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item onclick={() => {}}>
+								💬 Support
+							</DropdownMenu.Item>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
 
-						<Select.Root type="single" bind:value={selectedCity}>
-							<Select.Trigger class="w-20">
-								{selectedCity.toUpperCase()}
-							</Select.Trigger>
-							<Select.Content>
-								<Select.Item value="pp">Phnom Penh</Select.Item>
-								<Select.Item value="shv">Sihanoukville</Select.Item>
-								<Select.Item value="sr">Siem Reap</Select.Item>
-								<Select.Item value="btb">Battambang</Select.Item>
-							</Select.Content>
-						</Select.Root>
-					</div>
-
-					<div class="flex items-center justify-center">
-					</div>
-
-					<div class="flex items-center gap-2 justify-end">
-						<Select.Root type="single" bind:value={selectedLanguage}>
-							<Select.Trigger class="w-16">
-								{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
-							</Select.Trigger>
-							<Select.Content>
-								<Select.Item value="en">🇺🇸 English</Select.Item>
-								<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
-							</Select.Content>
-						</Select.Root>
-
-						<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
-							<Share2 size={16} />
-						</Button.Button>
-					</div>
+					<Select.Root type="single" bind:value={selectedCity}>
+						<Select.Trigger class="w-20">
+							{selectedCity.toUpperCase()}
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Item value="pp">Phnom Penh</Select.Item>
+							<Select.Item value="shv">Sihanoukville</Select.Item>
+							<Select.Item value="sr">Siem Reap</Select.Item>
+							<Select.Item value="btb">Battambang</Select.Item>
+						</Select.Content>
+					</Select.Root>
 				</div>
-				<Separator.Separator class="mb-6" />
-			</header>
-		{/if}
+
+				<div class="flex items-center justify-center">
+				</div>
+
+				<div class="flex items-center gap-2 justify-end">
+					<Select.Root type="single" bind:value={selectedLanguage}>
+						<Select.Trigger class="w-16">
+							{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Item value="en">🇺🇸 English</Select.Item>
+							<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
+						</Select.Content>
+					</Select.Root>
+
+					<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
+						<Share2 size={16} />
+					</Button.Button>
+				</div>
+			</div>
+			<Separator.Separator class="mb-6" />
+		</header>
 
 		<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)] mb-8">
 			{#if currentView === 'main'}
@@ -304,14 +301,7 @@
 							{#each featuredEvents as event}
 								<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
 									<Card.CardHeader class="gap-0 pb-4">
-										<div class="flex justify-between items-start">
-											<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
-											<div class="flex gap-2">
-												{#if event.featured}
-													<Badge.Badge>Featured</Badge.Badge>
-												{/if}
-											</div>
-										</div>
+										<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
 									</Card.CardHeader>
 									
 									<AspectRatio.Root class="pb-2" ratio={16/9}>

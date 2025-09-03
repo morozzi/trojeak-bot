@@ -2,6 +2,9 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Badge from '$lib/components/ui/badge/index.js';
+	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
+	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import { createEventDispatcher } from 'svelte';
 
 	interface Brand {
@@ -68,47 +71,124 @@
 <div class="space-y-8">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<h1 class="text-3xl font-bold">Brands ({brands.length})</h1>
+			<h1 class="text-3xl font-bold">Brands</h1>
 		</div>
 		
 		<div class="grid gap-4">
-			{#each brands as brand}
-				<Card.Card class="cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectBrand(brand.id)}>
-					<Card.CardHeader>
-						<div class="flex justify-between items-start">
-							<Card.CardTitle>{brand.name}</Card.CardTitle>
-							<div class="flex gap-2">
-								<Badge.Badge variant="secondary">{brand.type.toUpperCase()}</Badge.Badge>
-								{#if brand.featured}
-									<Badge.Badge>Featured</Badge.Badge>
-								{/if}
-							</div>
-						</div>
-					</Card.CardHeader>
-					<Card.CardContent>
-						<p>{brand.description}</p>
+			{#if brands.length === 0}
+				<Card.Card>
+					<Skeleton.Skeleton class="h-16 w-full" />
+					<Card.CardContent class="p-4 space-y-2">
+						<Skeleton.Skeleton class="h-4 w-full" />
+						<Skeleton.Skeleton class="h-4 w-3/4" />
+						<Skeleton.Skeleton class="h-4 w-1/2" />
 					</Card.CardContent>
 				</Card.Card>
-			{/each}
+			{:else}
+				{#each brands as brand}
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectBrand(brand.id)}>
+						<Card.CardHeader class="gap-0 pb-4">
+							<div class="flex justify-between items-start">
+								<Card.CardTitle class="text-lg font-semibold">{brand.name}</Card.CardTitle>
+								<div class="flex gap-2">
+									<Badge.Badge variant="secondary">{brand.type.toUpperCase()}</Badge.Badge>
+									{#if brand.featured}
+										<Badge.Badge>Featured</Badge.Badge>
+									{/if}
+								</div>
+							</div>
+						</Card.CardHeader>
+						
+						{#if brand.featured}
+							<AspectRatio.Root class="pb-2" ratio={16/9}>
+								<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+									Featured Brand Banner
+								</div>
+							</AspectRatio.Root>
+						{/if}
+
+						<Card.CardContent class="p-4 pb-4 space-y-4">
+							<div class="text-sm text-muted-foreground">
+								🍺 {brand.type.toUpperCase()}
+							</div>
+
+							<p>{brand.description}</p>
+						</Card.CardContent>
+					</Card.Card>
+				{/each}
+			{/if}
 		</div>
 	{:else if viewMode === 'detail' && selectedBrandId}
 		{@const selectedBrand = brands.find(b => b.id === selectedBrandId)}
 		{#if selectedBrand}
 			<div class="space-y-8">
-				<div class="flex justify-between items-center">
-					<div class="flex gap-2">
-						<Badge.Badge variant="secondary">{selectedBrand.type.toUpperCase()}</Badge.Badge>
-						{#if selectedBrand.featured}
-							<Badge.Badge>Featured</Badge.Badge>
-						{/if}
-					</div>
-				</div>
+				{#if selectedBrand.featured}
+					<AspectRatio.Root class="pb-2" ratio={16/9}>
+						<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+							Featured Brand Banner
+						</div>
+					</AspectRatio.Root>
+				{/if}
 
 				<h1 class="text-3xl font-bold">{selectedBrand.name}</h1>
+				<div class="flex gap-2">
+					<Badge.Badge variant="secondary">{selectedBrand.type.toUpperCase()}</Badge.Badge>
+					{#if selectedBrand.featured}
+						<Badge.Badge>Featured</Badge.Badge>
+					{/if}
+				</div>
 				
 				<Card.Card>
 					<Card.CardContent class="p-6">
 						<p>{selectedBrand.description}</p>
+					</Card.CardContent>
+				</Card.Card>
+
+				<Card.Card>
+					<Card.CardHeader>
+						<Card.CardTitle>Upcoming Events</Card.CardTitle>
+					</Card.CardHeader>
+					<Card.CardContent>
+						{#if selectedBrand.featured}
+							<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
+								<Card.CardHeader class="gap-0 pb-4">
+									<Card.CardTitle class="text-lg font-semibold">Weekend Beach Club</Card.CardTitle>
+								</Card.CardHeader>
+								
+								<AspectRatio.Root class="pb-2" ratio={16/9}>
+									<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+										Featured Event Banner
+									</div>
+								</AspectRatio.Root>
+
+								<Card.CardContent class="p-4 pb-4 space-y-4">
+									<div class="text-sm text-muted-foreground">
+										📅 August 24, 2025 • 📍 Sihanoukville
+									</div>
+
+									<div class="text-sm">
+										🏢 Otres Beach Club
+									</div>
+
+									<div class="text-sm">🎵 Artist Name</div>
+
+									<div class="flex gap-2 items-center">
+										<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
+										<Avatar.Root class="w-8 h-8 rounded-lg">
+											<Avatar.Fallback class="rounded-lg bg-muted" />
+										</Avatar.Root>
+										<Avatar.Root class="w-8 h-8 rounded-lg">
+											<Avatar.Fallback class="rounded-lg bg-muted" />
+										</Avatar.Root>
+										<Avatar.Root class="w-8 h-8 rounded-lg">
+											<Avatar.Fallback class="rounded-lg bg-muted" />
+										</Avatar.Root>
+									</div>
+								</Card.CardContent>
+							</Card.Card>
+						{:else}
+							<p class="text-muted-foreground">No upcoming events.</p>
+						{/if}
 					</Card.CardContent>
 				</Card.Card>
 			</div>
@@ -121,11 +201,11 @@
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 			<div class="flex items-center justify-start">
 				{#if viewMode === 'list'}
-					<Button.Button variant="outline" onclick={goBack}>
+					<Button.Button variant="outline" size="sm" onclick={goBack}>
 						← Back to Main
 					</Button.Button>
 				{:else}
-					<Button.Button variant="outline" onclick={goToList}>
+					<Button.Button variant="outline" size="sm" onclick={goToList}>
 						← Back to Brands
 					</Button.Button>
 				{/if}
