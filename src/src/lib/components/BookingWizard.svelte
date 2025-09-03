@@ -145,7 +145,7 @@
 					</div>
 					{#if totalItems > 0}
 						<div class="p-4 bg-muted rounded-lg">
-							<p class="font-medium">Total Items: {totalItems}</p>
+							<p class="font-medium">Items: {totalItems}</p>
 							<p class="text-sm text-muted-foreground">Estimated Total: ${estimatedTotal}</p>
 						</div>
 					{/if}
@@ -186,9 +186,6 @@
 
 					<div class="p-4 bg-muted rounded-lg space-y-2">
 						<h4 class="font-medium">Booking Summary</h4>
-						<p class="text-sm">Event: {event.title}</p>
-						<p class="text-sm">Venue: {event.venue_name}</p>
-						<p class="text-sm">Guests: {guestCount}</p>
 						<p class="text-sm">Items: {totalItems}</p>
 						<p class="text-sm">Estimated Total: ${estimatedTotal}</p>
 					</div>
@@ -198,27 +195,41 @@
 					<h3 class="text-lg font-semibold">Payment Method</h3>
 					<RadioGroup.Root bind:value={paymentMethod} class="space-y-3">
 						<div class="flex items-center space-x-2">
-							<RadioGroup.Item value="aba" id="aba" />
+							<RadioGroup.RadioGroupItem value="aba" id="aba" />
 							<Label.Label for="aba" class="flex-1 cursor-pointer">
-								<div class="flex justify-between items-center">
-									<span>ABA QR Pay</span>
-									<Badge.Badge variant="secondary">QR Code</Badge.Badge>
-								</div>
+								<Card.Card class="p-4">
+									<div class="flex items-center gap-3">
+										<div class="text-2xl">🏦</div>
+										<div>
+											<h4 class="font-medium">ABA QR Pay</h4>
+											<p class="text-sm text-muted-foreground">Pay with ABA Bank mobile app</p>
+										</div>
+									</div>
+								</Card.Card>
 							</Label.Label>
 						</div>
+							
 						<div class="flex items-center space-x-2">
-							<RadioGroup.Item value="ipay88" id="ipay88" />
+							<RadioGroup.RadioGroupItem value="ipay88" id="ipay88" />
 							<Label.Label for="ipay88" class="flex-1 cursor-pointer">
-								<div class="flex justify-between items-center">
-									<span>iPay88</span>
-									<Badge.Badge variant="secondary">Card/Bank</Badge.Badge>
-								</div>
+								<Card.Card class="p-4">
+									<div class="flex items-center gap-3">
+										<div class="text-2xl">💳</div>
+										<div>
+											<h4 class="font-medium">iPay88</h4>
+											<p class="text-sm text-muted-foreground">Credit card, bank transfer, mobile banking</p>
+										</div>
+									</div>
+								</Card.Card>
 							</Label.Label>
 						</div>
 					</RadioGroup.Root>
 
 					<div class="p-4 bg-muted rounded-lg space-y-2">
 						<h4 class="font-medium">Final Summary</h4>
+						<p class="text-sm">Event: {event.title}</p>
+						<p class="text-sm">Venue: {event.venue_name}</p>
+						<p class="text-sm">Guests: {guestCount}</p>
 						<p class="text-sm">Total Amount: ${estimatedTotal}</p>
 						<p class="text-sm">Payment Method: {paymentMethod === 'aba' ? 'ABA QR Pay' : paymentMethod === 'ipay88' ? 'iPay88' : 'Not selected'}</p>
 					</div>
