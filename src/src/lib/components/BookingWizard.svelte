@@ -241,17 +241,18 @@
 <nav class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
 	<div class="mx-auto w-full max-w-2xl px-4">
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
-			<div class="flex items-center justify-start gap-2">
+			<div class="flex items-center justify-start">
 				{#if currentStep > 1}
 					<Button.Button variant="outline" onclick={prevStep}>
 						← Back
 					</Button.Button>
 				{/if}
+			</div>
+			<div class="flex items-center justify-center">
 				<Button.Button variant="outline" onclick={onCancel}>
 					Cancel
 				</Button.Button>
 			</div>
-			<div class="flex items-center justify-center"></div>
 			<div class="flex items-center justify-end">
 				{#if currentStep < 4}
 					<Button.Button onclick={nextStep} disabled={
