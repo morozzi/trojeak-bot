@@ -274,6 +274,7 @@
 					</Button.Button>
 				</div>
 			</div>
+			<Separator.Separator class="mb-6" />
 		</header>
 
 		<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)] mb-8">
