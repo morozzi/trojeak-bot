@@ -95,7 +95,7 @@
 	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 </script>
 
-<div class="container p-4 max-w-2xl mx-auto">
+<div class="space-y-8">
 	<Card.Card>
 		<Card.CardHeader class="text-center">
 			<Card.CardTitle class="text-2xl font-bold">Book Your Event</Card.CardTitle>
@@ -113,11 +113,11 @@
 								 'bg-muted text-muted-foreground'}">
 								{index + 1}
 							</div>
-							<span class="text-xs text-center {currentStep === index + 1 ? 'text-foreground font-medium' : 'text-muted-foreground'}">{title}</span>
+							<span class="text-xs text-center {currentStep === index + 1 ? 'text-primary font-medium' : 'text-muted-foreground'}">{title}</span>
 						</div>
 					{/each}
 				</div>
-				<Progress.Progress value={progressPercentage} class="h-2" />
+				<Progress.Progress value={progressPercentage} class="w-full" />
 			</div>
 
 			<Separator.Separator />
@@ -128,183 +128,126 @@
 					<div class="grid gap-4">
 						{#each availableBrands as brand}
 							<Card.Card class="p-4">
-								<div class="flex justify-between items-start">
-									<div class="flex-1">
+								<div class="flex justify-between items-center">
+									<div class="space-y-1">
 										<h4 class="font-medium">{brand.name}</h4>
 										<p class="text-sm text-muted-foreground">{brand.description}</p>
-										<Badge.Badge variant="secondary" class="mt-2">{brand.type}</Badge.Badge>
+										<Badge.Badge variant="secondary">{brand.type}</Badge.Badge>
 									</div>
 									<div class="flex items-center gap-2">
-										<Button.Button 
-											variant="outline" 
-											size="sm"
-											onclick={() => updateBrandQuantity(brand.id, Math.max(0, (selectedBrands[brand.id] || 0) - 1))}
-										>
-											-
-										</Button.Button>
+										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.id, Math.max(0, (selectedBrands[brand.id] || 0) - 1))}>-</Button.Button>
 										<span class="w-8 text-center">{selectedBrands[brand.id] || 0}</span>
-										<Button.Button 
-											variant="outline" 
-											size="sm"
-											onclick={() => updateBrandQuantity(brand.id, (selectedBrands[brand.id] || 0) + 1)}
-										>
-											+
-										</Button.Button>
+										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.id, (selectedBrands[brand.id] || 0) + 1)}>+</Button.Button>
 									</div>
 								</div>
 							</Card.Card>
 						{/each}
 					</div>
+					{#if totalItems > 0}
+						<div class="p-4 bg-muted rounded-lg">
+							<p class="font-medium">Total Items: {totalItems}</p>
+							<p class="text-sm text-muted-foreground">Estimated Total: ${estimatedTotal}</p>
+						</div>
+					{/if}
 				</div>
-			{/if}
-
-			{#if currentStep === 2}
+			{:else if currentStep === 2}
 				<div class="space-y-4">
-					<h3 class="text-lg font-semibold">Guest Details</h3>
+					<h3 class="text-lg font-semibold">Guest Information</h3>
 					<div class="space-y-4">
 						<div class="space-y-2">
-							<Label.Label for="guestCount">Number of Guests</Label.Label>
-							<Select.Root type="single" bind:value={guestCountString}>
-								<Select.Trigger>
-									{guestCount} Guest{guestCount > 1 ? 's' : ''}
-								</Select.Trigger>
-								<Select.Content>
-									{#each Array(10) as _, i}
-										<Select.Item value={(i + 1).toString()}>{i + 1} Guest{i > 0 ? 's' : ''}</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
+							<Label.Label for="guests">Number of Guests</Label.Label>
+							<Input.Input id="guests" type="number" min="1" max="10" bind:value={guestCountString} placeholder="1" />
 						</div>
-						
 						<div class="space-y-2">
 							<Label.Label for="phone">Phone Number</Label.Label>
-							<Input.Input 
-								id="phone"
-								bind:value={phoneNumber}
-								placeholder="+855 12 345 678"
-								type="tel"
-							/>
+							<Input.Input id="phone" type="tel" bind:value={phoneNumber} placeholder="+855 12 345 678" />
 						</div>
 					</div>
 				</div>
-			{/if}
-
-			{#if currentStep === 3}
+			{:else if currentStep === 3}
 				<div class="space-y-4">
-					<h3 class="text-lg font-semibold">Additional Information</h3>
-					<div class="space-y-2">
-						<Label.Label for="comment">Special Requests (optional)</Label.Label>
-						<Textarea.Textarea 
-							id="comment"
-							bind:value={comment}
-							placeholder="Any dietary restrictions, seating preferences..."
-							class="min-h-[100px]"
-						/>
+					<h3 class="text-lg font-semibold">Additional Details</h3>
+					<div class="space-y-4">
+						<div class="space-y-2">
+							<Label.Label for="comment">Special Requests (Optional)</Label.Label>
+							<Textarea.Textarea id="comment" bind:value={comment} placeholder="Any special requests or notes..." maxlength="200" />
+							<p class="text-xs text-muted-foreground">{comment.length}/200 characters</p>
+						</div>
+					</div>
+
+					<div class="p-4 bg-muted rounded-lg space-y-2">
+						<h4 class="font-medium">Booking Summary</h4>
+						<p class="text-sm">Event: {event.title}</p>
+						<p class="text-sm">Venue: {event.venue_name}</p>
+						<p class="text-sm">Guests: {guestCount}</p>
+						<p class="text-sm">Items: {totalItems}</p>
+						<p class="text-sm">Estimated Total: ${estimatedTotal}</p>
 					</div>
 				</div>
-			{/if}
-
-			{#if currentStep === 4}
+			{:else if currentStep === 4}
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Payment Method</h3>
-					<RadioGroup.RadioGroup bind:value={paymentMethod}>
-						<div class="space-y-3">
-							<div class="flex items-center space-x-2">
-								<RadioGroup.RadioGroupItem value="aba" id="aba" />
-								<Label.Label for="aba" class="flex-1 cursor-pointer">
-									<Card.Card class="p-4">
-										<div class="flex items-center gap-3">
-											<div class="text-2xl">🏦</div>
-											<div>
-												<h4 class="font-medium">ABA QR Pay</h4>
-												<p class="text-sm text-muted-foreground">Pay with ABA Bank mobile app</p>
-											</div>
-										</div>
-									</Card.Card>
-								</Label.Label>
-							</div>
-							
-							<div class="flex items-center space-x-2">
-								<RadioGroup.RadioGroupItem value="ipay88" id="ipay88" />
-								<Label.Label for="ipay88" class="flex-1 cursor-pointer">
-									<Card.Card class="p-4">
-										<div class="flex items-center gap-3">
-											<div class="text-2xl">💳</div>
-											<div>
-												<h4 class="font-medium">iPay88</h4>
-												<p class="text-sm text-muted-foreground">Credit card, bank transfer, mobile banking</p>
-											</div>
-										</div>
-									</Card.Card>
-								</Label.Label>
-							</div>
+					<RadioGroup.Root bind:value={paymentMethod} class="space-y-3">
+						<div class="flex items-center space-x-2">
+							<RadioGroup.Item value="aba" id="aba" />
+							<Label.Label for="aba" class="flex-1 cursor-pointer">
+								<div class="flex justify-between items-center">
+									<span>ABA QR Pay</span>
+									<Badge.Badge variant="secondary">QR Code</Badge.Badge>
+								</div>
+							</Label.Label>
 						</div>
-					</RadioGroup.RadioGroup>
+						<div class="flex items-center space-x-2">
+							<RadioGroup.Item value="ipay88" id="ipay88" />
+							<Label.Label for="ipay88" class="flex-1 cursor-pointer">
+								<div class="flex justify-between items-center">
+									<span>iPay88</span>
+									<Badge.Badge variant="secondary">Card/Bank</Badge.Badge>
+								</div>
+							</Label.Label>
+						</div>
+					</RadioGroup.Root>
+
+					<div class="p-4 bg-muted rounded-lg space-y-2">
+						<h4 class="font-medium">Final Summary</h4>
+						<p class="text-sm">Total Amount: ${estimatedTotal}</p>
+						<p class="text-sm">Payment Method: {paymentMethod === 'aba' ? 'ABA QR Pay' : paymentMethod === 'ipay88' ? 'iPay88' : 'Not selected'}</p>
+					</div>
 				</div>
 			{/if}
-
-			{#if totalItems > 0}
-				<div class="space-y-4">
-					<Separator.Separator />
-					<Card.Card class="p-4">
-						<h4 class="font-medium mb-3">Order Summary</h4>
-						<div class="space-y-2">
-							{#each Object.entries(selectedBrands) as [brandId, quantity]}
-								{@const brand = availableBrands.find(b => b.id === brandId)}
-								{#if brand}
-									<div class="flex justify-between text-sm">
-										<span>{brand.name} × {quantity}</span>
-										<span>${quantity * 12}</span>
-									</div>
-								{/if}
-							{/each}
-							<Separator.Separator />
-							<div class="flex justify-between font-medium">
-								<span>Total x {totalItems}</span>
-								<span>${estimatedTotal}</span>
-							</div>
-						</div>
-					</Card.Card>
-				</div>
-			{/if}
-
-			<div class="flex justify-between pt-4">
-				<Button.Button variant="outline" onclick={onCancel}>
-					Cancel
-				</Button.Button>
-				
-				<div class="flex gap-2">
-					{#if currentStep > 1}
-						<Button.Button variant="outline" onclick={prevStep}>
-							Back
-						</Button.Button>
-					{/if}
-					
-					{#if currentStep < 4}
-						<Button.Button 
-							onclick={nextStep}
-							disabled={
-								(currentStep === 1 && !canProceedFromStep1) ||
-								(currentStep === 2 && !canProceedFromStep2) ||
-								(currentStep === 3 && !canProceedFromStep3)
-							}
-						>
-							Continue
-						</Button.Button>
-					{:else}
-						<Button.Button 
-							onclick={handleCompleteBooking}
-							disabled={!canCompleteBooking || isProcessing}
-						>
-							{#if isProcessing}
-								Processing...
-							{:else}
-								Complete Booking
-							{/if}
-						</Button.Button>
-					{/if}
-				</div>
-			</div>
 		</Card.CardContent>
 	</Card.Card>
 </div>
+
+<nav class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
+	<div class="mx-auto w-full max-w-2xl px-4">
+		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
+			<div class="flex items-center justify-start">
+				{#if currentStep > 1}
+					<Button.Button variant="outline" onclick={prevStep}>
+						← Back
+					</Button.Button>
+				{/if}
+			</div>
+			<div class="flex items-center justify-center"></div>
+			<div class="flex items-center justify-end gap-2">
+				<Button.Button variant="outline" onclick={onCancel}>
+					Cancel
+				</Button.Button>
+				{#if currentStep < 4}
+					<Button.Button onclick={nextStep} disabled={
+						(currentStep === 1 && !canProceedFromStep1) ||
+						(currentStep === 2 && !canProceedFromStep2) ||
+						(currentStep === 3 && !canProceedFromStep3)
+					}>
+						Continue
+					</Button.Button>
+				{:else}
+					<Button.Button onclick={handleCompleteBooking} disabled={!canCompleteBooking || isProcessing}>
+						{isProcessing ? 'Processing...' : 'Book'}
+					</Button.Button>
+				{/if}
+			</div>
+		</div>
+	</div>
+</nav>
