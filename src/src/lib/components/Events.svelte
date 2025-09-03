@@ -155,13 +155,9 @@
 		{#if selectedEvent}
 			<div class="space-y-8">
 				<AspectRatio.Root class="pb-2" ratio={16/9}>
-					{#if selectedEvent.featured}
-						<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
-							Featured Event Banner
-						</div>
-					{:else}
-						<div class="bg-gray-100 h-full"></div>
-					{/if}
+					<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+						Event Banner
+					</div>
 				</AspectRatio.Root>
 
 				<h1 class="text-3xl font-bold">{selectedEvent.title}</h1>

@@ -314,11 +314,13 @@
 										</div>
 									</Card.CardHeader>
 									
-									<AspectRatio.Root class="pb-2" ratio={16/9}>
-										<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
-											Featured Event Banner
-										</div>
-									</AspectRatio.Root>
+									{#if event.featured}
+										<AspectRatio.Root class="pb-2" ratio={16/9}>
+											<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+												Event Banner
+											</div>
+										</AspectRatio.Root>
+									{/if}
 
 									<Card.CardContent class="p-4 pb-4 space-y-4">
 										<div class="text-sm text-muted-foreground">

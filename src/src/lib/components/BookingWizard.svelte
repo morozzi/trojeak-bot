@@ -155,8 +155,17 @@
 					<h3 class="text-lg font-semibold">Guest Information</h3>
 					<div class="space-y-4">
 						<div class="space-y-2">
-							<Label.Label for="guests">Number of Guests</Label.Label>
-							<Input.Input id="guests" type="number" min="1" max="10" bind:value={guestCountString} placeholder="1" />
+							<Label.Label for="guestCount">Number of Guests</Label.Label>
+							<Select.Root type="single" bind:value={guestCountString}>
+								<Select.Trigger>
+									{guestCount} Guest{guestCount > 1 ? 's' : ''}
+								</Select.Trigger>
+								<Select.Content>
+									{#each Array(10) as _, i}
+										<Select.Item value={(i + 1).toString()}>{i + 1} Guest{i > 0 ? 's' : ''}</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
 						</div>
 						<div class="space-y-2">
 							<Label.Label for="phone">Phone Number</Label.Label>

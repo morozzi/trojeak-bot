@@ -108,10 +108,6 @@
 						{/if}
 
 						<Card.CardContent class="p-4 pb-4 space-y-4">
-							<div class="text-sm text-muted-foreground">
-								🍺 {brand.type.toUpperCase()}
-							</div>
-
 							<p>{brand.description}</p>
 						</Card.CardContent>
 					</Card.Card>
