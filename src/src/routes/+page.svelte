@@ -57,6 +57,7 @@
 		backgroundColor: '#f9fafb',
 		textColor: '#1f2937'
 	});
+	let footerEl: HTMLElement | undefined = $state();
 
 	const featuredEvents: Event[] = [
 		{
@@ -113,6 +114,12 @@
 		'JD'
 	);
 	
+	function updateFooterHeight() {
+		if (!footerEl) return;
+		const h = footerEl.offsetHeight;
+		document.documentElement.style.setProperty('--footer-h', `${h}px`);
+	}
+
 	function handleShareToStory() {
 		if (!webApp?.shareToStory) return;
 		
@@ -160,6 +167,15 @@
 		}
 	});
 
+	$effect(() => {
+		if (footerEl && currentView === 'main') {
+			updateFooterHeight();
+			const ro = new ResizeObserver(updateFooterHeight);
+			ro.observe(footerEl);
+			return () => ro.disconnect();
+		}
+	});
+
 	function goToPage(page: 'main' | 'events' | 'venues' | 'brands', eventId?: string): void {
 		if (page === 'events') selectedEventId = eventId;
 		if (page === 'main') selectedEventId = undefined;
@@ -177,189 +193,213 @@
 	}
 </script>
 
-{#if isLoading}
-	<LoadingAnimation message="Loading Trojeak..." />
-{:else if error}
-	<div class="flex items-center justify-center min-h-screen">
-		<Card.Card class="w-full max-w-2xl mx-auto">
-			<Card.CardContent class="p-6 text-center">
-				<h2 class="text-xl font-semibold mb-2">Connection Error</h2>
-				<p class="text-muted-foreground">{error}</p>
-			</Card.CardContent>
-		</Card.Card>
-	</div>
-{:else}
-	<div class="container mx-auto px-4 pt-4 pb-28 max-w-2xl">
-		<div class="flex items-center justify-between pb-4">
-			<div class="flex items-center gap-5">
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger>
-						{#snippet child({ props })}
-							<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
-								{#if userInfo?.photo_url}
-									<Avatar.Image src={userInfo.photo_url} alt="User" />
-								{/if}
-								<Avatar.Fallback>{userInitials}</Avatar.Fallback>
-							</Avatar.Root>
-						{/snippet}
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content class="w-56" align="start">
-						<DropdownMenu.Label>My Account</DropdownMenu.Label>
-						<DropdownMenu.Separator />
-						<DropdownMenu.Item onclick={() => {}}>
-							⚙️ Account Settings
-						</DropdownMenu.Item>
-						<DropdownMenu.Item onclick={() => {}}>
-							📢 Channel Subscription
-						</DropdownMenu.Item>
-						<DropdownMenu.Item onclick={() => {}}>
-							📋 My Bookings
-						</DropdownMenu.Item>
-						<DropdownMenu.Separator />
-						<DropdownMenu.Item onclick={() => {}}>
-							💬 Support
-						</DropdownMenu.Item>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-
-				<Select.Root type="single" bind:value={selectedCity}>
-					<Select.Trigger class="w-20">
-						{selectedCity.toUpperCase()}
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Item value="pp">Phnom Penh</Select.Item>
-						<Select.Item value="shv">Sihanoukville</Select.Item>
-						<Select.Item value="sr">Siem Reap</Select.Item>
-						<Select.Item value="btb">Battambang</Select.Item>
-					</Select.Content>
-				</Select.Root>
-			</div>
-
-			<div class="flex items-center gap-2">
-				<Select.Root type="single" bind:value={selectedLanguage}>
-					<Select.Trigger class="w-16">
-						{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Item value="en">🇺🇸 English</Select.Item>
-						<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
-					</Select.Content>
-				</Select.Root>
-
-				<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
-					<Share2 size={16} />
-				</Button.Button>
-			</div>
+<div 
+	class="min-h-[100svh] bg-background"
+	style="--app-footer-h: calc(var(--footer-h, 72px) + env(safe-area-inset-bottom, 0px));"
+>
+	{#if isLoading}
+		<LoadingAnimation message="Loading Trojeak..." />
+	{:else if error}
+		<div class="flex items-center justify-center min-h-screen">
+			<Card.Card class="w-full max-w-2xl mx-auto">
+				<Card.CardContent class="p-6 text-center">
+					<h2 class="text-xl font-semibold mb-2">Connection Error</h2>
+					<p class="text-muted-foreground">{error}</p>
+				</Card.CardContent>
+			</Card.Card>
 		</div>
+	{:else}
+		<header class="mx-auto w-full max-w-2xl px-4 pt-4 pb-4">
+			<div class="grid grid-cols-[1fr_auto_1fr] items-center pb-4">
+				<div class="flex items-center gap-5 justify-start">
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger>
+							{#snippet child({ props })}
+								<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
+									{#if userInfo?.photo_url}
+										<Avatar.Image src={userInfo.photo_url} alt="User" />
+									{/if}
+									<Avatar.Fallback>{userInitials}</Avatar.Fallback>
+								</Avatar.Root>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content class="w-56 z-[60]" align="start">
+							<DropdownMenu.Label>My Account</DropdownMenu.Label>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item onclick={() => {}}>
+								⚙️ Account Settings
+							</DropdownMenu.Item>
+							<DropdownMenu.Item onclick={() => {}}>
+								📢 Channel Subscription
+							</DropdownMenu.Item>
+							<DropdownMenu.Item onclick={() => {}}>
+								📋 My Bookings
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item onclick={() => {}}>
+								💬 Support
+							</DropdownMenu.Item>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
 
-		<Separator.Separator class="mb-6" />
-
-		{#if currentView === 'main'}
-			<div class="space-y-8">
-				<div class="text-center space-y-4">
-					<h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-						Let's Trojeak
-					</h1>
-					<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
+					<Select.Root type="single" bind:value={selectedCity}>
+						<Select.Trigger class="w-20">
+							{selectedCity.toUpperCase()}
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Item value="pp">Phnom Penh</Select.Item>
+							<Select.Item value="shv">Sihanoukville</Select.Item>
+							<Select.Item value="sr">Siem Reap</Select.Item>
+							<Select.Item value="btb">Battambang</Select.Item>
+						</Select.Content>
+					</Select.Root>
 				</div>
 
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-					{#if featuredEvents.length === 0}
-						<Card.Card>
-							<Skeleton.Skeleton class="h-16 w-full" />
-							<Card.CardContent class="p-4 space-y-2">
-								<Skeleton.Skeleton class="h-4 w-full" />
-								<Skeleton.Skeleton class="h-4 w-3/4" />
-								<Skeleton.Skeleton class="h-4 w-1/2" />
-							</Card.CardContent>
-						</Card.Card>
-					{:else}
-						{#each featuredEvents as event}
-							<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
-								<Card.CardHeader class="gap-0 pb-4">
-									<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
-								</Card.CardHeader>
-								
-								<AspectRatio.Root class="pb-2" ratio={16/9}>
-									<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
-										Featured Event Banner
-									</div>
-								</AspectRatio.Root>
-								
-								<Card.CardContent class="p-4 pb-4 space-y-4">
-									<div class="text-sm text-muted-foreground">
-										📅 August 24, 2025 • 📍 {event.city}
-									</div>
-									
-									<div class="text-sm">
-										🏢 {event.venue_name}
-									</div>
-									
-									<div class="text-sm">🎵 Artist Name</div>
-									
-									<div class="flex gap-2 items-center">
-										<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
-										<Avatar.Root class="w-8 h-8 rounded-lg">
-											<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
-										</Avatar.Root>
-										<Avatar.Root class="w-8 h-8 rounded-lg">
-											<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
-										</Avatar.Root>
-										<Avatar.Root class="w-8 h-8 rounded-lg">
-											<Avatar.Fallback class="rounded-lg bg-muted"></Avatar.Fallback>
-										</Avatar.Root>
-									</div>
+				<div class="flex items-center justify-center">
+				</div>
+
+				<div class="flex items-center gap-2 justify-end">
+					<Select.Root type="single" bind:value={selectedLanguage}>
+						<Select.Trigger class="w-16">
+							{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Item value="en">🇺🇸 English</Select.Item>
+							<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
+						</Select.Content>
+					</Select.Root>
+
+					<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
+						<Share2 size={16} />
+					</Button.Button>
+				</div>
+			</div>
+		</header>
+
+		<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)]">
+			{#if currentView === 'main'}
+				<div class="space-y-8">
+					<div class="text-center space-y-4">
+						<h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+							Let's Trojeak
+						</h1>
+						<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+						{#if featuredEvents.length === 0}
+							<Card.Card>
+								<Skeleton.Skeleton class="h-16 w-full" />
+								<Card.CardContent class="p-4 space-y-2">
+									<Skeleton.Skeleton class="h-4 w-full" />
+									<Skeleton.Skeleton class="h-4 w-3/4" />
+									<Skeleton.Skeleton class="h-4 w-1/2" />
 								</Card.CardContent>
 							</Card.Card>
-						{/each}
-					{/if}
+						{:else}
+							{#each featuredEvents as event}
+								<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
+									<Card.CardHeader class="gap-0 pb-4">
+										<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
+									</Card.CardHeader>
+									
+									<AspectRatio.Root class="pb-2" ratio={16/9}>
+										<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+											Featured Event Banner
+										</div>
+									</AspectRatio.Root>
+
+									<Card.CardContent class="p-4 pb-4 space-y-4">
+										<div class="text-sm text-muted-foreground">
+											📅 August 24, 2025 • 📍 {event.city}
+										</div>
+
+										<div class="text-sm">
+											🏢 {event.venue_name}
+										</div>
+
+										<div class="text-sm">🎵 Artist Name</div>
+
+										<div class="flex gap-2 items-center">
+											<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
+											<Avatar.Root class="w-8 h-8 rounded-lg">
+												<Avatar.Fallback class="rounded-lg bg-muted" />
+											</Avatar.Root>
+											<Avatar.Root class="w-8 h-8 rounded-lg">
+												<Avatar.Fallback class="rounded-lg bg-muted" />
+											</Avatar.Root>
+											<Avatar.Root class="w-8 h-8 rounded-lg">
+												<Avatar.Fallback class="rounded-lg bg-muted" />
+											</Avatar.Root>
+										</div>
+									</Card.CardContent>
+								</Card.Card>
+							{/each}
+						{/if}
+					</div>
 				</div>
-			</div>
-			
-			<div class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-40">
-				<div class="container mx-auto max-w-2xl">
+			{:else if currentView === 'events'}
+				<Events initialEventId={selectedEventId} on:goBack={() => goToPage('main')} on:startBooking={handleStartBooking} />
+			{:else if currentView === 'venues'}
+				<Venues on:goBack={() => goToPage('main')} />
+			{:else if currentView === 'brands'}
+				<Brands on:goBack={() => goToPage('main')} />
+			{:else if currentView === 'booking'}
+				<BookingWizard 
+					event={{
+						...selectedEvent,
+						venue_id: 'ven_001',
+						brands: ['brd_001', 'brd_002']
+					}}
+					availableBrands={availableBrands}
+					onComplete={goToPreviousBookingView}
+					onCancel={goToPreviousBookingView}
+				/>
+			{/if}
+		</main>
+
+		{#if currentView === 'main'}
+			<nav 
+				bind:this={footerEl}
+				aria-label="Primary navigation"
+				class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50"
+			>
+				<div class="mx-auto w-full max-w-2xl px-4">
 					<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
-					
-						<!-- Left slot (always left; empty for this page) -->
-      			<div class="flex items-center gap-6 justify-start"></div>
-      			
-						<!-- Center slot (always centered) -->
-      			<div class="flex items-center gap-6 justify-center">
-      				<Button.Button variant="outline" size="sm" onclick={() => goToPage('events')} class="flex flex-col items-center gap-1 px-4 py-2">
-          			<span class="text-sm font-medium">Events</span>
-        			</Button.Button>
-        			
-      				<Button.Button variant="outline" size="sm" onclick={() => goToPage('venues')} class="flex flex-col items-center gap-1 px-4 py-2">
+						<div class="flex items-center justify-start">
+						</div>
+
+						<div class="flex items-center gap-6 justify-center">
+							<Button.Button 
+								variant="outline" size="sm"
+								onclick={() => goToPage('events')}
+								class="flex flex-col items-center gap-1 px-4 py-2"
+							>
+								<span class="text-sm font-medium">Events</span>
+							</Button.Button>
+							
+							<Button.Button 
+								variant="outline" size="sm"
+								onclick={() => goToPage('venues')}
+								class="flex flex-col items-center gap-1 px-4 py-2"
+							>
 								<span class="text-sm font-medium">Venues</span>
 							</Button.Button>
 							
-							<Button.Button variant="outline" size="sm" onclick={() => goToPage('brands')} class="flex flex-col items-center gap-1 px-4 py-2">
+							<Button.Button 
+								variant="outline" size="sm"
+								onclick={() => goToPage('brands')}
+								class="flex flex-col items-center gap-1 px-4 py-2"
+							>
 								<span class="text-sm font-medium">Brands</span>
 							</Button.Button>
-      			</div>
-						
-						<!-- Right slot (always right; empty for this page) -->
-      			<div class="flex items-center gap-6 justify-end"></div>
+						</div>
+
+						<div class="flex items-center justify-end">
+						</div>
 					</div>
 				</div>
-			</div>
-		{:else if currentView === 'events'}
-			<Events initialEventId={selectedEventId} on:goBack={() => goToPage('main')} on:startBooking={handleStartBooking} />
-		{:else if currentView === 'venues'}
-			<Venues on:goBack={() => goToPage('main')} />
-		{:else if currentView === 'brands'}
-			<Brands on:goBack={() => goToPage('main')} />
-		{:else if currentView === 'booking'}
-			<BookingWizard 
-				event={{
-					...selectedEvent,
-					venue_id: 'ven_001',
-					brands: ['brd_001', 'brd_002']
-				}}
-				availableBrands={availableBrands}
-				onComplete={goToPreviousBookingView}
-				onCancel={goToPreviousBookingView}
-			/>
+			</nav>
 		{/if}
-	</div>
-{/if}
+	{/if}
+</div>
