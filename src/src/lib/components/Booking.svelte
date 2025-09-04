@@ -107,7 +107,7 @@
 </script>
 
 <div class="space-y-8">
-	<div class="text-center space-y-4">
+	<div class="text-center space-y-4 pt-6">
 		<h1 class="text-2xl font-bold">Book Your Event</h1>
 		<p class="text-muted-foreground">{event.title} at {event.venue_name}</p>
 	</div>

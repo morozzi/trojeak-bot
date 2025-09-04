@@ -74,7 +74,6 @@
 	function goToList(): void {
 		viewMode = 'list';
 		selectedEventId = null;
-		window.scrollTo(0, 0);
 	}
 
 	function goBack(): void {

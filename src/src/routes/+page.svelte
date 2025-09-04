@@ -15,7 +15,7 @@
 	import Events from '$lib/components/Events.svelte';
 	import Venues from '$lib/components/Venues.svelte';
 	import Brands from '$lib/components/Brands.svelte';
-	import BookingWizard from '$lib/components/BookingWizard.svelte';
+	import Booking from '$lib/components/Booking.svelte';
 
 	interface TelegramUser {
 		id: number;
@@ -361,7 +361,7 @@
 			{:else if currentView === 'brands'}
 				<Brands on:goBack={() => goToPage('main')} />
 			{:else if currentView === 'booking'}
-				<BookingWizard 
+				<Booking 
 					event={{
 						...selectedEvent,
 						venue_id: 'ven_001',
