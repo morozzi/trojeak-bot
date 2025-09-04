@@ -61,20 +61,27 @@
 			featured: false,
 			description: 'Historic venue with traditional Khmer architecture and modern amenities.'
 		}
-	];
+	].sort((a, b) => Number(b.featured) - Number(a.featured));
 
 	function selectVenue(venueId: string): void {
 		selectedVenueId = venueId;
 		viewMode = 'detail';
+		window.scrollTo(0, 0);
 	}
 
 	function goToList(): void {
 		viewMode = 'list';
 		selectedVenueId = null;
+		window.scrollTo(0, 0);
 	}
 
 	function goBack(): void {
 		dispatch('goBack');
+	}
+
+	function goToEvent(eventId: string): void {
+		// Navigate to specific event
+		console.log('Navigate to event:', eventId);
 	}
 </script>
 
@@ -98,10 +105,12 @@
 				{#each venues as venue}
 					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectVenue(venue.id)}>
 						<Card.CardHeader class="gap-0 pb-4">
-							<div class="flex justify-between items-start">
-								<Card.CardTitle class="text-lg font-semibold">{venue.name}</Card.CardTitle>
-								<div class="flex gap-2">
+							<div class="flex justify-between items-center">
+								<div class="flex items-center gap-2">
+									<Card.CardTitle class="text-lg font-semibold">{venue.name}</Card.CardTitle>
 									<Badge.Badge variant="secondary">{venue.type.toUpperCase()}</Badge.Badge>
+								</div>
+								<div class="flex gap-2">
 									{#if venue.featured}
 										<Badge.Badge>Featured</Badge.Badge>
 									{/if}
@@ -148,15 +157,16 @@
 					</AspectRatio.Root>
 				{/if}
 
-				<h1 class="text-3xl font-bold">{selectedVenue.name}</h1>
-				<div class="flex gap-2">
-					<Badge.Badge variant="secondary">{selectedVenue.type.toUpperCase()}</Badge.Badge>
-					{#if selectedVenue.featured}
-						<Badge.Badge>Featured</Badge.Badge>
-					{/if}
-				</div>
-				
 				<Card.Card>
+					<Card.CardHeader>
+						<h1 class="text-3xl font-bold">{selectedVenue.name}</h1>
+						<div class="flex gap-2">
+							<Badge.Badge variant="secondary">{selectedVenue.type.toUpperCase()}</Badge.Badge>
+							{#if selectedVenue.featured}
+								<Badge.Badge>Featured</Badge.Badge>
+							{/if}
+						</div>
+					</Card.CardHeader>
 					<Card.CardContent class="p-6 space-y-4">
 						<div class="space-y-2">
 							<p class="text-sm text-muted-foreground">📍 {selectedVenue.address}</p>
@@ -166,53 +176,47 @@
 					</Card.CardContent>
 				</Card.Card>
 
-				<Card.Card>
-					<Card.CardHeader>
-						<Card.CardTitle>Upcoming Events</Card.CardTitle>
-					</Card.CardHeader>
-					<Card.CardContent>
-						{#if selectedVenue.featured}
-							<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
-								<Card.CardHeader class="gap-0 pb-4">
-									<Card.CardTitle class="text-lg font-semibold">Friday Night Live</Card.CardTitle>
-								</Card.CardHeader>
-								
-								<AspectRatio.Root class="pb-2" ratio={16/9}>
-									<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
-										Featured Event Banner
-									</div>
-								</AspectRatio.Root>
+				<h3 class="text-lg font-semibold mb-4">Upcoming Events</h3>
+				{#if selectedVenue.featured}
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent('evt_001')}>
+						<Card.CardHeader class="gap-0 pb-4">
+							<Card.CardTitle class="text-lg font-semibold">Friday Night Live</Card.CardTitle>
+						</Card.CardHeader>
+						
+						<AspectRatio.Root class="pb-2" ratio={16/9}>
+							<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+								Featured Event Banner
+							</div>
+						</AspectRatio.Root>
 
-								<Card.CardContent class="p-4 pb-4 space-y-4">
-									<div class="text-sm text-muted-foreground">
-										📅 August 24, 2025 • 📍 {selectedVenue.city}
-									</div>
+						<Card.CardContent class="p-4 pb-4 space-y-4">
+							<div class="text-sm text-muted-foreground">
+								📅 August 24, 2025 • 📍 {selectedVenue.city}
+							</div>
 
-									<div class="text-sm">
-										🏢 {selectedVenue.name}
-									</div>
+							<div class="text-sm">
+								🏢 {selectedVenue.name}
+							</div>
 
-									<div class="text-sm">🎵 Artist Name</div>
+							<div class="text-sm">🎵 Artist Name</div>
 
-									<div class="flex gap-2 items-center">
-										<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
-										<Avatar.Root class="w-8 h-8 rounded-lg">
-											<Avatar.Fallback class="rounded-lg bg-muted" />
-										</Avatar.Root>
-										<Avatar.Root class="w-8 h-8 rounded-lg">
-											<Avatar.Fallback class="rounded-lg bg-muted" />
-										</Avatar.Root>
-										<Avatar.Root class="w-8 h-8 rounded-lg">
-											<Avatar.Fallback class="rounded-lg bg-muted" />
-										</Avatar.Root>
-									</div>
-								</Card.CardContent>
-							</Card.Card>
-						{:else}
-							<p class="text-muted-foreground">No upcoming events.</p>
-						{/if}
-					</Card.CardContent>
-				</Card.Card>
+							<div class="flex gap-2 items-center">
+								<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+							</div>
+						</Card.CardContent>
+					</Card.Card>
+				{:else}
+					<p class="text-muted-foreground">No upcoming events.</p>
+				{/if}
 			</div>
 		{/if}
 	{/if}

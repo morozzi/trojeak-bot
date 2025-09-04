@@ -63,16 +63,18 @@
 			date: 'August 24, 2025',
 			description: 'Beachfront party with live DJ and tropical cocktails.'
 		}
-	];
+	].sort((a, b) => Number(b.featured) - Number(a.featured));
 
 	function selectEvent(eventId: string): void {
 		selectedEventId = eventId;
 		viewMode = 'detail';
+		window.scrollTo(0, 0);
 	}
 
 	function goToList(): void {
 		viewMode = 'list';
 		selectedEventId = null;
+		window.scrollTo(0, 0);
 	}
 
 	function goBack(): void {
@@ -104,7 +106,7 @@
 				{#each events as event}
 					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectEvent(event.id)}>
 						<Card.CardHeader class="gap-0 pb-4">
-							<div class="flex justify-between items-start">
+							<div class="flex justify-between items-center">
 								<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
 								<div class="flex gap-2">
 									{#if event.featured}
@@ -160,14 +162,15 @@
 					</div>
 				</AspectRatio.Root>
 
-				<h1 class="text-3xl font-bold">{selectedEvent.title}</h1>
-				{#if selectedEvent.featured}
-					<div class="flex gap-2">
-						<Badge.Badge>Featured</Badge.Badge>
-					</div>
-				{/if}
-				
 				<Card.Card>
+					<Card.CardHeader>
+						<h1 class="text-3xl font-bold">{selectedEvent.title}</h1>
+						{#if selectedEvent.featured}
+							<div class="flex gap-2">
+								<Badge.Badge>Featured</Badge.Badge>
+							</div>
+						{/if}
+					</Card.CardHeader>
 					<Card.CardContent class="p-6 space-y-4">
 						<div class="space-y-2">
 							<p class="text-sm text-muted-foreground">📍 {selectedEvent.venue_name}</p>

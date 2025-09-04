@@ -91,7 +91,7 @@
 			date: 'August 24, 2025',
 			description: 'Beachfront party with live DJ and tropical cocktails.'
 		}
-	];
+	].sort((a, b) => Number(b.featured) - Number(a.featured));
 
 	const availableBrands: Brand[] = [
 		{
@@ -181,16 +181,19 @@
 		if (page === 'events') selectedEventId = eventId;
 		if (page === 'main') selectedEventId = undefined;
 		currentView = page;
+		window.scrollTo(0, 0);
 	}
 
 	function handleStartBooking(event: CustomEvent<{event: Event}>) {
 		selectedEvent = event.detail.event;
 		previousView = currentView;
 		currentView = 'booking';
+		window.scrollTo(0, 0);
 	}
 
 	function goToPreviousBookingView() {
 		currentView = previousView;
+		window.scrollTo(0, 0);
 	}
 </script>
 
@@ -304,7 +307,7 @@
 							{#each featuredEvents as event}
 								<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
 									<Card.CardHeader class="gap-0 pb-4">
-										<div class="flex justify-between items-start">
+										<div class="flex justify-between items-center">
 											<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
 											<div class="flex gap-2">
 												{#if event.featured}

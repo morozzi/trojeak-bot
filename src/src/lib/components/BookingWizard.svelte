@@ -46,8 +46,9 @@
 	let guestCountString = $state("1");
 	let phoneNumber = $state('+855');
 	let comment = $state('');
-	let paymentMethod = $state<'aba' | 'ipay88' | null>(null);
+	let paymentMethod = $state<'aba' | 'ipay88' | 'telegram_stars' | null>(null);
 	let isProcessing = $state(false);
+	let footerVisible = $state(true);
 
 	$effect(() => {
 		if (guestCountString && !isNaN(parseInt(guestCountString))) {
@@ -63,6 +64,14 @@
 	const canCompleteBooking = $derived(paymentMethod !== null);
 	const progressPercentage = $derived((currentStep / 4) * 100);
 
+	function toggleFooter(show: boolean) {
+		if (!show) {
+			setTimeout(() => footerVisible = false, 300);
+		} else {
+			footerVisible = true;
+		}
+	}
+
 	function updateBrandQuantity(brandId: string, quantity: number) {
 		if (quantity === 0) {
 			delete selectedBrands[brandId];
@@ -76,12 +85,14 @@
 	function nextStep() {
 		if (currentStep < 4) {
 			currentStep += 1;
+			window.scrollTo(0, 0);
 		}
 	}
 
 	function prevStep() {
 		if (currentStep > 1) {
 			currentStep -= 1;
+			window.scrollTo(0, 0);
 		}
 	}
 
@@ -96,149 +107,176 @@
 </script>
 
 <div class="space-y-8">
-	<Card.Card>
-		<Card.CardHeader class="text-center">
-			<Card.CardTitle class="text-2xl font-bold">Book Your Event</Card.CardTitle>
-			<p class="text-muted-foreground">{event.title} at {event.venue_name}</p>
-		</Card.CardHeader>
-		
-		<Card.CardContent class="space-y-6">
-			<div class="space-y-3">
-				<div class="flex justify-between items-center">
-					{#each stepTitles as title, index}
-						<div class="flex flex-col items-center gap-2 flex-1">
-							<div class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm
-								{currentStep > index + 1 ? 'bg-primary text-primary-foreground' : 
-								 currentStep === index + 1 ? 'bg-primary text-primary-foreground' : 
-								 'bg-muted text-muted-foreground'}">
-								{index + 1}
-							</div>
-							<span class="text-xs text-center {currentStep === index + 1 ? 'text-primary font-medium' : 'text-muted-foreground'}">{title}</span>
+	<div class="text-center space-y-4">
+		<h1 class="text-2xl font-bold">Book Your Event</h1>
+		<p class="text-muted-foreground">{event.title} at {event.venue_name}</p>
+	</div>
+	
+	<div class="space-y-6">
+		<div class="space-y-3">
+			<div class="flex justify-between items-center">
+				{#each stepTitles as title, index}
+					<div class="flex flex-col items-center gap-2 flex-1">
+						<div class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm
+							{currentStep > index + 1 ? 'bg-primary text-primary-foreground' : 
+							 currentStep === index + 1 ? 'bg-primary text-primary-foreground' : 
+							 'bg-muted text-muted-foreground'}">
+							{index + 1}
 						</div>
+						<span class="text-xs text-center {currentStep === index + 1 ? 'text-primary font-medium' : 'text-muted-foreground'}">{title}</span>
+					</div>
+				{/each}
+			</div>
+			<Progress.Progress value={progressPercentage} class="w-full" />
+		</div>
+
+		<Separator.Separator />
+
+		{#if currentStep === 1}
+			<div class="space-y-4">
+				<h3 class="text-lg font-semibold">Select Your Drinks</h3>
+				<div class="grid gap-4">
+					{#each availableBrands as brand}
+						<Card.Card class="p-4">
+							<div class="flex justify-between items-center">
+								<div class="space-y-1">
+									<h4 class="font-medium">{brand.name}</h4>
+									<p class="text-sm text-muted-foreground">{brand.description}</p>
+									<Badge.Badge variant="secondary">{brand.type}</Badge.Badge>
+								</div>
+								<div class="flex items-center gap-2">
+									<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.id, Math.max(0, (selectedBrands[brand.id] || 0) - 1))}>-</Button.Button>
+									<span class="w-8 text-center">{selectedBrands[brand.id] || 0}</span>
+									<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.id, (selectedBrands[brand.id] || 0) + 1)}>+</Button.Button>
+								</div>
+							</div>
+						</Card.Card>
 					{/each}
 				</div>
-				<Progress.Progress value={progressPercentage} class="w-full" />
+				{#if totalItems > 0}
+					<div class="p-4 bg-muted rounded-lg">
+						<p class="font-medium">Items: {totalItems}</p>
+						<p class="text-sm text-muted-foreground">Estimated Total: ${estimatedTotal}</p>
+					</div>
+				{/if}
 			</div>
-
-			<Separator.Separator />
-
-			{#if currentStep === 1}
+		{:else if currentStep === 2}
+			<div class="space-y-4">
+				<h3 class="text-lg font-semibold">Guest Information</h3>
 				<div class="space-y-4">
-					<h3 class="text-lg font-semibold">Select Your Drinks</h3>
-					<div class="grid gap-4">
-						{#each availableBrands as brand}
+					<div class="space-y-2">
+						<Label.Label for="guestCount">Number of Guests</Label.Label>
+						<Select.Root type="single" bind:value={guestCountString}>
+							<Select.Trigger>
+								{guestCount} Guest{guestCount > 1 ? 's' : ''}
+							</Select.Trigger>
+							<Select.Content>
+								{#each Array(10) as _, i}
+									<Select.Item value={(i + 1).toString()}>{i + 1} Guest{i > 0 ? 's' : ''}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
+					</div>
+					<div class="space-y-2">
+						<Label.Label for="phone">Phone Number</Label.Label>
+						<Input.Input 
+							id="phone" 
+							type="tel" 
+							bind:value={phoneNumber} 
+							placeholder="+855 12 345 678"
+							onfocus={() => toggleFooter(false)}
+							onblur={() => toggleFooter(true)}
+						/>
+					</div>
+				</div>
+			</div>
+		{:else if currentStep === 3}
+			<div class="space-y-4">
+				<h3 class="text-lg font-semibold">Additional Details</h3>
+				<div class="space-y-4">
+					<div class="space-y-2">
+						<Label.Label for="comment">Special Requests (Optional)</Label.Label>
+						<Textarea.Textarea 
+							id="comment" 
+							bind:value={comment} 
+							placeholder="Any special requests or notes..." 
+							maxlength="200"
+							onfocus={() => toggleFooter(false)}
+							onblur={() => toggleFooter(true)}
+						/>
+						<p class="text-xs text-muted-foreground">{comment.length}/200 characters</p>
+					</div>
+				</div>
+
+				<div class="p-4 bg-muted rounded-lg space-y-2">
+					<h4 class="font-medium">Booking Summary</h4>
+					<p class="text-sm">Items: {totalItems}</p>
+					<p class="text-sm">Estimated Total: ${estimatedTotal}</p>
+				</div>
+			</div>
+		{:else if currentStep === 4}
+			<div class="space-y-4">
+				<h3 class="text-lg font-semibold">Payment Method</h3>
+				<RadioGroup.Root bind:value={paymentMethod} class="space-y-3">
+					<div class="flex items-center space-x-2">
+						<RadioGroup.RadioGroupItem value="aba" id="aba" />
+						<Label.Label for="aba" class="flex-1 cursor-pointer">
 							<Card.Card class="p-4">
-								<div class="flex justify-between items-center">
-									<div class="space-y-1">
-										<h4 class="font-medium">{brand.name}</h4>
-										<p class="text-sm text-muted-foreground">{brand.description}</p>
-										<Badge.Badge variant="secondary">{brand.type}</Badge.Badge>
-									</div>
-									<div class="flex items-center gap-2">
-										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.id, Math.max(0, (selectedBrands[brand.id] || 0) - 1))}>-</Button.Button>
-										<span class="w-8 text-center">{selectedBrands[brand.id] || 0}</span>
-										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.id, (selectedBrands[brand.id] || 0) + 1)}>+</Button.Button>
+								<div class="flex items-center gap-3">
+									<div class="text-2xl">🏦</div>
+									<div>
+										<h4 class="font-medium">ABA QR Pay</h4>
+										<p class="text-sm text-muted-foreground">Pay with ABA Bank mobile app</p>
 									</div>
 								</div>
 							</Card.Card>
-						{/each}
+						</Label.Label>
 					</div>
-					{#if totalItems > 0}
-						<div class="p-4 bg-muted rounded-lg">
-							<p class="font-medium">Items: {totalItems}</p>
-							<p class="text-sm text-muted-foreground">Estimated Total: ${estimatedTotal}</p>
-						</div>
-					{/if}
-				</div>
-			{:else if currentStep === 2}
-				<div class="space-y-4">
-					<h3 class="text-lg font-semibold">Guest Information</h3>
-					<div class="space-y-4">
-						<div class="space-y-2">
-							<Label.Label for="guestCount">Number of Guests</Label.Label>
-							<Select.Root type="single" bind:value={guestCountString}>
-								<Select.Trigger>
-									{guestCount} Guest{guestCount > 1 ? 's' : ''}
-								</Select.Trigger>
-								<Select.Content>
-									{#each Array(10) as _, i}
-										<Select.Item value={(i + 1).toString()}>{i + 1} Guest{i > 0 ? 's' : ''}</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
-						</div>
-						<div class="space-y-2">
-							<Label.Label for="phone">Phone Number</Label.Label>
-							<Input.Input id="phone" type="tel" bind:value={phoneNumber} placeholder="+855 12 345 678" />
-						</div>
-					</div>
-				</div>
-			{:else if currentStep === 3}
-				<div class="space-y-4">
-					<h3 class="text-lg font-semibold">Additional Details</h3>
-					<div class="space-y-4">
-						<div class="space-y-2">
-							<Label.Label for="comment">Special Requests (Optional)</Label.Label>
-							<Textarea.Textarea id="comment" bind:value={comment} placeholder="Any special requests or notes..." maxlength="200" />
-							<p class="text-xs text-muted-foreground">{comment.length}/200 characters</p>
-						</div>
+						
+					<div class="flex items-center space-x-2">
+						<RadioGroup.RadioGroupItem value="ipay88" id="ipay88" />
+						<Label.Label for="ipay88" class="flex-1 cursor-pointer">
+							<Card.Card class="p-4">
+								<div class="flex items-center gap-3">
+									<div class="text-2xl">💳</div>
+									<div>
+										<h4 class="font-medium">iPay88</h4>
+										<p class="text-sm text-muted-foreground">Credit card, mobile banking</p>
+									</div>
+								</div>
+							</Card.Card>
+						</Label.Label>
 					</div>
 
-					<div class="p-4 bg-muted rounded-lg space-y-2">
-						<h4 class="font-medium">Booking Summary</h4>
-						<p class="text-sm">Items: {totalItems}</p>
-						<p class="text-sm">Estimated Total: ${estimatedTotal}</p>
+					<div class="flex items-center space-x-2">
+						<RadioGroup.RadioGroupItem value="telegram_stars" id="telegram_stars" />
+						<Label.Label for="telegram_stars" class="flex-1 cursor-pointer">
+							<Card.Card class="p-4">
+								<div class="flex items-center gap-3">
+									<div class="text-2xl">⭐</div>
+									<div>
+										<h4 class="font-medium">Telegram Stars</h4>
+										<p class="text-sm text-muted-foreground">Pay with Telegram Stars</p>
+									</div>
+								</div>
+							</Card.Card>
+						</Label.Label>
 					</div>
-				</div>
-			{:else if currentStep === 4}
-				<div class="space-y-4">
-					<h3 class="text-lg font-semibold">Payment Method</h3>
-					<RadioGroup.Root bind:value={paymentMethod} class="space-y-3">
-						<div class="flex items-center space-x-2">
-							<RadioGroup.RadioGroupItem value="aba" id="aba" />
-							<Label.Label for="aba" class="flex-1 cursor-pointer">
-								<Card.Card class="p-4">
-									<div class="flex items-center gap-3">
-										<div class="text-2xl">🏦</div>
-										<div>
-											<h4 class="font-medium">ABA QR Pay</h4>
-											<p class="text-sm text-muted-foreground">Pay with ABA Bank mobile app</p>
-										</div>
-									</div>
-								</Card.Card>
-							</Label.Label>
-						</div>
-							
-						<div class="flex items-center space-x-2">
-							<RadioGroup.RadioGroupItem value="ipay88" id="ipay88" />
-							<Label.Label for="ipay88" class="flex-1 cursor-pointer">
-								<Card.Card class="p-4">
-									<div class="flex items-center gap-3">
-										<div class="text-2xl">💳</div>
-										<div>
-											<h4 class="font-medium">iPay88</h4>
-											<p class="text-sm text-muted-foreground">Credit card, mobile banking</p>
-										</div>
-									</div>
-								</Card.Card>
-							</Label.Label>
-						</div>
-					</RadioGroup.Root>
+				</RadioGroup.Root>
 
-					<div class="p-4 bg-muted rounded-lg space-y-2">
-						<h4 class="font-medium">Final Summary</h4>
-						<p class="text-sm">Event: {event.title}</p>
-						<p class="text-sm">Venue: {event.venue_name}</p>
-						<p class="text-sm">Guests: {guestCount}</p>
-						<p class="text-sm">Total Amount: ${estimatedTotal}</p>
-					</div>
+				<div class="p-4 bg-muted rounded-lg space-y-2">
+					<h4 class="font-medium">Final Summary</h4>
+					<p class="text-sm">Event: {event.title}</p>
+					<p class="text-sm">Venue: {event.venue_name}</p>
+					<p class="text-sm">Guests: {guestCount}</p>
+					<p class="text-sm">Total Amount: ${estimatedTotal}</p>
 				</div>
-			{/if}
-		</Card.CardContent>
-	</Card.Card>
+			</div>
+		{/if}
+	</div>
 </div>
 
-<nav class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
+<nav class="{footerVisible ? '' : 'hidden'} fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
 	<div class="mx-auto w-full max-w-2xl px-4">
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 			<div class="flex items-center justify-start">
