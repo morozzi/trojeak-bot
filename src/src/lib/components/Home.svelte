@@ -4,6 +4,7 @@
 	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
+	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import type { Event } from '$lib/types/api.js';
 
@@ -11,6 +12,7 @@
 		featuredEvents: Event[];
 		selectedCity: string;
 		selectedLanguage: string;
+		userInfo: any;
 	}
 
 	const { featuredEvents, selectedCity, selectedLanguage, userInfo }: Props = $props();
@@ -23,8 +25,8 @@
 		footerHeight: { height: number };
 	}>();
 
-	function handleEventClick(eventId: string) {
-		dispatch('eventClick', { eventId });
+	function handleEventClick(eventId: number) {
+		dispatch('eventClick', { eventId: eventId.toString() });
 	}
 
 	function handleNavigate(page: string) {
@@ -67,43 +69,49 @@
 			</Card.Card>
 		{:else}
 			{#each featuredEvents as event}
-				<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => handleEventClick(event.id)}>
+				<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => handleEventClick(event.eventid)}>
 					<Card.CardHeader class="gap-0 pb-4">
 						<div class="flex justify-between items-center">
-							<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
+							<Card.CardTitle class="text-lg font-semibold">{event.eventtitle}</Card.CardTitle>
 							<div class="flex gap-2">
-								{#if event.featured}
+								{#if event.eventfeatured}
 									<Badge.Badge>Featured</Badge.Badge>
 								{/if}
 							</div>
 						</div>
 					</Card.CardHeader>
 					
-					{#if event.featured}
+					{#if event.eventfeatured}
 						<AspectRatio.Root class="pb-2" ratio={16/9}>
 							<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
-								Event Banner
+								Featured Event Banner
 							</div>
 						</AspectRatio.Root>
 					{/if}
 
 					<Card.CardContent class="p-4 pb-4 space-y-4">
 						<div class="text-sm text-muted-foreground">
-							📅 {event.date} • 📍 {event.city}
+							📅 {new Date(event.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 						</div>
 
 						<div class="text-sm">
-							🏢 {event.venue_name}
+							🎵 {event.eventartist}
 						</div>
 
-						<div class="text-sm">🎵 Artist Name</div>
-
-						<div class="flex gap-2 items-center">
-							<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
-							<div class="w-8 h-8 rounded-lg bg-muted"></div>
-							<div class="w-8 h-8 rounded-lg bg-muted"></div>
-							<div class="w-8 h-8 rounded-lg bg-muted"></div>
-						</div>
+						{#if event.eventschema}
+							<div class="flex gap-2 items-center">
+								<span class="text-sm text-muted-foreground mr-2">💰 {event.eventschema} Schema</span>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+							</div>
+						{/if}
 					</Card.CardContent>
 				</Card.Card>
 			{/each}
@@ -111,44 +119,18 @@
 	</div>
 </div>
 
-<nav 
-	bind:this={footerEl}
-	aria-label="Primary navigation"
-	class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50"
->
+<nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
 	<div class="mx-auto w-full max-w-2xl px-4">
-		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
-			<div class="flex items-center justify-start">
-			</div>
-
-			<div class="flex items-center gap-6 justify-center">
-				<Button.Button 
-					variant="outline" size="sm"
-					onclick={() => handleNavigate('events')}
-					class="flex flex-col items-center gap-1 px-4 py-2"
-				>
-					<span class="text-sm font-medium">Events</span>
-				</Button.Button>
-				
-				<Button.Button 
-					variant="outline" size="sm"
-					onclick={() => handleNavigate('venues')}
-					class="flex flex-col items-center gap-1 px-4 py-2"
-				>
-					<span class="text-sm font-medium">Venues</span>
-				</Button.Button>
-				
-				<Button.Button 
-					variant="outline" size="sm"
-					onclick={() => handleNavigate('brands')}
-					class="flex flex-col items-center gap-1 px-4 py-2"
-				>
-					<span class="text-sm font-medium">Brands</span>
-				</Button.Button>
-			</div>
-
-			<div class="flex items-center justify-end">
-			</div>
+		<div class="grid grid-cols-3 gap-4 pt-4 pb-8">
+			<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('events')}>
+				Events
+			</Button.Button>
+			<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('venues')}>
+				Venues
+			</Button.Button>
+			<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('brands')}>
+				Brands
+			</Button.Button>
 		</div>
 	</div>
 </nav>
