@@ -83,12 +83,23 @@
 			date: 'August 24, 2025',
 			description: 'Beachfront party with live DJ and tropical cocktails.'
 		}
-	];
+	].sort((a, b) => Number(b.featured) - Number(a.featured));
 
 	const availableBrands: Brand[] = [
-		{ id: 'brd_001', name: 'Cambodia Lite', type: 'Beer', featured: true, description: 'Local favorite light beer' },
-		{ id: 'brd_002', name: 'Cambodia Premium', type: 'Beer', featured: false, description: 'Premium local beer' },
-		{ id: 'brd_003', name: 'Tiger Beer', type: 'Beer', featured: true, description: 'International beer brand' }
+		{
+			id: 'brd_001',
+			name: 'Absolut Vodka',
+			type: 'vodka',
+			featured: false,
+			description: 'Premium Swedish vodka'
+		},
+		{
+			id: 'brd_002',
+			name: 'Hennessy',
+			type: 'cognac',
+			featured: true,
+			description: 'World-renowned cognac'
+		}
 	];
 
 	onMount(async () => {
@@ -107,7 +118,7 @@
 					userInfo = JSON.parse(decodeURIComponent(userParam));
 				}
 			}
-
+			
 			if (WebApp.themeParams) {
 				themeParams = {
 					backgroundColor: WebApp.themeParams.header_bg_color || '#f9fafb',
@@ -115,7 +126,7 @@
 				};
 				WebApp.setHeaderColor(themeParams.backgroundColor);
 			}
-
+			
 			const urlParams = new URLSearchParams(window.location.search);
 			const startParam = urlParams.get('start');
 			if (startParam === 'events') {
@@ -191,6 +202,10 @@
 	function handleNavigate(event: CustomEvent<{page: string}>) {
 		goToPage(event.detail.page as 'main' | 'events' | 'venues' | 'brands');
 	}
+
+	function handleFooterHeight(event: CustomEvent<{height: number}>) {
+		document.documentElement.style.setProperty('--footer-h', `${event.detail.height}px`);
+	}
 </script>
 
 <div 
@@ -230,13 +245,27 @@
 					{userInfo}
 					on:eventClick={handleEventClick}
 					on:navigate={handleNavigate}
+					on:footerHeight={handleFooterHeight}
 				/>
 			{:else if currentView === 'events'}
-				<Events initialEventId={selectedEventId} on:goBack={() => goToPage('main')} on:startBooking={handleStartBooking} />
+				<Events 
+					initialEventId={selectedEventId} 
+					on:goBack={() => goToPage('main')} 
+					on:startBooking={handleStartBooking} 
+					on:footerHeight={handleFooterHeight}
+				/>
 			{:else if currentView === 'venues'}
-				<Venues on:goBack={() => goToPage('main')} on:goToEvent={handleGoToEvent} />
+				<Venues 
+					on:goBack={() => goToPage('main')} 
+					on:goToEvent={handleGoToEvent} 
+					on:footerHeight={handleFooterHeight}
+				/>
 			{:else if currentView === 'brands'}
-				<Brands on:goBack={() => goToPage('main')} on:goToEvent={handleGoToEvent} />
+				<Brands 
+					on:goBack={() => goToPage('main')} 
+					on:goToEvent={handleGoToEvent} 
+					on:footerHeight={handleFooterHeight}
+				/>
 			{:else if currentView === 'booking'}
 				<Booking 
 					event={{
@@ -247,6 +276,7 @@
 					availableBrands={availableBrands}
 					onComplete={goToPreviousBookingView}
 					onCancel={goToPreviousBookingView}
+					on:footerHeight={handleFooterHeight}
 				/>
 			{/if}
 		</main>

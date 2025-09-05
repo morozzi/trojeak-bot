@@ -25,9 +25,12 @@
 
 	const { featuredEvents, selectedCity, selectedLanguage, userInfo }: Props = $props();
 
+	let footerEl: HTMLElement | undefined = $state();
+
 	const dispatch = createEventDispatcher<{
 		eventClick: { eventId: string };
 		navigate: { page: string };
+		footerHeight: { height: number };
 	}>();
 
 	function handleEventClick(eventId: string) {
@@ -37,6 +40,21 @@
 	function handleNavigate(page: string) {
 		dispatch('navigate', { page });
 	}
+
+	function updateFooterHeight() {
+		if (!footerEl) return;
+		const height = footerEl.offsetHeight;
+		dispatch('footerHeight', { height });
+	}
+
+	$effect(() => {
+		if (footerEl) {
+			updateFooterHeight();
+			const ro = new ResizeObserver(updateFooterHeight);
+			ro.observe(footerEl);
+			return () => ro.disconnect();
+		}
+	});
 </script>
 
 <div class="space-y-8">
@@ -104,6 +122,7 @@
 </div>
 
 <nav 
+	bind:this={footerEl}
 	aria-label="Primary navigation"
 	class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50"
 >

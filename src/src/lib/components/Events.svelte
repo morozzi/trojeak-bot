@@ -24,9 +24,12 @@
 
 	const { initialEventId }: Props = $props();
 
+	let footerEl: HTMLElement | undefined = $state();
+
 	const dispatch = createEventDispatcher<{
 		goBack: void;
 		startBooking: { event: Event };
+		footerHeight: { height: number };
 	}>();
 
 	let viewMode: 'list' | 'detail' = $state(initialEventId ? 'detail' : 'list');
@@ -83,6 +86,21 @@
 	function startBooking(event: Event): void {
 		dispatch('startBooking', { event });
 	}
+
+	function updateFooterHeight() {
+		if (!footerEl) return;
+		const height = footerEl.offsetHeight;
+		dispatch('footerHeight', { height });
+	}
+
+	$effect(() => {
+		if (footerEl) {
+			updateFooterHeight();
+			const ro = new ResizeObserver(updateFooterHeight);
+			ro.observe(footerEl);
+			return () => ro.disconnect();
+		}
+	});
 </script>
 
 <div class="space-y-8">
@@ -187,7 +205,7 @@
 	{/if}
 </div>
 
-<nav class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
+<nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
 	<div class="mx-auto w-full max-w-2xl px-4">
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 			<div class="flex items-center justify-start">
