@@ -3,7 +3,6 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
-	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import { createEventDispatcher } from 'svelte';
 
@@ -19,6 +18,7 @@
 
 	const dispatch = createEventDispatcher<{
 		goBack: void;
+		goToEvent: { eventId: string };
 	}>();
 
 	let viewMode: 'list' | 'detail' = $state('list');
@@ -27,21 +27,21 @@
 	const venues: Venue[] = [
 		{
 			id: 'ven_001',
-			name: 'Sky Bar Phnom Penh',
+			name: 'Sky Bar',
 			type: 'bar',
 			city: 'Phnom Penh',
-			address: '123 Riverside, Phnom Penh',
+			address: 'Rosewood Hotel, Street 136',
 			featured: true,
-			description: 'Rooftop bar with panoramic city views and premium cocktails.'
+			description: 'Rooftop bar with stunning city views and premium cocktails.'
 		},
 		{
 			id: 'ven_002',
 			name: 'Golden KTV',
 			type: 'ktv',
 			city: 'Phnom Penh',
-			address: '456 Central Market Area',
+			address: 'Street 136, Daun Penh',
 			featured: false,
-			description: 'Modern KTV with private rooms and professional sound systems.'
+			description: 'Premium KTV lounge with private rooms and state-of-the-art sound system.'
 		},
 		{
 			id: 'ven_003',
@@ -80,8 +80,7 @@
 	}
 
 	function goToEvent(eventId: string): void {
-		// Navigate to specific event
-		console.log('Navigate to event:', eventId);
+		dispatch('goToEvent', { eventId });
 	}
 </script>
 
@@ -178,9 +177,15 @@
 
 				<h3 class="text-lg font-semibold mb-4">Upcoming Events</h3>
 				{#if selectedVenue.featured}
-					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent('evt_001')}>
+					{@const upcomingEvent = { id: 'evt_001', title: 'Friday Night Live', featured: true }}
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent(upcomingEvent.id)}>
 						<Card.CardHeader class="gap-0 pb-4">
-							<Card.CardTitle class="text-lg font-semibold">Friday Night Live</Card.CardTitle>
+							<div class="flex justify-between items-center">
+								<Card.CardTitle class="text-lg font-semibold">{upcomingEvent.title}</Card.CardTitle>
+								{#if upcomingEvent.featured}
+									<Badge.Badge>Featured</Badge.Badge>
+								{/if}
+							</div>
 						</Card.CardHeader>
 						
 						<AspectRatio.Root class="pb-2" ratio={16/9}>

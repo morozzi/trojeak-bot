@@ -190,6 +190,10 @@
 		currentView = 'booking';
 		window.scrollTo(0, 0);
 	}
+	
+	function handleGoToEvent(event: CustomEvent<{eventId: string}>) {
+  	goToPage('events', event.detail.eventId);
+	}
 
 	function goToPreviousBookingView() {
 		currentView = previousView;
@@ -357,9 +361,9 @@
 			{:else if currentView === 'events'}
 				<Events initialEventId={selectedEventId} on:goBack={() => goToPage('main')} on:startBooking={handleStartBooking} />
 			{:else if currentView === 'venues'}
-				<Venues on:goBack={() => goToPage('main')} />
+				<Venues on:goBack={() => goToPage('main')} on:goToEvent={handleGoToEvent} />
 			{:else if currentView === 'brands'}
-				<Brands on:goBack={() => goToPage('main')} />
+				<Brands on:goBack={() => goToPage('main')} on:goToEvent={handleGoToEvent} />
 			{:else if currentView === 'booking'}
 				<Booking 
 					event={{

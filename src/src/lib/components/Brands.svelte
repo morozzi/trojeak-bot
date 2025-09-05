@@ -17,6 +17,7 @@
 
 	const dispatch = createEventDispatcher<{
 		goBack: void;
+		goToEvent: { eventId: string };
 	}>();
 
 	let viewMode: 'list' | 'detail' = $state('list');
@@ -25,10 +26,10 @@
 	const brands: Brand[] = [
 		{
 			id: 'brd_001',
-			name: 'Angkor Beer',
-			type: 'beer',
-			featured: true,
-			description: 'Cambodia\'s premium beer brand with crisp, refreshing taste.'
+			name: 'Absolut Vodka',
+			type: 'vodka',
+			featured: false,
+			description: 'Premium Swedish vodka with a smooth, clean taste perfect for cocktails.'
 		},
 		{
 			id: 'brd_002',
@@ -70,8 +71,7 @@
 	}
 
 	function goToEvent(eventId: string): void {
-		// Navigate to specific event
-		console.log('Navigate to event:', eventId);
+		dispatch('goToEvent', { eventId });
 	}
 </script>
 
@@ -152,9 +152,15 @@
 
 				<h3 class="text-lg font-semibold mb-4">Upcoming Events</h3>
 				{#if selectedBrand.featured}
-					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent('evt_003')}>
+					{@const upcomingEvent = { id: 'evt_003', title: 'Weekend Beach Club', featured: true }}
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent(upcomingEvent.id)}>
 						<Card.CardHeader class="gap-0 pb-4">
-							<Card.CardTitle class="text-lg font-semibold">Weekend Beach Club</Card.CardTitle>
+							<div class="flex justify-between items-center">
+								<Card.CardTitle class="text-lg font-semibold">{upcomingEvent.title}</Card.CardTitle>
+								{#if upcomingEvent.featured}
+									<Badge.Badge>Featured</Badge.Badge>
+								{/if}
+							</div>
 						</Card.CardHeader>
 						
 						<AspectRatio.Root class="pb-2" ratio={16/9}>
@@ -172,7 +178,7 @@
 								🏢 Otres Beach Club
 							</div>
 
-							<div class="text-sm">🎵 Artist Name</div>
+							<div class="text-sm">🎵 Live DJ</div>
 
 							<div class="flex gap-2 items-center">
 								<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
