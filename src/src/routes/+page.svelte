@@ -2,16 +2,9 @@
 	import { onMount } from 'svelte';
 	import type { WebApp } from '@twa-dev/sdk';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Badge from '$lib/components/ui/badge/index.js';
-	import * as Button from '$lib/components/ui/button/index.js';
-	import * as Avatar from '$lib/components/ui/avatar/index.js';
-	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
-	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import * as Select from '$lib/components/ui/select/index.js';
-	import * as Separator from '$lib/components/ui/separator/index.js';
-	import { Share2 } from '@lucide/svelte';
-	import LoadingAnimation from '$lib/components/LoadingAnimation.svelte';
+	import Loading from '$lib/components/Loading.svelte';
+	import Header from '$lib/components/Header.svelte';
+	import Home from '$lib/components/Home.svelte';
 	import Events from '$lib/components/Events.svelte';
 	import Venues from '$lib/components/Venues.svelte';
 	import Brands from '$lib/components/Brands.svelte';
@@ -58,7 +51,6 @@
 		backgroundColor: '#f9fafb',
 		textColor: '#1f2937'
 	});
-	let footerEl: HTMLElement | undefined = $state();
 
 	const featuredEvents: Event[] = [
 		{
@@ -94,86 +86,53 @@
 	].sort((a, b) => Number(b.featured) - Number(a.featured));
 
 	const availableBrands: Brand[] = [
-		{
-			id: 'brd_001',
-			name: 'Angkor Beer',
-			type: 'beer',
-			featured: true,
-			description: 'Cambodia\'s premium beer.'
-		},
-		{
-			id: 'brd_002',
-			name: 'Hennessy',
-			type: 'spirits', 
-			featured: true,
-			description: 'World-renowned cognac.'
-		}
+		{ id: 'brd_001', name: 'Cambodia Lite', type: 'Beer', featured: true, description: 'Local favorite light beer' },
+		{ id: 'brd_002', name: 'Cambodia Premium', type: 'Beer', featured: false, description: 'Premium local beer' },
+		{ id: 'brd_003', name: 'Tiger Beer', type: 'Beer', featured: true, description: 'International beer brand' }
 	];
 
-	const userInitials = $derived(userInfo ? 
-		userInfo.first_name[0] + (userInfo.last_name?.[0] || '') : 
-		'JD'
-	);
-	
-	function updateFooterHeight() {
-		if (!footerEl) return;
-		const h = footerEl.offsetHeight;
-		document.documentElement.style.setProperty('--footer-h', `${h}px`);
-	}
-
-	function handleShareToStory() {
-		if (!webApp?.shareToStory) return;
-		
-		webApp.shareToStory('https://trojeak.morozzi.com', {
-			text: 'Check out Trojeak - Cambodia #1 event app!',
-			widget_link: {
-				url: 'https://trojeak.morozzi.com',
-				name: 'Book Events'
-			}
-		});
-	}
-
-	onMount(() => {
+	onMount(async () => {
 		try {
-			webApp = window.Telegram?.WebApp;
-			if (webApp) {
-				webApp.ready();
-				webApp.expand();
-				userInfo = webApp.initDataUnsafe?.user;
-
-				if (webApp.themeParams) {
-					themeParams = {
-						backgroundColor: webApp.themeParams.header_bg_color || '#f9fafb',
-						textColor: '#1f2937'
-					};
-					webApp.setHeaderColor(themeParams.backgroundColor);
+			const WebApp = (await import('@twa-dev/sdk')).default;
+			webApp = WebApp;
+			
+			WebApp.ready();
+			WebApp.expand();
+			
+			const initData = WebApp.initData;
+			if (initData) {
+				const urlParams = new URLSearchParams(initData);
+				const userParam = urlParams.get('user');
+				if (userParam) {
+					userInfo = JSON.parse(decodeURIComponent(userParam));
 				}
 			}
 
-			const urlParams = new URLSearchParams(window.location.search);
-			const startParam = urlParams.get('start');
-			if (startParam === 'events') {
-				currentView = 'events';
-			} else if (startParam === 'venues') {
-				currentView = 'venues';
-			} else if (startParam === 'brands') {
-				currentView = 'brands';
+			if (WebApp.themeParams) {
+				themeParams = {
+					backgroundColor: WebApp.themeParams.bg_color || '#f9fafb',
+					textColor: WebApp.themeParams.text_color || '#1f2937'
+				};
 			}
 
+			const urlParams = new URLSearchParams(window.location.search);
+			const startParam = urlParams.get('tgWebAppStartParam');
+			if (startParam) {
+				const [action, id] = startParam.split('_');
+				if (action === 'event' && id) {
+					selectedEventId = `evt_${id}`;
+					currentView = 'events';
+				} else if (action === 'venue' && id) {
+					currentView = 'venues';
+				} else if (action === 'brand' && id) {
+					currentView = 'brands';
+				}
+			}
 		} catch (err) {
-			error = 'Failed to initialize mini app';
-			console.error('WebApp initialization failed:', err);
+			error = 'Failed to initialize Telegram Web App';
+			console.error('Telegram Web App initialization error:', err);
 		} finally {
 			isLoading = false;
-		}
-	});
-
-	$effect(() => {
-		if (footerEl && currentView === 'main') {
-			updateFooterHeight();
-			const ro = new ResizeObserver(updateFooterHeight);
-			ro.observe(footerEl);
-			return () => ro.disconnect();
 		}
 	});
 
@@ -192,12 +151,48 @@
 	}
 	
 	function handleGoToEvent(event: CustomEvent<{eventId: string}>) {
-  	goToPage('events', event.detail.eventId);
+		goToPage('events', event.detail.eventId);
 	}
 
 	function goToPreviousBookingView() {
 		currentView = previousView;
 		window.scrollTo(0, 0);
+	}
+
+	function handleCityChange(event: CustomEvent<{city: string}>) {
+		selectedCity = event.detail.city;
+	}
+
+	function handleLanguageChange(event: CustomEvent<{language: string}>) {
+		selectedLanguage = event.detail.language;
+	}
+
+	function handleShareToStory() {
+		if (webApp) {
+			try {
+				webApp.shareToStory('https://trojeak.morozzi.com', {
+					text: 'Check out these amazing events in Cambodia! 🇰🇭',
+					widget_link: {
+						url: 'https://trojeak.morozzi.com',
+						name: 'Trojeak Events'
+					}
+				});
+			} catch (err) {
+				console.error('Share to story failed:', err);
+			}
+		}
+	}
+
+	function handleAccountAction(event: CustomEvent<{action: string}>) {
+		console.log('Account action:', event.detail.action);
+	}
+
+	function handleEventClick(event: CustomEvent<{eventId: string}>) {
+		goToPage('events', event.detail.eventId);
+	}
+
+	function handleNavigate(event: CustomEvent<{page: string}>) {
+		goToPage(event.detail.page as 'main' | 'events' | 'venues' | 'brands');
 	}
 </script>
 
@@ -206,7 +201,7 @@
 	style="--app-footer-h: calc(var(--footer-h, 72px) + env(safe-area-inset-bottom, 0px));"
 >
 	{#if isLoading}
-		<LoadingAnimation message="Loading Trojeak..." />
+		<Loading message="Loading Trojeak..." />
 	{:else if error}
 		<div class="flex items-center justify-center min-h-screen">
 			<Card.Card class="w-full max-w-2xl mx-auto">
@@ -218,146 +213,27 @@
 		</div>
 	{:else}
 		{#if currentView !== 'booking'}
-			<header class="mx-auto w-full max-w-2xl px-4 pt-4 pb-4">
-				<div class="grid grid-cols-[1fr_auto_1fr] items-center pb-4">
-					<div class="flex items-center gap-5 justify-start">
-						<DropdownMenu.Root>
-							<DropdownMenu.Trigger>
-								{#snippet child({ props })}
-									<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
-										{#if userInfo?.photo_url}
-											<Avatar.Image src={userInfo.photo_url} alt="User" />
-										{/if}
-										<Avatar.Fallback>{userInitials}</Avatar.Fallback>
-									</Avatar.Root>
-								{/snippet}
-							</DropdownMenu.Trigger>
-							<DropdownMenu.Content class="w-56 z-[60]" align="start">
-								<DropdownMenu.Label>My Account</DropdownMenu.Label>
-								<DropdownMenu.Separator />
-								<DropdownMenu.Item onclick={() => {}}>
-									⚙️ Account Settings
-								</DropdownMenu.Item>
-								<DropdownMenu.Item onclick={() => {}}>
-									📢 Channel Subscription
-								</DropdownMenu.Item>
-								<DropdownMenu.Item onclick={() => {}}>
-									📋 My Bookings
-								</DropdownMenu.Item>
-								<DropdownMenu.Separator />
-								<DropdownMenu.Item onclick={() => {}}>
-									💬 Support
-								</DropdownMenu.Item>
-							</DropdownMenu.Content>
-						</DropdownMenu.Root>
-
-						<Select.Root type="single" bind:value={selectedCity}>
-							<Select.Trigger class="w-20">
-								{selectedCity.toUpperCase()}
-							</Select.Trigger>
-							<Select.Content>
-								<Select.Item value="pp">Phnom Penh</Select.Item>
-								<Select.Item value="shv">Sihanoukville</Select.Item>
-								<Select.Item value="sr">Siem Reap</Select.Item>
-								<Select.Item value="btb">Battambang</Select.Item>
-							</Select.Content>
-						</Select.Root>
-					</div>
-
-					<div class="flex items-center justify-center">
-					</div>
-
-					<div class="flex items-center gap-2 justify-end">
-						<Select.Root type="single" bind:value={selectedLanguage}>
-							<Select.Trigger class="w-16">
-								{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
-							</Select.Trigger>
-							<Select.Content>
-								<Select.Item value="en">🇺🇸 English</Select.Item>
-								<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
-							</Select.Content>
-						</Select.Root>
-
-						<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
-							<Share2 size={16} />
-						</Button.Button>
-					</div>
-				</div>
-				<Separator.Separator class="mb-6" />
-			</header>
+			<Header 
+				{userInfo}
+				{selectedCity}
+				{selectedLanguage}
+				on:cityChange={handleCityChange}
+				on:languageChange={handleLanguageChange}
+				on:shareToStory={handleShareToStory}
+				on:accountAction={handleAccountAction}
+			/>
 		{/if}
 
 		<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)] mb-8">
 			{#if currentView === 'main'}
-				<div class="space-y-8">
-					<div class="text-center space-y-4">
-						<h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-							Let's Trojeak
-						</h1>
-						<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
-					</div>
-
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-						{#if featuredEvents.length === 0}
-							<Card.Card>
-								<Skeleton.Skeleton class="h-16 w-full" />
-								<Card.CardContent class="p-4 space-y-2">
-									<Skeleton.Skeleton class="h-4 w-full" />
-									<Skeleton.Skeleton class="h-4 w-3/4" />
-									<Skeleton.Skeleton class="h-4 w-1/2" />
-								</Card.CardContent>
-							</Card.Card>
-						{:else}
-							{#each featuredEvents as event}
-								<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToPage('events', event.id)}>
-									<Card.CardHeader class="gap-0 pb-4">
-										<div class="flex justify-between items-center">
-											<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
-											<div class="flex gap-2">
-												{#if event.featured}
-													<Badge.Badge>Featured</Badge.Badge>
-												{/if}
-											</div>
-										</div>
-									</Card.CardHeader>
-									
-									{#if event.featured}
-										<AspectRatio.Root class="pb-2" ratio={16/9}>
-											<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
-												Event Banner
-											</div>
-										</AspectRatio.Root>
-									{/if}
-
-									<Card.CardContent class="p-4 pb-4 space-y-4">
-										<div class="text-sm text-muted-foreground">
-											📅 August 24, 2025 • 📍 {event.city}
-										</div>
-
-										<div class="text-sm">
-											🏢 {event.venue_name}
-										</div>
-
-										<div class="text-sm">🎵 Artist Name</div>
-
-										<div class="flex gap-2 items-center">
-											<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
-											<Avatar.Root class="w-8 h-8 rounded-lg">
-												<Avatar.Fallback class="rounded-lg bg-muted" />
-											</Avatar.Root>
-											<Avatar.Root class="w-8 h-8 rounded-lg">
-												<Avatar.Fallback class="rounded-lg bg-muted" />
-											</Avatar.Root>
-											<Avatar.Root class="w-8 h-8 rounded-lg">
-												<Avatar.Fallback class="rounded-lg bg-muted" />
-											</Avatar.Root>
-										</div>
-									</Card.CardContent>
-								</Card.Card>
-							{/each}
-						{/if}
-					</div>
-				</div>
+				<Home 
+					{featuredEvents}
+					{selectedCity}
+					{selectedLanguage}
+					{userInfo}
+					on:eventClick={handleEventClick}
+					on:navigate={handleNavigate}
+				/>
 			{:else if currentView === 'events'}
 				<Events initialEventId={selectedEventId} on:goBack={() => goToPage('main')} on:startBooking={handleStartBooking} />
 			{:else if currentView === 'venues'}
@@ -377,49 +253,5 @@
 				/>
 			{/if}
 		</main>
-
-		{#if currentView === 'main'}
-			<nav 
-				bind:this={footerEl}
-				aria-label="Primary navigation"
-				class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50"
-			>
-				<div class="mx-auto w-full max-w-2xl px-4">
-					<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
-						<div class="flex items-center justify-start">
-						</div>
-
-						<div class="flex items-center gap-6 justify-center">
-							<Button.Button 
-								variant="outline" size="sm"
-								onclick={() => goToPage('events')}
-								class="flex flex-col items-center gap-1 px-4 py-2"
-							>
-								<span class="text-sm font-medium">Events</span>
-							</Button.Button>
-							
-							<Button.Button 
-								variant="outline" size="sm"
-								onclick={() => goToPage('venues')}
-								class="flex flex-col items-center gap-1 px-4 py-2"
-							>
-								<span class="text-sm font-medium">Venues</span>
-							</Button.Button>
-							
-							<Button.Button 
-								variant="outline" size="sm"
-								onclick={() => goToPage('brands')}
-								class="flex flex-col items-center gap-1 px-4 py-2"
-							>
-								<span class="text-sm font-medium">Brands</span>
-							</Button.Button>
-						</div>
-
-						<div class="flex items-center justify-end">
-						</div>
-					</div>
-				</div>
-			</nav>
-		{/if}
 	{/if}
 </div>
