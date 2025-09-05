@@ -6,8 +6,17 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import { createEventDispatcher } from 'svelte';
-	import type { Event } from '$lib/types/api.js';
-	import { events } from '$lib/data/mockData.js';
+
+	interface Event {
+		id: string;
+		title: string;
+		venue_name: string;
+		city: string;
+		featured: boolean;
+		price_range: string;
+		date: string;
+		description: string;
+	}
 
 	interface Props {
 		initialEventId?: string;
@@ -26,7 +35,38 @@
 	let viewMode: 'list' | 'detail' = $state(initialEventId ? 'detail' : 'list');
 	let selectedEventId: string | null = $state(initialEventId || null);
 
-	const sortedEvents = events.sort((a, b) => Number(b.eventfeatured) - Number(a.eventfeatured));
+	const events: Event[] = [
+		{
+			id: 'evt_001',
+			title: 'Friday Night Party',
+			venue_name: 'Sky Bar Phnom Penh',
+			city: 'Phnom Penh',
+			featured: true,
+			price_range: '$15-25',
+			date: 'August 22, 2025',
+			description: 'Ultimate rooftop party with city views and premium cocktails.'
+		},
+		{
+			id: 'evt_002', 
+			title: 'Karaoke Night Special',
+			venue_name: 'Golden KTV',
+			city: 'Phnom Penh',
+			featured: false,
+			price_range: '$10-20',
+			date: 'August 23, 2025',
+			description: 'Private rooms with premium sound system and drink promotions.'
+		},
+		{
+			id: 'evt_003',
+			title: 'Weekend Beach Club',
+			venue_name: 'Otres Beach Club',
+			city: 'Sihanoukville',
+			featured: true,
+			price_range: '$12-22',
+			date: 'August 24, 2025',
+			description: 'Beachfront party with live DJ and tropical cocktails.'
+		}
+	].sort((a, b) => Number(b.featured) - Number(a.featured));
 
 	function selectEvent(eventId: string): void {
 		selectedEventId = eventId;
@@ -70,7 +110,7 @@
 		</div>
 		
 		<div class="grid gap-4">
-			{#if sortedEvents.length === 0}
+			{#if events.length === 0}
 				<Card.Card>
 					<Skeleton.Skeleton class="h-16 w-full" />
 					<Card.CardContent class="p-4 space-y-2">
@@ -80,20 +120,20 @@
 					</Card.CardContent>
 				</Card.Card>
 			{:else}
-				{#each sortedEvents as event}
-					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectEvent(event.eventid.toString())}>
+				{#each events as event}
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectEvent(event.id)}>
 						<Card.CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
-								<Card.CardTitle class="text-lg font-semibold">{event.eventtitle}</Card.CardTitle>
+								<Card.CardTitle class="text-lg font-semibold">{event.title}</Card.CardTitle>
 								<div class="flex gap-2">
-									{#if event.eventfeatured}
+									{#if event.featured}
 										<Badge.Badge>Featured</Badge.Badge>
 									{/if}
 								</div>
 							</div>
 						</Card.CardHeader>
 						
-						{#if event.eventfeatured}
+						{#if event.featured}
 							<AspectRatio.Root class="pb-2" ratio={16/9}>
 								<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
 									Featured Event Banner
@@ -103,11 +143,11 @@
 
 						<Card.CardContent class="p-4 pb-4 space-y-4">
 							<div class="text-sm text-muted-foreground">
-								📅 {new Date(event.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+								📅 {event.date} • 📍 {event.city}
 							</div>
 
 							<div class="text-sm">
-								🎵 {event.eventartist}
+								🏢 {event.venue_name}
 							</div>
 
 							<div class="text-sm">🎵 Artist Name</div>
@@ -130,7 +170,7 @@
 			{/if}
 		</div>
 	{:else if viewMode === 'detail' && selectedEventId}
-		{@const selectedEvent = sortedEvents.find(e => e.eventid.toString() === selectedEventId)}
+		{@const selectedEvent = events.find(e => e.id === selectedEventId)}
 		{#if selectedEvent}
 			<div class="space-y-8">
 				<AspectRatio.Root class="pb-2" ratio={16/9}>
@@ -141,8 +181,8 @@
 
 				<Card.Card>
 					<Card.CardHeader>
-						<h1 class="text-3xl font-bold">{selectedEvent.eventtitle}</h1>
-						{#if selectedEvent.eventfeatured}
+						<h1 class="text-3xl font-bold">{selectedEvent.title}</h1>
+						{#if selectedEvent.featured}
 							<div class="flex gap-2">
 								<Badge.Badge>Featured</Badge.Badge>
 							</div>
@@ -150,15 +190,11 @@
 					</Card.CardHeader>
 					<Card.CardContent class="p-6 space-y-4">
 						<div class="space-y-2">
-							<p class="text-sm text-muted-foreground">🎵 {selectedEvent.eventartist}</p>
-							{#if selectedEvent.eventschema}
-								<p class="text-sm text-muted-foreground">💰 {selectedEvent.eventschema} Schema - ${selectedEvent.eventschemaprice}</p>
-							{/if}
-							<p class="text-sm text-muted-foreground">📅 {new Date(selectedEvent.eventdate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+							<p class="text-sm text-muted-foreground">📍 {selectedEvent.venue_name}</p>
+							<p class="text-sm text-muted-foreground">💰 {selectedEvent.price_range}</p>
+							<p class="text-sm text-muted-foreground">📅 {selectedEvent.date}</p>
 						</div>
-						{#if selectedEvent.eventdesc}
-							<p>{selectedEvent.eventdesc}</p>
-						{/if}
+						<p>{selectedEvent.description}</p>
 						<Button.Button onclick={() => startBooking(selectedEvent)} class="w-full">
 							Book This Event
 						</Button.Button>

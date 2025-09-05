@@ -6,16 +6,8 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import { createEventDispatcher } from 'svelte';
-
-	interface Venue {
-		id: string;
-		name: string;
-		type: string;
-		city: string;
-		address: string;
-		featured: boolean;
-		description: string;
-	}
+	import type { Venue } from '$lib/types/api.js';
+	import { venueData } from '$lib/data/mockData.js';
 
 	let footerEl: HTMLElement | undefined = $state();
 
@@ -28,44 +20,7 @@
 	let viewMode: 'list' | 'detail' = $state('list');
 	let selectedVenueId: string | null = $state(null);
 
-	const venues: Venue[] = [
-		{
-			id: 'ven_001',
-			name: 'Sky Bar',
-			type: 'bar',
-			city: 'Phnom Penh',
-			address: 'Rosewood Hotel, Street 136',
-			featured: true,
-			description: 'Rooftop bar with stunning city views and premium cocktails.'
-		},
-		{
-			id: 'ven_002',
-			name: 'Golden KTV',
-			type: 'ktv',
-			city: 'Phnom Penh',
-			address: 'Street 136, Daun Penh',
-			featured: false,
-			description: 'Premium KTV lounge with private rooms and state-of-the-art sound system.'
-		},
-		{
-			id: 'ven_003',
-			name: 'Otres Beach Club',
-			type: 'club',
-			city: 'Sihanoukville',
-			address: 'Otres Beach, Sihanoukville',
-			featured: true,
-			description: 'Beachfront club with live music and tropical atmosphere.'
-		},
-		{
-			id: 'ven_004',
-			name: 'Temple Club',
-			type: 'club',
-			city: 'Siem Reap',
-			address: 'Pub Street, Siem Reap',
-			featured: false,
-			description: 'Historic venue with traditional Khmer architecture and modern amenities.'
-		}
-	].sort((a, b) => Number(b.featured) - Number(a.featured));
+	const venues = venueData.sort((a, b) => Number(b.venuefeatured) - Number(a.venuefeatured));
 
 	function selectVenue(venueId: string): void {
 		selectedVenueId = venueId;
@@ -121,22 +76,22 @@
 				</Card.Card>
 			{:else}
 				{#each venues as venue}
-					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectVenue(venue.id)}>
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectVenue(venue.venueid.toString())}>
 						<Card.CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
 								<div class="flex items-center gap-2">
-									<Card.CardTitle class="text-lg font-semibold">{venue.name}</Card.CardTitle>
-									<Badge.Badge variant="secondary">{venue.type.toUpperCase()}</Badge.Badge>
+									<Card.CardTitle class="text-lg font-semibold">{venue.venuename}</Card.CardTitle>
+									<Badge.Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge.Badge>
 								</div>
 								<div class="flex gap-2">
-									{#if venue.featured}
+									{#if venue.venuefeatured}
 										<Badge.Badge>Featured</Badge.Badge>
 									{/if}
 								</div>
 							</div>
 						</Card.CardHeader>
 						
-						{#if venue.featured}
+						{#if venue.venuefeatured}
 							<AspectRatio.Root class="pb-2" ratio={16/9}>
 								<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
 									Featured Venue Banner
@@ -146,28 +101,26 @@
 
 						<Card.CardContent class="p-4 pb-4 space-y-4">
 							<div class="text-sm text-muted-foreground">
-								📍 {venue.address}
+								📍 <a href={venue.venuelink} target="_blank" rel="noopener noreferrer" class="hover:underline">View Location</a>
 							</div>
 
 							<div class="text-sm text-muted-foreground">
-								🏙️ {venue.city}
+								🏙️ City ID: {venue.cityid}
 							</div>
 
 							<div class="text-sm">
-								🏢 {venue.type.toUpperCase()}
+								🏢 {venue.venuetype.toUpperCase()}
 							</div>
-
-							<p>{venue.description}</p>
 						</Card.CardContent>
 					</Card.Card>
 				{/each}
 			{/if}
 		</div>
 	{:else if viewMode === 'detail' && selectedVenueId}
-		{@const selectedVenue = venues.find(v => v.id === selectedVenueId)}
+		{@const selectedVenue = venues.find(v => v.venueid.toString() === selectedVenueId)}
 		{#if selectedVenue}
 			<div class="space-y-8">
-				{#if selectedVenue.featured}
+				{#if selectedVenue.venuefeatured}
 					<AspectRatio.Root class="pb-2" ratio={16/9}>
 						<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
 							Featured Venue Banner
@@ -177,25 +130,24 @@
 
 				<Card.Card>
 					<Card.CardHeader>
-						<h1 class="text-3xl font-bold">{selectedVenue.name}</h1>
+						<h1 class="text-3xl font-bold">{selectedVenue.venuename}</h1>
 						<div class="flex gap-2">
-							<Badge.Badge variant="secondary">{selectedVenue.type.toUpperCase()}</Badge.Badge>
-							{#if selectedVenue.featured}
+							<Badge.Badge variant="secondary">{selectedVenue.venuetype.toUpperCase()}</Badge.Badge>
+							{#if selectedVenue.venuefeatured}
 								<Badge.Badge>Featured</Badge.Badge>
 							{/if}
 						</div>
 					</Card.CardHeader>
 					<Card.CardContent class="p-6 space-y-4">
 						<div class="space-y-2">
-							<p class="text-sm text-muted-foreground">📍 {selectedVenue.address}</p>
-							<p class="text-sm text-muted-foreground">🏙️ {selectedVenue.city}</p>
+							<p class="text-sm text-muted-foreground">📍 <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer" class="hover:underline">View Location</a></p>
+							<p class="text-sm text-muted-foreground">🏙️ City ID: {selectedVenue.cityid}</p>
 						</div>
-						<p>{selectedVenue.description}</p>
 					</Card.CardContent>
 				</Card.Card>
 
 				<h3 class="text-lg font-semibold mb-4">Upcoming Events</h3>
-				{#if selectedVenue.featured}
+				{#if selectedVenue.venuefeatured}
 					{@const upcomingEvent = { id: 'evt_001', title: 'Friday Night Live', featured: true }}
 					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent(upcomingEvent.id)}>
 						<Card.CardHeader class="gap-0 pb-4">
@@ -215,11 +167,11 @@
 
 						<Card.CardContent class="p-4 pb-4 space-y-4">
 							<div class="text-sm text-muted-foreground">
-								📅 August 24, 2025 • 📍 {selectedVenue.city}
+								📅 August 24, 2025 • 📍 City ID: {selectedVenue.cityid}
 							</div>
 
 							<div class="text-sm">
-								🏢 {selectedVenue.name}
+								🏢 {selectedVenue.venuename}
 							</div>
 
 							<div class="text-sm">🎵 Artist Name</div>

@@ -6,11 +6,18 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import { createEventDispatcher } from 'svelte';
-	import type { Brand } from '$lib/types/api.js';
-	import { brandData } from '$lib/data/mockData.js';
+
+	interface Venue {
+		id: string;
+		name: string;
+		type: string;
+		city: string;
+		address: string;
+		featured: boolean;
+		description: string;
+	}
 
 	let footerEl: HTMLElement | undefined = $state();
-	let isLoading: boolean = $state(false);
 
 	const dispatch = createEventDispatcher<{
 		goBack: void;
@@ -19,19 +26,56 @@
 	}>();
 
 	let viewMode: 'list' | 'detail' = $state('list');
-	let selectedBrandId: string | null = $state(null);
+	let selectedVenueId: string | null = $state(null);
 
-	const brands = brandData.sort((a, b) => Number(b.brandfeatured) - Number(a.brandfeatured));
+	const venues: Venue[] = [
+		{
+			id: 'ven_001',
+			name: 'Sky Bar',
+			type: 'bar',
+			city: 'Phnom Penh',
+			address: 'Rosewood Hotel, Street 136',
+			featured: true,
+			description: 'Rooftop bar with stunning city views and premium cocktails.'
+		},
+		{
+			id: 'ven_002',
+			name: 'Golden KTV',
+			type: 'ktv',
+			city: 'Phnom Penh',
+			address: 'Street 136, Daun Penh',
+			featured: false,
+			description: 'Premium KTV lounge with private rooms and state-of-the-art sound system.'
+		},
+		{
+			id: 'ven_003',
+			name: 'Otres Beach Club',
+			type: 'club',
+			city: 'Sihanoukville',
+			address: 'Otres Beach, Sihanoukville',
+			featured: true,
+			description: 'Beachfront club with live music and tropical atmosphere.'
+		},
+		{
+			id: 'ven_004',
+			name: 'Temple Club',
+			type: 'club',
+			city: 'Siem Reap',
+			address: 'Pub Street, Siem Reap',
+			featured: false,
+			description: 'Historic venue with traditional Khmer architecture and modern amenities.'
+		}
+	].sort((a, b) => Number(b.featured) - Number(a.featured));
 
-	function selectBrand(brandId: string): void {
-		selectedBrandId = brandId;
+	function selectVenue(venueId: string): void {
+		selectedVenueId = venueId;
 		viewMode = 'detail';
 		window.scrollTo(0, 0);
 	}
 
 	function goToList(): void {
 		viewMode = 'list';
-		selectedBrandId = null;
+		selectedVenueId = null;
 		window.scrollTo(0, 0);
 	}
 
@@ -62,128 +106,97 @@
 <div class="space-y-8">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<h1 class="text-3xl font-bold">Brands</h1>
+			<h1 class="text-3xl font-bold">Venues</h1>
 		</div>
 		
 		<div class="grid gap-4">
-			{#if isLoading || brands.length === 0}
+			{#if venues.length === 0}
 				<Card.Card>
-					<Card.CardHeader class="pb-2">
-						<div class="flex items-start justify-between">
-							<div class="space-y-2 flex-1">
-								<Skeleton.Root class="h-6 w-3/4" />
-								<Skeleton.Root class="h-4 w-1/2" />
-							</div>
-						</div>
-					</Card.CardHeader>
-					<Card.CardContent class="space-y-4">
-						<Skeleton.Root class="h-4 w-full" />
-						<Skeleton.Root class="h-4 w-2/3" />
-						<div class="flex gap-2">
-							<Skeleton.Root class="h-8 w-8 rounded-lg" />
-							<Skeleton.Root class="h-8 w-8 rounded-lg" />
-							<Skeleton.Root class="h-8 w-8 rounded-lg" />
-						</div>
-					</Card.CardContent>
-				</Card.Card>
-				<Card.Card>
-					<Card.CardHeader class="pb-2">
-						<div class="flex items-start justify-between">
-							<div class="space-y-2 flex-1">
-								<Skeleton.Root class="h-6 w-3/4" />
-								<Skeleton.Root class="h-4 w-1/2" />
-							</div>
-						</div>
-					</Card.CardHeader>
-					<Card.CardContent class="space-y-4">
-						<Skeleton.Root class="h-4 w-full" />
-						<Skeleton.Root class="h-4 w-2/3" />
-						<div class="flex gap-2">
-							<Skeleton.Root class="h-8 w-8 rounded-lg" />
-							<Skeleton.Root class="h-8 w-8 rounded-lg" />
-							<Skeleton.Root class="h-8 w-8 rounded-lg" />
-						</div>
-					</Card.CardContent>
-				</Card.Card>
-				<Card.Card>
-					<Card.CardHeader class="pb-2">
-						<div class="flex items-start justify-between">
-							<div class="space-y-2 flex-1">
-								<Skeleton.Root class="h-6 w-3/4" />
-								<Skeleton.Root class="h-4 w-1/2" />
-							</div>
-						</div>
-					</Card.CardHeader>
-					<Card.CardContent class="space-y-4">
-						<Skeleton.Root class="h-4 w-full" />
-						<Skeleton.Root class="h-4 w-2/3" />
-						<div class="flex gap-2">
-							<Skeleton.Root class="h-8 w-8 rounded-lg" />
-							<Skeleton.Root class="h-8 w-8 rounded-lg" />
-							<Skeleton.Root class="h-8 w-8 rounded-lg" />
-						</div>
+					<Skeleton.Skeleton class="h-16 w-full" />
+					<Card.CardContent class="p-4 space-y-2">
+						<Skeleton.Skeleton class="h-4 w-full" />
+						<Skeleton.Skeleton class="h-4 w-3/4" />
+						<Skeleton.Skeleton class="h-4 w-1/2" />
 					</Card.CardContent>
 				</Card.Card>
 			{:else}
-				{#each brands as brand}
-					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectBrand(brand.brandid.toString())}>
+				{#each venues as venue}
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectVenue(venue.id)}>
 						<Card.CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
 								<div class="flex items-center gap-2">
-									<Card.CardTitle class="text-lg font-semibold">{brand.brandname}</Card.CardTitle>
+									<Card.CardTitle class="text-lg font-semibold">{venue.name}</Card.CardTitle>
+									<Badge.Badge variant="secondary">{venue.type.toUpperCase()}</Badge.Badge>
 								</div>
 								<div class="flex gap-2">
-									{#if brand.brandfeatured}
+									{#if venue.featured}
 										<Badge.Badge>Featured</Badge.Badge>
 									{/if}
 								</div>
 							</div>
 						</Card.CardHeader>
 						
-						{#if brand.brandfeatured}
+						{#if venue.featured}
 							<AspectRatio.Root class="pb-2" ratio={16/9}>
 								<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
-									Featured Brand Banner
+									Featured Venue Banner
 								</div>
 							</AspectRatio.Root>
 						{/if}
 
 						<Card.CardContent class="p-4 pb-4 space-y-4">
-							<p>Premium alcohol brand</p>
+							<div class="text-sm text-muted-foreground">
+								📍 {venue.address}
+							</div>
+
+							<div class="text-sm text-muted-foreground">
+								🏙️ {venue.city}
+							</div>
+
+							<div class="text-sm">
+								🏢 {venue.type.toUpperCase()}
+							</div>
+
+							<p>{venue.description}</p>
 						</Card.CardContent>
 					</Card.Card>
 				{/each}
 			{/if}
 		</div>
-	{:else if viewMode === 'detail' && selectedBrandId}
-		{@const selectedBrand = brands.find(b => b.brandid.toString() === selectedBrandId)}
-		{#if selectedBrand}
+	{:else if viewMode === 'detail' && selectedVenueId}
+		{@const selectedVenue = venues.find(v => v.id === selectedVenueId)}
+		{#if selectedVenue}
 			<div class="space-y-8">
-				{#if selectedBrand.brandfeatured}
+				{#if selectedVenue.featured}
 					<AspectRatio.Root class="pb-2" ratio={16/9}>
 						<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
-							Featured Brand Banner
+							Featured Venue Banner
 						</div>
 					</AspectRatio.Root>
 				{/if}
 
 				<Card.Card>
 					<Card.CardHeader>
-						<h1 class="text-3xl font-bold">{selectedBrand.brandname}</h1>
+						<h1 class="text-3xl font-bold">{selectedVenue.name}</h1>
 						<div class="flex gap-2">
-							{#if selectedBrand.brandfeatured}
+							<Badge.Badge variant="secondary">{selectedVenue.type.toUpperCase()}</Badge.Badge>
+							{#if selectedVenue.featured}
 								<Badge.Badge>Featured</Badge.Badge>
 							{/if}
 						</div>
 					</Card.CardHeader>
-					<Card.CardContent class="p-6">
-						<p>Premium alcohol brand</p>
+					<Card.CardContent class="p-6 space-y-4">
+						<div class="space-y-2">
+							<p class="text-sm text-muted-foreground">📍 {selectedVenue.address}</p>
+							<p class="text-sm text-muted-foreground">🏙️ {selectedVenue.city}</p>
+						</div>
+						<p>{selectedVenue.description}</p>
 					</Card.CardContent>
 				</Card.Card>
 
 				<h3 class="text-lg font-semibold mb-4">Upcoming Events</h3>
-				{#if selectedBrand.brandfeatured}
-					{@const upcomingEvent = { id: 'evt_003', title: 'Weekend Beach Club', featured: true }}
+				{#if selectedVenue.featured}
+					{@const upcomingEvent = { id: 'evt_001', title: 'Friday Night Live', featured: true }}
 					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent(upcomingEvent.id)}>
 						<Card.CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
@@ -202,14 +215,14 @@
 
 						<Card.CardContent class="p-4 pb-4 space-y-4">
 							<div class="text-sm text-muted-foreground">
-								📅 August 24, 2025 • 📍 Sihanoukville
+								📅 August 24, 2025 • 📍 {selectedVenue.city}
 							</div>
 
 							<div class="text-sm">
-								🏢 Otres Beach Club
+								🏢 {selectedVenue.name}
 							</div>
 
-							<div class="text-sm">🎵 Live DJ</div>
+							<div class="text-sm">🎵 Artist Name</div>
 
 							<div class="flex gap-2 items-center">
 								<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
@@ -243,7 +256,7 @@
 					</Button.Button>
 				{:else}
 					<Button.Button variant="outline" size="sm" onclick={goToList}>
-						← Back to Brands
+						← Back to Venues
 					</Button.Button>
 				{/if}
 			</div>

@@ -5,7 +5,17 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
-	import type { Event } from '$lib/types/api.js';
+
+	interface Event {
+		id: string;
+		title: string;
+		venue_name: string;
+		city: string;
+		featured: boolean;
+		price_range: string;
+		date: string;
+		description: string;
+	}
 
 	interface Props {
 		featuredEvents: Event[];

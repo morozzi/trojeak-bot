@@ -1,10 +1,7 @@
-<!-- routes/+page.svelte - Main application page -->
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { WebApp } from '@twa-dev/sdk';
-	import type { TelegramUser, ViewType } from '$lib/types/components.js';
-	import type { Event, Brand } from '$lib/types/api.js';
-	import { events, brandData } from '$lib/data/mockData.js';
+	import * as Card from '$lib/components/ui/card/index.js';
 	import Loading from '$lib/components/Loading.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Home from '$lib/components/Home.svelte';
@@ -13,14 +10,41 @@
 	import Brands from '$lib/components/Brands.svelte';
 	import Booking from '$lib/components/Booking.svelte';
 
+	interface TelegramUser {
+		id: number;
+		first_name: string;
+		last_name?: string;
+		username?: string;
+		photo_url?: string;
+	}
+
+	interface Event {
+		id: string;
+		title: string;
+		venue_name: string;
+		city: string;
+		featured: boolean;
+		price_range: string;
+		date: string;
+		description: string;
+	}
+
+	interface Brand {
+		id: string;
+		name: string;
+		type: string;
+		featured: boolean;
+		description: string;
+	}
+
 	let webApp: WebApp | null = $state(null);
 	let isLoading: boolean = $state(true);
 	let error: string = $state('');
 	let userInfo: TelegramUser | null = $state(null);
-	let currentView: ViewType | 'booking' = $state('home');
+	let currentView: 'main' | 'events' | 'venues' | 'brands' | 'booking' = $state('main');
 	let selectedEventId: string | undefined = $state(undefined);
 	let selectedEvent: Event | null = $state(null);
-	let previousView: ViewType = $state('home');
+	let previousView: 'main' | 'events' | 'venues' | 'brands' = $state('main');
 	let selectedCity = $state('pp');
 	let selectedLanguage = $state('en');
 	let themeParams = $state({
@@ -28,72 +52,108 @@
 		textColor: '#1f2937'
 	});
 
-	const featuredEvents = events.filter(event => event.eventfeatured === 1);
-	const availableBrands = brandData.filter(brand => brand.brandfeatured === 1);
+	const featuredEvents: Event[] = [
+		{
+			id: 'evt_001', 
+			title: 'Friday Night Live',
+			venue_name: 'Sky Bar',
+			city: 'Phnom Penh',
+			featured: true,
+			price_range: '$8-15',
+			date: 'August 23, 2025',
+			description: 'Live music and craft cocktails with city views.'
+		},
+		{
+			id: 'evt_002', 
+			title: 'Karaoke Night Special',
+			venue_name: 'Golden KTV',
+			city: 'Phnom Penh',
+			featured: false,
+			price_range: '$10-20',
+			date: 'August 23, 2025',
+			description: 'Private rooms with premium sound system and drink promotions.'
+		},
+		{
+			id: 'evt_003',
+			title: 'Weekend Beach Club',
+			venue_name: 'Otres Beach Club',
+			city: 'Sihanoukville',
+			featured: true,
+			price_range: '$12-22',
+			date: 'August 24, 2025',
+			description: 'Beachfront party with live DJ and tropical cocktails.'
+		}
+	].sort((a, b) => Number(b.featured) - Number(a.featured));
+
+	const availableBrands: Brand[] = [
+		{
+			id: 'brd_001',
+			name: 'Absolut Vodka',
+			type: 'vodka',
+			featured: false,
+			description: 'Premium Swedish vodka'
+		},
+		{
+			id: 'brd_002',
+			name: 'Hennessy',
+			type: 'cognac',
+			featured: true,
+			description: 'World-renowned cognac'
+		}
+	];
 
 	onMount(async () => {
 		try {
-			if (typeof window !== 'undefined') {
-				const { default: WebApp } = await import('@twa-dev/sdk');
-				webApp = WebApp;
-				
-				WebApp.ready();
-				WebApp.expand();
-				
-				if (WebApp.initDataUnsafe?.user) {
-					userInfo = {
-						id: WebApp.initDataUnsafe.user.id,
-						first_name: WebApp.initDataUnsafe.user.first_name,
-						last_name: WebApp.initDataUnsafe.user.last_name,
-						username: WebApp.initDataUnsafe.user.username,
-						photo_url: WebApp.initDataUnsafe.user.photo_url
-					};
+			const WebApp = (await import('@twa-dev/sdk')).default;
+			webApp = WebApp;
+			
+			WebApp.ready();
+			WebApp.expand();
+			
+			const initData = WebApp.initData;
+			if (initData) {
+				const urlParams = new URLSearchParams(initData);
+				const userParam = urlParams.get('user');
+				if (userParam) {
+					userInfo = JSON.parse(decodeURIComponent(userParam));
 				}
-				
-				if (WebApp.themeParams) {
-					themeParams = {
-						backgroundColor: WebApp.themeParams.bg_color || '#f9fafb',
-						textColor: WebApp.themeParams.text_color || '#1f2937'
-					};
-				}
-				
-				WebApp.onEvent('backButtonClicked', () => {
-					if (currentView === 'booking') {
-						goToPreviousBookingView();
-					} else if (currentView !== 'home') {
-						goToPage('home');
-					}
-				});
-				
-				const updateBackButton = () => {
-					if (currentView === 'home') {
-						WebApp.BackButton.hide();
-					} else {
-						WebApp.BackButton.show();
-					}
+			}
+			
+			if (WebApp.themeParams) {
+				themeParams = {
+					backgroundColor: WebApp.themeParams.header_bg_color || '#f9fafb',
+					textColor: WebApp.themeParams.text_color || '#1f2937'
 				};
-				
-				$effect(() => {
-					updateBackButton();
-				});
+				WebApp.setHeaderColor(themeParams.backgroundColor);
+			}
+			
+			const urlParams = new URLSearchParams(window.location.search);
+			const startParam = urlParams.get('start');
+			if (startParam === 'events') {
+				currentView = 'events';
+			} else if (startParam === 'venues') {
+				currentView = 'venues';
+			} else if (startParam === 'brands') {
+				currentView = 'brands';
 			}
 		} catch (err) {
 			error = 'Failed to initialize Telegram Web App';
+			console.error('Telegram Web App initialization error:', err);
 		} finally {
 			isLoading = false;
 		}
 	});
 
-	function goToPage(page: ViewType, eventId?: string): void {
+	function goToPage(page: 'main' | 'events' | 'venues' | 'brands', eventId?: string): void {
 		if (page === 'events') selectedEventId = eventId;
-		if (page === 'home') selectedEventId = undefined;
+		if (page === 'main') selectedEventId = undefined;
 		currentView = page;
 		window.scrollTo(0, 0);
 	}
 
 	function handleStartBooking(event: CustomEvent<{event: Event}>) {
 		selectedEvent = event.detail.event;
-		previousView = currentView as ViewType;
+		previousView = currentView;
 		currentView = 'booking';
 		window.scrollTo(0, 0);
 	}
@@ -126,13 +186,13 @@
 					}
 				});
 			} catch (err) {
-				error = 'Share to story failed';
+				console.error('Share to story failed:', err);
 			}
 		}
 	}
 
 	function handleAccountAction(event: CustomEvent<{action: string}>) {
-		const action = event.detail.action;
+		console.log('Account action:', event.detail.action);
 	}
 
 	function handleEventClick(event: CustomEvent<{eventId: string}>) {
@@ -140,7 +200,7 @@
 	}
 
 	function handleNavigate(event: CustomEvent<{page: string}>) {
-		goToPage(event.detail.page as ViewType);
+		goToPage(event.detail.page as 'main' | 'events' | 'venues' | 'brands');
 	}
 
 	function handleFooterHeight(event: CustomEvent<{height: number}>) {
@@ -156,12 +216,12 @@
 		<Loading message="Loading Trojeak..." />
 	{:else if error}
 		<div class="flex items-center justify-center min-h-screen">
-			<div class="w-full max-w-2xl mx-auto border rounded-lg shadow-sm">
-				<div class="p-6 text-center">
+			<Card.Card class="w-full max-w-2xl mx-auto">
+				<Card.CardContent class="p-6 text-center">
 					<h2 class="text-xl font-semibold mb-2">Connection Error</h2>
 					<p class="text-muted-foreground">{error}</p>
-				</div>
-			</div>
+				</Card.CardContent>
+			</Card.Card>
 		</div>
 	{:else}
 		{#if currentView !== 'booking'}
@@ -177,7 +237,7 @@
 		{/if}
 
 		<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)] mb-8">
-			{#if currentView === 'home'}
+			{#if currentView === 'main'}
 				<Home 
 					{featuredEvents}
 					{selectedCity}
@@ -190,19 +250,19 @@
 			{:else if currentView === 'events'}
 				<Events 
 					initialEventId={selectedEventId} 
-					on:goBack={() => goToPage('home')} 
+					on:goBack={() => goToPage('main')} 
 					on:startBooking={handleStartBooking} 
 					on:footerHeight={handleFooterHeight}
 				/>
 			{:else if currentView === 'venues'}
 				<Venues 
-					on:goBack={() => goToPage('home')} 
+					on:goBack={() => goToPage('main')} 
 					on:goToEvent={handleGoToEvent} 
 					on:footerHeight={handleFooterHeight}
 				/>
 			{:else if currentView === 'brands'}
 				<Brands 
-					on:goBack={() => goToPage('home')} 
+					on:goBack={() => goToPage('main')} 
 					on:goToEvent={handleGoToEvent} 
 					on:footerHeight={handleFooterHeight}
 				/>
