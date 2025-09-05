@@ -33,49 +33,37 @@
 
 	onMount(async () => {
 		try {
-			if (typeof window !== 'undefined') {
-				const { default: WebApp } = await import('@twa-dev/sdk');
-				webApp = WebApp;
-				
-				WebApp.ready();
-				WebApp.expand();
-				
-				if (WebApp.initDataUnsafe?.user) {
-					userInfo = {
-						id: WebApp.initDataUnsafe.user.id,
-						first_name: WebApp.initDataUnsafe.user.first_name,
-						last_name: WebApp.initDataUnsafe.user.last_name,
-						username: WebApp.initDataUnsafe.user.username,
-						photo_url: WebApp.initDataUnsafe.user.photo_url
-					};
+			const WebApp = (await import('@twa-dev/sdk')).default;
+			webApp = WebApp;
+			
+			WebApp.ready();
+			WebApp.expand();
+			
+			const initData = WebApp.initData;
+			if (initData) {
+				const urlParams = new URLSearchParams(initData);
+				const userParam = urlParams.get('user');
+				if (userParam) {
+					userInfo = JSON.parse(decodeURIComponent(userParam));
 				}
-				
-				if (WebApp.themeParams) {
-					themeParams = {
-						backgroundColor: WebApp.themeParams.bg_color || '#f9fafb',
-						textColor: WebApp.themeParams.text_color || '#1f2937'
-					};
-				}
-				
-				WebApp.onEvent('backButtonClicked', () => {
-					if (currentView === 'booking') {
-						goToPreviousBookingView();
-					} else if (currentView !== 'home') {
-						goToPage('home');
-					}
-				});
-				
-				const updateBackButton = () => {
-					if (currentView === 'home') {
-						WebApp.BackButton.hide();
-					} else {
-						WebApp.BackButton.show();
-					}
+			}
+			
+			if (WebApp.themeParams) {
+				themeParams = {
+					backgroundColor: WebApp.themeParams.header_bg_color || '#f9fafb',
+					textColor: WebApp.themeParams.text_color || '#1f2937'
 				};
-				
-				$effect(() => {
-					updateBackButton();
-				});
+				WebApp.setHeaderColor(themeParams.backgroundColor);
+			}
+			
+			const urlParams = new URLSearchParams(window.location.search);
+			const startParam = urlParams.get('start');
+			if (startParam === 'events') {
+				currentView = 'events';
+			} else if (startParam === 'venues') {
+				currentView = 'venues';
+			} else if (startParam === 'brands') {
+				currentView = 'brands';
 			}
 		} catch (err) {
 			error = 'Failed to initialize Telegram Web App';
@@ -93,7 +81,7 @@
 
 	function handleStartBooking(event: CustomEvent<{event: Event}>) {
 		selectedEvent = event.detail.event;
-		previousView = currentView as ViewType;
+		previousView = currentView;
 		currentView = 'booking';
 		window.scrollTo(0, 0);
 	}
@@ -126,7 +114,7 @@
 					}
 				});
 			} catch (err) {
-				error = 'Share to story failed';
+				console.error('Share to story failed:', err);
 			}
 		}
 	}
@@ -156,8 +144,8 @@
 		<Loading message="Loading Trojeak..." />
 	{:else if error}
 		<div class="flex items-center justify-center min-h-screen">
-			<div class="w-full max-w-2xl mx-auto border rounded-lg shadow-sm">
-				<div class="p-6 text-center">
+			<div class="w-full max-w-2xl mx-auto p-6 bg-card text-card-foreground shadow-sm border rounded-lg">
+				<div class="text-center">
 					<h2 class="text-xl font-semibold mb-2">Connection Error</h2>
 					<p class="text-muted-foreground">{error}</p>
 				</div>
