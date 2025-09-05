@@ -110,24 +110,20 @@
 
 			if (WebApp.themeParams) {
 				themeParams = {
-					backgroundColor: WebApp.themeParams.bg_color || '#f9fafb',
+					backgroundColor: WebApp.themeParams.header_bg_color || '#f9fafb',
 					textColor: WebApp.themeParams.text_color || '#1f2937'
 				};
 				WebApp.setHeaderColor(themeParams.backgroundColor);
 			}
 
 			const urlParams = new URLSearchParams(window.location.search);
-			const startParam = urlParams.get('tgWebAppStartParam');
-			if (startParam) {
-				const [action, id] = startParam.split('_');
-				if (action === 'event' && id) {
-					selectedEventId = `evt_${id}`;
-					currentView = 'events';
-				} else if (action === 'venue' && id) {
-					currentView = 'venues';
-				} else if (action === 'brand' && id) {
-					currentView = 'brands';
-				}
+			const startParam = urlParams.get('start');
+			if (startParam === 'events') {
+				currentView = 'events';
+			} else if (startParam === 'venues') {
+				currentView = 'venues';
+			} else if (startParam === 'brands') {
+				currentView = 'brands';
 			}
 		} catch (err) {
 			error = 'Failed to initialize Telegram Web App';
@@ -169,7 +165,7 @@
 	}
 
 	function handleShareToStory() {
-		if (webApp) {
+		if (webApp?.shareToStory) {
 			try {
 				webApp.shareToStory('https://trojeak.morozzi.com', {
 					text: 'Check out these amazing events in Cambodia! 🇰🇭',
