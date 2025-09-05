@@ -83,7 +83,7 @@
 			date: 'August 24, 2025',
 			description: 'Beachfront party with live DJ and tropical cocktails.'
 		}
-	].sort((a, b) => Number(b.featured) - Number(a.featured));
+	];
 
 	const availableBrands: Brand[] = [
 		{ id: 'brd_001', name: 'Cambodia Lite', type: 'Beer', featured: true, description: 'Local favorite light beer' },
@@ -113,6 +113,7 @@
 					backgroundColor: WebApp.themeParams.bg_color || '#f9fafb',
 					textColor: WebApp.themeParams.text_color || '#1f2937'
 				};
+				WebApp.setHeaderColor(themeParams.backgroundColor);
 			}
 
 			const urlParams = new URLSearchParams(window.location.search);
