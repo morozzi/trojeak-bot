@@ -195,11 +195,9 @@
 									📅 {new Date(event.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 								</div>
 								
-								{#if venue}
-									<div class="text-sm">
-										📍 {venue.venuename} <a href={venue.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
-									</div>
-								{/if}
+								<div class="text-sm">
+									📍 {venue.venuename} <a href={venue.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
+								</div>
 
 								<div class="text-sm">
 									🎵 {event.eventartist}
