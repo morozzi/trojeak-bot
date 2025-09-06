@@ -174,7 +174,7 @@
 						{@const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''))}
 						{@const eventBrands = brandData.filter(b => eventBrandIds.includes(b.brandid.toString()))}
 						
-						<Card.Card class="py-6 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent(event.eventid.toString())}>
+						<Card.Card class="mb-8 py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent(event.eventid.toString())}>
 							<Card.CardHeader class="gap-0 pb-4">
 								<div class="flex justify-between items-center">
 									<Card.CardTitle class="text-lg font-semibold">{event.eventtitle}</Card.CardTitle>
