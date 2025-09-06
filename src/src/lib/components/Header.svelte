@@ -24,9 +24,9 @@
 		accountAction: { action: string };
 	}>();
 
-	const userInitials = $derived(userInfo?.first_name ? 
-    userInfo.first_name[0].toUpperCase() + (userInfo.last_name?.[0]?.toUpperCase() || '') : 
-    '?'
+	const userInitials = $derived(() => 
+    !userInfo?.first_name ? '?' : 
+    userInfo.first_name.charAt(0).toUpperCase() + (userInfo.last_name?.charAt(0)?.toUpperCase() || '')
 	);
 
 	function handleCityChange(city: string) {
