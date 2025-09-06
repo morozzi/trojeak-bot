@@ -130,7 +130,7 @@
 							</AspectRatio.Root>
 						{/if}
 
-						<Card.CardContent class="p-4 pb-4 space-y-6">
+						<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
 							<p class="text-md text-muted-foreground">{getBrandEventCount(brand.brandid)} upcoming events</p>
 						</Card.CardContent>
 					</Card.Card>
