@@ -149,14 +149,14 @@
 				{/if}
 
 				<Card.Card>
-					<Card.CardHeader class="pb-6">
-						<div class="flex items-center gap-4">
+					<Card.CardHeader>
+						<div class="flex items-center gap-8">
 							<Avatar.Root class="w-16 h-16 rounded-lg">
 								<Avatar.Image src="/pic/brand/{selectedBrand.brandpic1}" alt={selectedBrand.brandname} class="rounded-lg" />
 								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedBrand.brandname.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
 							<div class="space-y-3">
-								<h1 class="text-3xl font-bold">{selectedBrand.brandname}</h1>
+								<h1 class="text-4xl font-bold">{selectedBrand.brandname}</h1>
 								<div class="flex gap-2">
 									{#if selectedBrand.brandfeatured}
 										<Badge.Badge>Featured</Badge.Badge>
