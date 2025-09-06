@@ -24,14 +24,10 @@
 		accountAction: { action: string };
 	}>();
 
-	const userInitials = $derived(() => {
-		if (userInfo?.first_name) {
-			const firstInitial = userInfo.first_name.charAt(0).toUpperCase();
-			const lastInitial = userInfo.last_name?.charAt(0).toUpperCase() || '';
-			return firstInitial + lastInitial;
-		}
-		return '?';
-	});
+	const userInitials = $derived(userInfo?.first_name ? 
+    userInfo.first_name[0].toUpperCase() + (userInfo.last_name?.[0]?.toUpperCase() || '') : 
+    '?'
+	);
 
 	function handleCityChange(city: string) {
 		dispatch('cityChange', { city });
