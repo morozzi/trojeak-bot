@@ -125,12 +125,12 @@
 						</Card.CardHeader>
 						
 						{#if brand.brandfeatured}
-							<AspectRatio.Root class="pb-2" ratio={16/9}>
-								<img src="/pic/brand/{brand.brandpic2}" alt="{brand.brandname} Banner" class="w-full h-full object-cover" />
+							<AspectRatio.Root ratio={16/9}>
+								<img src="/pic/brand/{brand.brandpic2}" alt="{brand.brandname}" class="w-full h-full object-cover" />
 							</AspectRatio.Root>
 						{/if}
 
-						<Card.CardContent class="p-4 pb-4 space-y-4">
+						<Card.CardContent class="p-4 pb-4 space-y-6">
 							<p class="text-md text-muted-foreground">{getBrandEventCount(brand.brandid)} upcoming events</p>
 						</Card.CardContent>
 					</Card.Card>
