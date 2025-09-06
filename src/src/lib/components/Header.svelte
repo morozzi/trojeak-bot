@@ -6,14 +6,7 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Separator from '$lib/components/ui/separator/index.js';
 	import { Share2 } from '@lucide/svelte';
-
-	interface TelegramUser {
-		id: number;
-		first_name: string;
-		last_name?: string;
-		username?: string;
-		photo_url?: string;
-	}
+	import type { TelegramUser } from '$lib/types/components.js';
 
 	interface Props {
 		userInfo: TelegramUser | null;
@@ -88,7 +81,6 @@
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
-
 			<Select.Root type="single" value={selectedCity} onValueChange={handleCityChange}>
 				<Select.Trigger class="w-20">
 					{selectedCity.toUpperCase()}
@@ -101,10 +93,8 @@
 				</Select.Content>
 			</Select.Root>
 		</div>
-
 		<div class="flex items-center justify-center">
 		</div>
-
 		<div class="flex items-center gap-2 justify-end">
 			<Select.Root type="single" value={selectedLanguage} onValueChange={handleLanguageChange}>
 				<Select.Trigger class="w-16">
@@ -115,7 +105,6 @@
 					<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
 				</Select.Content>
 			</Select.Root>
-
 			<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
 				<Share2 size={16} />
 			</Button.Button>
