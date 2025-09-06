@@ -167,7 +167,7 @@
 					</Card.CardHeader>
 				</Card.Card>
 
-				<h3 class="text-2xl font-semibold mb-4">Upcoming Events</h3>
+				<h3 class="text-2xl font-semibold my-4">Upcoming Events</h3>
 				{#if brandEvents.length > 0}
 					{#each brandEvents as event}
 						{@const venue = venueData.find(v => v.venueid === event.venueid)}
@@ -220,7 +220,7 @@
 						</Card.Card>
 					{/each}
 				{:else}
-					<div class="text-center py-8">
+					<div class="text-center py-6">
 						<Button.Button variant="default" size="lg" class="bg-primary text-primary-foreground hover:bg-primary/90">
 							Notify me
 						</Button.Button>
