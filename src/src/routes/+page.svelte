@@ -17,7 +17,7 @@
 	let isLoading: boolean = $state(true);
 	let error: string = $state('');
 	let userInfo: TelegramUser | null = $state(null);
-	let currentView: ViewType | 'booking' = $state('home');
+	let currentView: ViewType = $state('home');
 	let selectedEventId: string | undefined = $state(undefined);
 	let selectedEvent: Event | null = $state(null);
 	let previousView: ViewType = $state('home');

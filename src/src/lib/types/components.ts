@@ -8,7 +8,7 @@ export interface TelegramUser {
   photo_url?: string;
 }
 
-export type ViewType = 'home' | 'events' | 'venues' | 'brands';
+export type ViewType = 'home' | 'events' | 'venues' | 'brands' | 'booking';
 
 export interface FilterState {
   cityId?: number;

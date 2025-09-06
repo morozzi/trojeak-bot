@@ -45,3 +45,29 @@ export interface VenueType {
   venuetypename: string;
   venuetypeicon: string;
 }
+
+export interface Language {
+  languagesid: string;
+  languagename: string;
+  languageflag: string;
+}
+
+export interface User {
+  id: number;
+  telegram_id: number;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  language: string;
+  cityid: number;
+  venue_types: string;
+  channel_member: 0 | 1;
+  venue_staff?: number;
+  alerts: 0 | 1;
+  onboarding: number;
+  status: 'active' | 'blocked';
+  is_bot: 0 | 1;
+  created_at: string;
+  updated_at: string;
+}
