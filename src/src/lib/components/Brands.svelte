@@ -77,7 +77,7 @@
 	});
 </script>
 
-<div class="space-y-8">
+<div class="space-y-6">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
 			<h1 class="text-3xl font-bold">Brands</h1>
@@ -131,7 +131,7 @@
 						{/if}
 
 						<Card.CardContent class="p-4 pb-4 space-y-4">
-							<p class="text-sm text-muted-foreground">{getBrandEventCount(brand.brandid)} upcoming events</p>
+							<p class="text-md text-muted-foreground">{getBrandEventCount(brand.brandid)} upcoming events</p>
 						</Card.CardContent>
 					</Card.Card>
 				{/each}
@@ -194,16 +194,16 @@
 								<div class="text-sm text-muted-foreground">
 									📅 {new Date(event.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 								</div>
-
-								<div class="text-sm">
-									🎵 {event.eventartist}
-								</div>
-
+								
 								{#if venue}
 									<div class="text-sm">
 										📍 {venue.venuename} <a href={venue.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
 									</div>
 								{/if}
+
+								<div class="text-sm">
+									🎵 {event.eventartist}
+								</div>
 
 								<div class="flex gap-2 items-center">
 									{#if event.eventschema}
