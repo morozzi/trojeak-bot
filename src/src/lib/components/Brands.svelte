@@ -167,7 +167,7 @@
 					</Card.CardHeader>
 				</Card.Card>
 
-				<h3 class="text-2xl font-semibold mt-8 mb-4">Upcoming Events</h3>
+				<h3 class="text-2xl font-semibold mt-10 mb-4">Upcoming Events</h3>
 				{#if brandEvents.length > 0}
 					{#each brandEvents as event}
 						{@const venue = venueData.find(v => v.venueid === event.venueid)}
@@ -221,7 +221,7 @@
 					{/each}
 				{:else}
 					<div class="text-center py-6">
-						<Button.Button variant="default" size="lg" class="bg-primary text-primary-foreground hover:bg-primary/90">
+						<Button.Button variant="default" size="xl" class="bg-primary text-primary-foreground hover:bg-primary/90">
 							Notify me
 						</Button.Button>
 					</div>
@@ -236,11 +236,11 @@
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 			<div class="flex items-center justify-start">
 				{#if viewMode === 'list'}
-					<Button.Button variant="outline" size="sm" onclick={goBack}>
+					<Button.Button variant="outline" size="md" onclick={goBack}>
 						Home
 					</Button.Button>
 				{:else}
-					<Button.Button variant="outline" size="sm" onclick={goToList}>
+					<Button.Button variant="outline" size="md" onclick={goToList}>
 						← Back
 					</Button.Button>
 				{/if}
