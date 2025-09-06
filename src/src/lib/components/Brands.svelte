@@ -149,7 +149,7 @@
 				{/if}
 
 				<Card.Card>
-					<Card.CardHeader>
+					<Card.CardHeader class="gap-0">
 						<div class="flex items-center gap-8">
 							<Avatar.Root class="w-32 h-32 rounded-lg">
 								<Avatar.Image src="/pic/brand/{selectedBrand.brandpic1}" alt={selectedBrand.brandname} class="rounded-lg" />
@@ -167,7 +167,7 @@
 					</Card.CardHeader>
 				</Card.Card>
 
-				<h3 class="text-lg font-semibold mb-4">Upcoming Events</h3>
+				<h3 class="text-xl font-semibold mb-4">Upcoming Events</h3>
 				{#if brandEvents.length > 0}
 					{#each brandEvents as event}
 						{@const venue = venueData.find(v => v.venueid === event.venueid)}
