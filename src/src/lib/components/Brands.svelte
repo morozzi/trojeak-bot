@@ -151,7 +151,7 @@
 				<Card.Card>
 					<Card.CardHeader>
 						<div class="flex items-center gap-8">
-							<Avatar.Root class="w-16 h-16 rounded-lg">
+							<Avatar.Root class="w-32 h-32 rounded-lg">
 								<Avatar.Image src="/pic/brand/{selectedBrand.brandpic1}" alt={selectedBrand.brandname} class="rounded-lg" />
 								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedBrand.brandname.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
