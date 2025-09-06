@@ -4,7 +4,7 @@
 	import type { WebApp } from '@twa-dev/sdk';
 	import type { TelegramUser, ViewType } from '$lib/types/components.js';
 	import type { Event, Brand } from '$lib/types/api.js';
-	import { events, brandData } from '$lib/data/mockData.js';
+	import { events, brandData, cityData, languageData } from '$lib/data/mockData.js';
 	import Loading from '$lib/components/Loading.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Home from '$lib/components/Home.svelte';
@@ -21,8 +21,8 @@
 	let selectedEventId: string | undefined = $state(undefined);
 	let selectedEvent: Event | null = $state(null);
 	let previousView: ViewType = $state('home');
-	let selectedCity = $state('pp');
-	let selectedLanguage = $state('en');
+	let selectedCity = $state(cityData[0].citysid);
+	let selectedLanguage = $state(languageData[0].languagesid);
 	let themeParams = $state({
 		backgroundColor: '#f9fafb',
 		textColor: '#1f2937'

@@ -35,12 +35,12 @@ export const venueData: Venue[] = [
 ];
 
 export const cityData: City[] = [
-  { cityid: 1, citysid: 'PP', cityname: 'Phnom Penh' },
-  { cityid: 2, citysid: 'SR', cityname: 'Siem Reap' },
-  { cityid: 3, citysid: 'SHV', cityname: 'Sihanoukville' },
-  { cityid: 4, citysid: 'BTB', cityname: 'Battambang' },
-  { cityid: 5, citysid: 'KPC', cityname: 'Kampong Cham' },
-  { cityid: 6, citysid: 'KPT', cityname: 'Kampong Thom' }
+  { cityid: 1, citysid: 'pp', cityname: 'Phnom Penh' },
+  { cityid: 2, citysid: 'sr', cityname: 'Siem Reap' },
+  { cityid: 3, citysid: 'shv', cityname: 'Sihanoukville' },
+  { cityid: 4, citysid: 'btb', cityname: 'Battambang' },
+  { cityid: 5, citysid: 'kpc', cityname: 'Kampong Cham' },
+  { cityid: 6, citysid: 'kpt', cityname: 'Kampong Thom' }
 ];
 
 export const events: Event[] = [

@@ -7,6 +7,7 @@
 	import * as Separator from '$lib/components/ui/separator/index.js';
 	import { Share2 } from '@lucide/svelte';
 	import type { TelegramUser } from '$lib/types/components.js';
+	import { cityData, languageData } from '$lib/data/mockData.js';
 
 	interface Props {
 		userInfo: TelegramUser | null;
@@ -86,10 +87,9 @@
 					{selectedCity.toUpperCase()}
 				</Select.Trigger>
 				<Select.Content>
-					<Select.Item value="pp">Phnom Penh</Select.Item>
-					<Select.Item value="shv">Sihanoukville</Select.Item>
-					<Select.Item value="sr">Siem Reap</Select.Item>
-					<Select.Item value="btb">Battambang</Select.Item>
+					{#each cityData as city}
+						<Select.Item value={city.citysid}>{city.cityname}</Select.Item>
+					{/each}
 				</Select.Content>
 			</Select.Root>
 		</div>
@@ -98,11 +98,14 @@
 		<div class="flex items-center gap-2 justify-end">
 			<Select.Root type="single" value={selectedLanguage} onValueChange={handleLanguageChange}>
 				<Select.Trigger class="w-16">
-					{selectedLanguage === "en" ? "🇺🇸" : "🇰🇭"}
+					{languageData.find(l => l.languagesid === selectedLanguage)?.languageflag}
 				</Select.Trigger>
 				<Select.Content>
-					<Select.Item value="en">🇺🇸 English</Select.Item>
-					<Select.Item value="kh">🇰🇭 ភាសាខ្មែរ</Select.Item>
+					{#each languageData as lang}
+						<Select.Item value={lang.languagesid}>
+							{lang.languageflag} {lang.languagename}
+						</Select.Item>
+					{/each}
 				</Select.Content>
 			</Select.Root>
 			<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
