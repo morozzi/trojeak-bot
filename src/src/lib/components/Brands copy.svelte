@@ -6,8 +6,8 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import { createEventDispatcher } from 'svelte';
-	import type { Brand, Event } from '$lib/types/api.js';
-	import { brandData, events } from '$lib/data/mockData.js';
+	import type { Brand } from '$lib/types/api.js';
+	import { brandData } from '$lib/data/mockData.js';
 
 	let footerEl: HTMLElement | undefined = $state();
 	let isLoading: boolean = $state(false);
@@ -22,21 +22,6 @@
 	let selectedBrandId: string | null = $state(null);
 
 	const brands = brandData.sort((a, b) => Number(b.brandfeatured) - Number(a.brandfeatured));
-
-	const getBrandEventCount = $derived((brandId: number): number => {
-		return events.filter(event => {
-			const brandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
-			return brandIds.includes(brandId.toString());
-		}).length;
-	});
-
-	const getBrandEvents = $derived((brandId: number): Event[] => {
-		const brandEvents = events.filter(event => {
-			const brandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
-			return brandIds.includes(brandId.toString());
-		});
-		return brandEvents.sort((a, b) => Number(b.eventfeatured) - Number(a.eventfeatured));
-	});
 
 	function selectBrand(brandId: string): void {
 		selectedBrandId = brandId;
@@ -101,16 +86,50 @@
 						</div>
 					</Card.CardContent>
 				</Card.Card>
+				<Card.Card>
+					<Card.CardHeader class="pb-2">
+						<div class="flex items-start justify-between">
+							<div class="space-y-2 flex-1">
+								<Skeleton.Root class="h-6 w-3/4" />
+								<Skeleton.Root class="h-4 w-1/2" />
+							</div>
+						</div>
+					</Card.CardHeader>
+					<Card.CardContent class="space-y-4">
+						<Skeleton.Root class="h-4 w-full" />
+						<Skeleton.Root class="h-4 w-2/3" />
+						<div class="flex gap-2">
+							<Skeleton.Root class="h-8 w-8 rounded-lg" />
+							<Skeleton.Root class="h-8 w-8 rounded-lg" />
+							<Skeleton.Root class="h-8 w-8 rounded-lg" />
+						</div>
+					</Card.CardContent>
+				</Card.Card>
+				<Card.Card>
+					<Card.CardHeader class="pb-2">
+						<div class="flex items-start justify-between">
+							<div class="space-y-2 flex-1">
+								<Skeleton.Root class="h-6 w-3/4" />
+								<Skeleton.Root class="h-4 w-1/2" />
+							</div>
+						</div>
+					</Card.CardHeader>
+					<Card.CardContent class="space-y-4">
+						<Skeleton.Root class="h-4 w-full" />
+						<Skeleton.Root class="h-4 w-2/3" />
+						<div class="flex gap-2">
+							<Skeleton.Root class="h-8 w-8 rounded-lg" />
+							<Skeleton.Root class="h-8 w-8 rounded-lg" />
+							<Skeleton.Root class="h-8 w-8 rounded-lg" />
+						</div>
+					</Card.CardContent>
+				</Card.Card>
 			{:else}
 				{#each brands as brand}
 					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectBrand(brand.brandid.toString())}>
 						<Card.CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
-								<div class="flex items-center gap-3">
-									<Avatar.Root class="w-12 h-12 rounded-lg">
-										<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
-										<Avatar.Fallback class="rounded-lg bg-muted">{brand.brandname.charAt(0)}</Avatar.Fallback>
-									</Avatar.Root>
+								<div class="flex items-center gap-2">
 									<Card.CardTitle class="text-lg font-semibold">{brand.brandname}</Card.CardTitle>
 								</div>
 								<div class="flex gap-2">
@@ -123,12 +142,14 @@
 						
 						{#if brand.brandfeatured}
 							<AspectRatio.Root class="pb-2" ratio={16/9}>
-								<img src="/pic/brand/{brand.brandpic2}" alt="{brand.brandname} Banner" class="w-full h-full object-cover" />
+								<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+									Featured Brand Banner
+								</div>
 							</AspectRatio.Root>
 						{/if}
 
 						<Card.CardContent class="p-4 pb-4 space-y-4">
-							<p class="text-sm text-muted-foreground">{getBrandEventCount(brand.brandid)} upcoming events</p>
+							<p>Premium alcohol brand</p>
 						</Card.CardContent>
 					</Card.Card>
 				{/each}
@@ -137,75 +158,75 @@
 	{:else if viewMode === 'detail' && selectedBrandId}
 		{@const selectedBrand = brands.find(b => b.brandid.toString() === selectedBrandId)}
 		{#if selectedBrand}
-			{@const brandEvents = getBrandEvents(selectedBrand.brandid)}
 			<div class="space-y-8">
 				{#if selectedBrand.brandfeatured}
 					<AspectRatio.Root class="pb-2" ratio={16/9}>
-						<img src="/pic/brand/{selectedBrand.brandpic2}" alt="{selectedBrand.brandname} Banner" class="w-full h-full object-cover" />
+						<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+							Featured Brand Banner
+						</div>
 					</AspectRatio.Root>
 				{/if}
 
 				<Card.Card>
-					<Card.CardHeader class="pb-6">
-						<div class="flex items-center gap-4">
-							<Avatar.Root class="w-16 h-16 rounded-lg">
-								<Avatar.Image src="/pic/brand/{selectedBrand.brandpic1}" alt={selectedBrand.brandname} class="rounded-lg" />
-								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedBrand.brandname.charAt(0)}</Avatar.Fallback>
-							</Avatar.Root>
-							<div class="space-y-3">
-								<h1 class="text-3xl font-bold">{selectedBrand.brandname}</h1>
-								<div class="flex gap-2">
-									{#if selectedBrand.brandfeatured}
-										<Badge.Badge>Featured</Badge.Badge>
-									{/if}
-								</div>
-							</div>
+					<Card.CardHeader>
+						<h1 class="text-3xl font-bold">{selectedBrand.brandname}</h1>
+						<div class="flex gap-2">
+							{#if selectedBrand.brandfeatured}
+								<Badge.Badge>Featured</Badge.Badge>
+							{/if}
 						</div>
 					</Card.CardHeader>
+					<Card.CardContent class="p-6">
+						<p>Premium alcohol brand</p>
+					</Card.CardContent>
 				</Card.Card>
 
 				<h3 class="text-lg font-semibold mb-4">Upcoming Events</h3>
-				{#if brandEvents.length > 0}
-					{#each brandEvents as event}
-						<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent(event.eventid.toString())}>
-							<Card.CardHeader class="gap-0 pb-4">
-								<div class="flex justify-between items-center">
-									<Card.CardTitle class="text-lg font-semibold">{event.eventtitle}</Card.CardTitle>
-									{#if event.eventfeatured}
-										<Badge.Badge>Featured</Badge.Badge>
-									{/if}
-								</div>
-							</Card.CardHeader>
-							
-							{#if event.eventfeatured}
-								<AspectRatio.Root class="pb-2" ratio={16/9}>
-									<img src="/pic/{event.eventpic}" alt={event.eventtitle} class="w-full h-full object-cover" />
-								</AspectRatio.Root>
-							{/if}
-
-							<Card.CardContent class="p-4 pb-4 space-y-4">
-								<div class="text-sm text-muted-foreground">
-									📅 {new Date(event.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-								</div>
-
-								<div class="text-sm">
-									🎵 {event.eventartist}
-								</div>
-
-								{#if event.eventschema}
-									<div class="flex gap-2 items-center">
-										<span class="text-sm text-muted-foreground mr-2">💰 {event.eventschema} Schema - ${event.eventschemaprice}</span>
-									</div>
+				{#if selectedBrand.brandfeatured}
+					{@const upcomingEvent = { id: 'evt_003', title: 'Weekend Beach Club', featured: true }}
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent(upcomingEvent.id)}>
+						<Card.CardHeader class="gap-0 pb-4">
+							<div class="flex justify-between items-center">
+								<Card.CardTitle class="text-lg font-semibold">{upcomingEvent.title}</Card.CardTitle>
+								{#if upcomingEvent.featured}
+									<Badge.Badge>Featured</Badge.Badge>
 								{/if}
-							</Card.CardContent>
-						</Card.Card>
-					{/each}
+							</div>
+						</Card.CardHeader>
+						
+						<AspectRatio.Root class="pb-2" ratio={16/9}>
+							<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+								Featured Event Banner
+							</div>
+						</AspectRatio.Root>
+
+						<Card.CardContent class="p-4 pb-4 space-y-4">
+							<div class="text-sm text-muted-foreground">
+								📅 August 24, 2025 • 📍 Sihanoukville
+							</div>
+
+							<div class="text-sm">
+								🏢 Otres Beach Club
+							</div>
+
+							<div class="text-sm">🎵 Live DJ</div>
+
+							<div class="flex gap-2 items-center">
+								<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+							</div>
+						</Card.CardContent>
+					</Card.Card>
 				{:else}
-					<div class="text-center py-8">
-						<Button.Button variant="outline" class="bg-primary text-primary-foreground hover:bg-primary/90">
-							Notify me
-						</Button.Button>
-					</div>
+					<p class="text-muted-foreground">No upcoming events.</p>
 				{/if}
 			</div>
 		{/if}
@@ -218,11 +239,11 @@
 			<div class="flex items-center justify-start">
 				{#if viewMode === 'list'}
 					<Button.Button variant="outline" size="sm" onclick={goBack}>
-						Home
+						← Back to Main
 					</Button.Button>
 				{:else}
 					<Button.Button variant="outline" size="sm" onclick={goToList}>
-						← Back
+						← Back to Brands
 					</Button.Button>
 				{/if}
 			</div>
