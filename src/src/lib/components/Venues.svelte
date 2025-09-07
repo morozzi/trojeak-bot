@@ -128,18 +128,6 @@
 
 						<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
 							<p class="text-md text-muted-foreground">{getVenueEventCount(venue.venueid)} upcoming events</p>
-							
-							<div class="text-sm text-muted-foreground">
-								📍 <a href={venue.venuelink} target="_blank" rel="noopener noreferrer" class="hover:underline">View Location</a>
-							</div>
-
-							<div class="text-sm text-muted-foreground">
-								🏙️ City ID: {venue.cityid}
-							</div>
-
-							<div class="text-sm">
-								🏢 {venue.venuetype.toUpperCase()}
-							</div>
 						</Card.CardContent>
 					</Card.Card>
 				{/each}
