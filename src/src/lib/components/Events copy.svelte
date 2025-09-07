@@ -5,10 +5,9 @@
 	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
-	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Event } from '$lib/types/api.js';
-	import { events, brandData, venueData } from '$lib/data/mockData.js';
+	import { events } from '$lib/data/mockData.js';
 
 	interface Props {
 		initialEventId?: string;
@@ -81,12 +80,53 @@
 					</Card.CardContent>
 				</Card.Card>
 			{:else}
-				<EventList 
-					events={sortedEvents} 
-					{venueData} 
-					{brandData} 
-					onEventClick={selectEvent} 
-				/>
+				{#each sortedEvents as event}
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectEvent(event.eventid.toString())}>
+						<Card.CardHeader class="gap-0 pb-4">
+							<div class="flex justify-between items-center">
+								<Card.CardTitle class="text-lg font-semibold">{event.eventtitle}</Card.CardTitle>
+								<div class="flex gap-2">
+									{#if event.eventfeatured}
+										<Badge.Badge>Featured</Badge.Badge>
+									{/if}
+								</div>
+							</div>
+						</Card.CardHeader>
+						
+						{#if event.eventfeatured}
+							<AspectRatio.Root class="pb-2" ratio={16/9}>
+								<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
+									Featured Event Banner
+								</div>
+							</AspectRatio.Root>
+						{/if}
+
+						<Card.CardContent class="p-4 pb-4 space-y-4">
+							<div class="text-sm text-muted-foreground">
+								📅 {new Date(event.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+							</div>
+
+							<div class="text-sm">
+								🎵 {event.eventartist}
+							</div>
+
+							<div class="text-sm">🎵 Artist Name</div>
+
+							<div class="flex gap-2 items-center">
+								<span class="text-sm text-muted-foreground mr-2">💰 12+2 Schema</span>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+							</div>
+						</Card.CardContent>
+					</Card.Card>
+				{/each}
 			{/if}
 		</div>
 	{:else if viewMode === 'detail' && selectedEventId}
@@ -135,11 +175,11 @@
 			<div class="flex items-center justify-start">
 				{#if viewMode === 'list'}
 					<Button.Button variant="outline" size="sm" onclick={goBack}>
-						Home
+						← Back to Main
 					</Button.Button>
 				{:else}
 					<Button.Button variant="outline" size="sm" onclick={goToList}>
-						← Back
+						← Back to Events
 					</Button.Button>
 				{/if}
 			</div>
