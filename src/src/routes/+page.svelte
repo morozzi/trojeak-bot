@@ -30,7 +30,6 @@
 	});
 
 	const featuredEvents = events.filter(event => event.eventfeatured === 1);
-	const availableBrands = brandData.filter(brand => brand.brandfeatured === 1);
 
 	onMount(async () => {
 		try {
@@ -201,7 +200,7 @@
 					<Booking 
 						event={selectedEvent}
 						venue={selectedVenue}
-						{availableBrands}
+						availableBrands={brandData}
 						onComplete={goToPreviousBookingView}
 						onCancel={goToPreviousBookingView}
 						on:footerHeight={handleFooterHeight}
