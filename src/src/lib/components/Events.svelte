@@ -109,7 +109,7 @@
 							</div>
 						{/if}
 					</Card.CardHeader>
-					<Card.CardContent class="p-6 px-0 space-y-4">
+					<Card.CardContent class="p-6 py-0 space-y-4">
 						<div class="text-sm text-muted-foreground">
 							📅 {new Date(selectedEvent.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 						</div>
