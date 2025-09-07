@@ -8,6 +8,7 @@
 	import * as Progress from '$lib/components/ui/progress/index.js';
 	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
+	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import { createEventDispatcher } from 'svelte';
 	import type { Event, Brand, Venue } from '$lib/types/api.js';
 
@@ -142,7 +143,11 @@
 					{#each eventBrands as brand}
 						<Card.Card class="p-4">
 							<div class="flex justify-between items-center">
-								<div class="space-y-1">
+								<div class="flex items-center gap-3">
+									<Avatar.Root class="w-8 h-8 rounded-lg">
+										<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+										<Avatar.Fallback class="rounded-lg bg-muted" />
+									</Avatar.Root>
 									<h4 class="font-medium">{brand.brandname}</h4>
 								</div>
 								<div class="flex items-center gap-2">
