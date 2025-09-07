@@ -3,8 +3,8 @@
 	import { onMount } from 'svelte';
 	import type { WebApp } from '@twa-dev/sdk';
 	import type { TelegramUser, ViewType } from '$lib/types/components.js';
-	import type { Event, Brand } from '$lib/types/api.js';
-	import { events, brandData, cityData, languageData } from '$lib/data/mockData.js';
+	import type { Event, Brand, Venue } from '$lib/types/api.js';
+	import { events, brandData, cityData, languageData, venueData } from '$lib/data/mockData.js';
 	import Loading from '$lib/components/Loading.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Home from '$lib/components/Home.svelte';
@@ -20,6 +20,7 @@
 	let currentView: ViewType = $state('home');
 	let selectedEventId: string | undefined = $state(undefined);
 	let selectedEvent: Event | null = $state(null);
+	let selectedVenue: Venue | null = $state(null);
 	let previousView: ViewType = $state('home');
 	let selectedCity = $state(cityData[0].citysid);
 	let selectedLanguage = $state(languageData[0].languagesid);
@@ -81,6 +82,7 @@
 
 	function handleStartBooking(event: CustomEvent<{event: Event}>) {
 		selectedEvent = event.detail.event;
+		selectedVenue = venueData.find(v => v.venueid === selectedEvent?.venueid) || null;
 		previousView = currentView;
 		currentView = 'booking';
 		window.scrollTo(0, 0);
@@ -195,10 +197,11 @@
 					on:footerHeight={handleFooterHeight}
 				/>
 			{:else if currentView === 'booking'}
-				{#if selectedEvent}
+				{#if selectedEvent && selectedVenue}
 					<Booking 
 						event={selectedEvent}
-						availableBrands={availableBrands}
+						venue={selectedVenue}
+						{availableBrands}
 						onComplete={goToPreviousBookingView}
 						onCancel={goToPreviousBookingView}
 						on:footerHeight={handleFooterHeight}
