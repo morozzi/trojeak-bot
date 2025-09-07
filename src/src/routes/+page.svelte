@@ -195,17 +195,15 @@
 					on:footerHeight={handleFooterHeight}
 				/>
 			{:else if currentView === 'booking'}
-				<Booking 
-					event={{
-						...selectedEvent,
-						venue_id: 'ven_001',
-						brands: ['brd_001', 'brd_002']
-					}}
-					availableBrands={availableBrands}
-					onComplete={goToPreviousBookingView}
-					onCancel={goToPreviousBookingView}
-					on:footerHeight={handleFooterHeight}
-				/>
+				{#if selectedEvent}
+					<Booking 
+						event={selectedEvent}
+						availableBrands={availableBrands}
+						onComplete={goToPreviousBookingView}
+						onCancel={goToPreviousBookingView}
+						on:footerHeight={handleFooterHeight}
+					/>
+				{/if}
 			{/if}
 		</main>
 	{/if}
