@@ -5,7 +5,6 @@
 	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
-	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Venue, Event } from '$lib/types/api.js';
 	import { venueData, events, brandData, cityData } from '$lib/data/mockData.js';
@@ -176,12 +175,53 @@
 
 				<h3 class="text-3xl font-semibold mt-10 mb-4 text-center">Upcoming Events</h3>
 				{#if venueEvents.length > 0}
-					<EventList 
-						events={venueEvents} 
-						{venueData} 
-						{brandData} 
-						onEventClick={goToEvent} 
-					/>
+					{#each venueEvents as event}
+						{@const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''))}
+						{@const eventBrands = brandData.filter(b => eventBrandIds.includes(b.brandid.toString()))}
+						
+						<Card.Card class="mb-8 py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToEvent(event.eventid.toString())}>
+							<Card.CardHeader class="gap-0 pb-4">
+								<div class="flex justify-between items-center">
+									<Card.CardTitle class="text-lg font-semibold">{event.eventtitle}</Card.CardTitle>
+									{#if event.eventfeatured}
+										<Badge.Badge>Featured</Badge.Badge>
+									{/if}
+								</div>
+							</Card.CardHeader>
+							
+							{#if event.eventfeatured}
+								<AspectRatio.Root class="pb-2" ratio={16/9}>
+									<img src="/pic/event/{event.eventpic}" alt={event.eventtitle} class="w-full h-full object-cover" />
+								</AspectRatio.Root>
+							{/if}
+
+							<Card.CardContent class="p-4 pb-4 space-y-4">
+								<div class="text-sm text-muted-foreground">
+									📅 {new Date(event.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+								</div>
+								
+								<div class="text-sm">
+									📍 {selectedVenue.venuename} <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
+								</div>
+
+								<div class="text-sm">
+									🎵 {event.eventartist}
+								</div>
+
+								<div class="flex gap-2 items-center">
+									{#if event.eventschema}
+										<span class="text-sm text-muted-foreground mr-2">💰 {event.eventschema}</span>
+									{/if}
+									{#each eventBrands as brand}
+										<Avatar.Root class="w-8 h-8 rounded-lg">
+											<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+											<Avatar.Fallback class="rounded-lg bg-muted" />
+										</Avatar.Root>
+									{/each}
+								</div>
+							</Card.CardContent>
+						</Card.Card>
+					{/each}
 				{:else}
 					<div class="text-center py-6">
 						<Button.Button variant="default" size="lg" class="bg-primary text-primary-foreground hover:bg-primary/90">
