@@ -80,7 +80,7 @@
 <div class="space-y-6">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<h1 class="text-4xl font-bold">Brands</h1>
+			<h1 class="text-4xl font-bold text-center">Brands</h1>
 		</div>
 		
 		<div class="grid gap-8">
@@ -167,7 +167,7 @@
 					</Card.CardHeader>
 				</Card.Card>
 
-				<h3 class="text-3xl font-semibold mt-10 mb-4">Upcoming Events</h3>
+				<h3 class="text-3xl font-semibold mt-10 mb-4 text-center">Upcoming Events</h3>
 				{#if brandEvents.length > 0}
 					{#each brandEvents as event}
 						{@const venue = venueData.find(v => v.venueid === event.venueid)}

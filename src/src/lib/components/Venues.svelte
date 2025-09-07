@@ -7,7 +7,7 @@
 	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import { createEventDispatcher } from 'svelte';
 	import type { Venue, Event } from '$lib/types/api.js';
-	import { venueData, events, brandData } from '$lib/data/mockData.js';
+	import { venueData, events, brandData, cityData } from '$lib/data/mockData.js';
 
 	let footerEl: HTMLElement | undefined = $state();
 	let isLoading: boolean = $state(false);
@@ -34,6 +34,10 @@
 					return Number(b.eventfeatured) - Number(a.eventfeatured);
 				return new Date(a.eventdate).getTime() - new Date(b.eventdate).getTime();
 			});
+	});
+
+	const getCityName = $derived((cityId: number): string => {
+		return cityData.find(city => city.cityid === cityId)?.cityname || '';
 	});
 
 	function selectVenue(venueId: string): void {
@@ -75,7 +79,7 @@
 <div class="space-y-6">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<h1 class="text-4xl font-bold">Venues</h1>
+			<h1 class="text-4xl font-bold text-center">Venues</h1>
 		</div>
 		
 		<div class="grid gap-8">
@@ -162,9 +166,14 @@
 							</div>
 						</div>
 					</Card.CardHeader>
+					<Card.CardContent class="p-4 px-6 pb-4">
+						<div class="text-sm text-muted-foreground">
+							📍 {getCityName(selectedVenue.cityid)} • <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer" class="hover:underline">Location</a>
+						</div>
+					</Card.CardContent>
 				</Card.Card>
 
-				<h3 class="text-3xl font-semibold mt-10 mb-4">Upcoming Events</h3>
+				<h3 class="text-3xl font-semibold mt-10 mb-4 text-center">Upcoming Events</h3>
 				{#if venueEvents.length > 0}
 					{#each venueEvents as event}
 						{@const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''))}
