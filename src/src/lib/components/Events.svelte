@@ -101,7 +101,7 @@
 				</AspectRatio.Root>
 
 				<Card.Card>
-					<Card.CardHeader class="pb-4">
+					<Card.CardHeader class="pb-3">
 						<h1 class="text-3xl font-bold">{selectedEvent.eventtitle}</h1>
 						{#if selectedEvent.eventfeatured}
 							<div class="flex gap-2">
@@ -140,7 +140,7 @@
 							<p>{selectedEvent.eventdesc}</p>
 						{/if}
 						
-						<Button.Button onclick={() => startBooking(selectedEvent)} class="w-full pt-2">
+						<Button.Button onclick={() => startBooking(selectedEvent)} class="w-full pt-4">
 							Book This Event
 						</Button.Button>
 					</Card.CardContent>
