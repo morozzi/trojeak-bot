@@ -268,7 +268,7 @@
 				<div class="p-4 bg-muted rounded-lg space-y-2">
 					<h4 class="font-medium">Final Summary</h4>
 					<p class="text-sm">Event: {event.eventtitle}</p>
-					<p class="text-sm">Venue: {venue.venuename}</p>
+					<p class="text-sm">Venue: {venue?.venuename}</p>
 					<p class="text-sm">Guests: {guestCount}</p>
 					<p class="text-sm">Total Amount: ${estimatedTotal}</p>
 				</div>
