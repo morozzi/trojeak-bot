@@ -22,10 +22,6 @@
 		footerHeight: { height: number };
 	}>();
 
-	const sortedFeaturedEvents = $derived(() => {
-		return featuredEvents.sort((a, b) => new Date(a.eventdate).getTime() - new Date(b.eventdate).getTime());
-	});
-
 	function handleEventClick(eventId: string) {
 		dispatch('eventClick', { eventId });
 	}
@@ -58,13 +54,20 @@
 		<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
 	</div>
 
-	{#if sortedFeaturedEvents.length > 0}
+	{#if featuredEvents.length > 0}
 		<EventList 
-			events={sortedFeaturedEvents} 
+			events={featuredEvents} 
 			{venueData} 
 			{brandData} 
 			onEventClick={handleEventClick} 
 		/>
+	{:else}
+		<div class="text-center py-8 space-y-4">
+			<p class="text-muted-foreground">No featured events available right now</p>
+			<Button.Button variant="outline" onclick={() => handleNavigate('events')}>
+				Browse All Events
+			</Button.Button>
+		</div>
 	{/if}
 </div>
 
