@@ -101,7 +101,7 @@
 				</AspectRatio.Root>
 
 				<Card.Card>
-					<Card.CardHeader>
+					<Card.CardHeader class="pb-4">
 						<h1 class="text-3xl font-bold">{selectedEvent.eventtitle}</h1>
 						{#if selectedEvent.eventfeatured}
 							<div class="flex gap-2">
@@ -109,7 +109,7 @@
 							</div>
 						{/if}
 					</Card.CardHeader>
-					<Card.CardContent class="p-6 pt-0 space-y-4">
+					<Card.CardContent class="p-6 px-0 space-y-4">
 						<div class="text-sm text-muted-foreground">
 							📅 {new Date(selectedEvent.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 						</div>
@@ -140,7 +140,7 @@
 							<p>{selectedEvent.eventdesc}</p>
 						{/if}
 						
-						<Button.Button onclick={() => startBooking(selectedEvent)} class="w-full">
+						<Button.Button onclick={() => startBooking(selectedEvent)} class="w-full pt-2">
 							Book This Event
 						</Button.Button>
 					</Card.CardContent>
