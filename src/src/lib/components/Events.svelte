@@ -64,7 +64,7 @@
 	});
 </script>
 
-<div class="space-y-8">
+<div class="space-y-6">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
 			<h1 class="text-3xl font-bold">Events</h1>
@@ -92,7 +92,10 @@
 	{:else if viewMode === 'detail' && selectedEventId}
 		{@const selectedEvent = sortedEvents.find(e => e.eventid.toString() === selectedEventId)}
 		{#if selectedEvent}
-			<div class="space-y-8">
+			{@const venue = venueData.find(v => v.venueid === selectedEvent.venueid)}
+			{@const eventBrandIds = selectedEvent.brandid.split(',').map(id => id.replace(/\^/g, ''))}
+			{@const eventBrands = brandData.filter(b => eventBrandIds.includes(b.brandid.toString()))}
+			<div class="space-y-6">
 				<AspectRatio.Root class="pb-2" ratio={16/9}>
 					<img src="/pic/event/{selectedEvent.eventpic}" alt={selectedEvent.eventtitle} class="w-full h-full object-cover" />
 				</AspectRatio.Root>
@@ -106,17 +109,37 @@
 							</div>
 						{/if}
 					</Card.CardHeader>
-					<Card.CardContent class="p-6 space-y-4">
-						<div class="space-y-2">
-							<p class="text-sm text-muted-foreground">🎵 {selectedEvent.eventartist}</p>
-							{#if selectedEvent.eventschema}
-								<p class="text-sm text-muted-foreground">💰 {selectedEvent.eventschema} Schema - ${selectedEvent.eventschemaprice}</p>
-							{/if}
-							<p class="text-sm text-muted-foreground">📅 {new Date(selectedEvent.eventdate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+					<Card.CardContent class="p-6 pt-0 space-y-4">
+						<div class="text-sm text-muted-foreground">
+							📅 {new Date(selectedEvent.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 						</div>
+						
+						{#if venue}
+							<div class="text-sm">
+								📍 {venue.venuename} <a href={venue.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
+							</div>
+						{/if}
+
+						<div class="text-sm">
+							🎵 {selectedEvent.eventartist}
+						</div>
+
+						<div class="flex gap-2 items-center">
+							{#if selectedEvent.eventschema}
+								<span class="text-sm text-muted-foreground mr-2">💰 {selectedEvent.eventschema}</span>
+							{/if}
+							{#each eventBrands as brand}
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+							{/each}
+						</div>
+
 						{#if selectedEvent.eventdesc}
 							<p>{selectedEvent.eventdesc}</p>
 						{/if}
+						
 						<Button.Button onclick={() => startBooking(selectedEvent)} class="w-full">
 							Book This Event
 						</Button.Button>
