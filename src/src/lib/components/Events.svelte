@@ -140,7 +140,7 @@
 							<p>{selectedEvent.eventdesc}</p>
 						{/if}
 						
-						<Button.Button onclick={() => startBooking(selectedEvent)} class="w-full mt-2">
+						<Button.Button onclick={() => startBooking(selectedEvent)} class="w-full mt-4">
 							Book This Event
 						</Button.Button>
 					</Card.CardContent>
