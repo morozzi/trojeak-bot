@@ -94,9 +94,7 @@
 		{#if selectedEvent}
 			<div class="space-y-8">
 				<AspectRatio.Root class="pb-2" ratio={16/9}>
-					<div class="bg-gray-200 text-gray-600 text-center font-medium h-full flex items-center justify-center">
-						Event Banner
-					</div>
+					<img src="/pic/event/{selectedEvent.eventpic}" alt={selectedEvent.eventtitle} class="w-full h-full object-cover" />
 				</AspectRatio.Root>
 
 				<Card.Card>
