@@ -166,7 +166,7 @@
 							</div>
 						</div>
 					</Card.CardHeader>
-					<Card.CardContent class="p-4 px-6">
+					<Card.CardContent class="pt-3 px-6">
 						<div class="text-sm text-muted-foreground">
 							📍 {getCityName(selectedVenue.cityid)} • <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer" class="hover:underline">Location</a>
 						</div>
