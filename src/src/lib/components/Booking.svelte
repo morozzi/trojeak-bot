@@ -9,36 +9,17 @@
 	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { createEventDispatcher } from 'svelte';
-
-	interface Event {
-		id: string;
-		title: string;
-		venue_id: string;
-		venue_name: string;
-		city: string;
-		featured: boolean;
-		brands: string[];
-		price_range: string;
-		date: string;
-		description: string;
-	}
-
-	interface Brand {
-		id: string;
-		name: string;
-		type: 'beer' | 'wine' | 'spirits';
-		featured: boolean;
-		description: string;
-	}
+	import type { Event, Brand, Venue } from '$lib/types/api.js';
 
 	interface Props {
 		event: Event;
+		venue: Venue;
 		availableBrands: Brand[];
 		onComplete: () => void;
 		onCancel: () => void;
 	}
 
-	const { event, availableBrands, onComplete, onCancel }: Props = $props();
+	const { event, venue, availableBrands, onComplete, onCancel }: Props = $props();
 	
 	let footerEl: HTMLElement | undefined = $state();
 
@@ -55,6 +36,9 @@
 	let paymentMethod = $state<'aba' | 'ipay88' | 'telegram_stars' | null>(null);
 	let isProcessing = $state(false);
 	let footerVisible = $state(true);
+
+	const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
+	const eventBrands = availableBrands.filter(b => eventBrandIds.includes(b.brandid.toString()));
 
 	$effect(() => {
 		if (guestCountString && !isNaN(parseInt(guestCountString))) {
@@ -78,7 +62,7 @@
 	});
 
 	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
-	const estimatedTotal = $derived(totalItems * 12);
+	const estimatedTotal = $derived(totalItems * (event.eventschemaprice || 0));
 	const canProceedFromStep1 = $derived(totalItems > 0);
 	const canProceedFromStep2 = $derived(guestCount >= 1 && phoneNumber.length > 4);
 	const canProceedFromStep3 = $derived(comment.length <= 200);
@@ -130,7 +114,7 @@
 <div class="space-y-8">
 	<div class="text-center space-y-4 pt-6">
 		<h1 class="text-2xl font-bold">Book Your Event</h1>
-		<p class="text-muted-foreground">{event.title} at {event.venue_name}</p>
+		<p class="text-muted-foreground">{event.eventtitle} at {venue.venuename}</p>
 	</div>
 	
 	<div class="space-y-6">
@@ -155,18 +139,16 @@
 			<div class="space-y-4">
 				<h3 class="text-lg font-semibold">Select Your Drinks</h3>
 				<div class="grid gap-4">
-					{#each availableBrands as brand}
+					{#each eventBrands as brand}
 						<Card.Card class="p-4">
 							<div class="flex justify-between items-center">
 								<div class="space-y-1">
-									<h4 class="font-medium">{brand.name}</h4>
-									<p class="text-sm text-muted-foreground">{brand.description}</p>
-									<Badge.Badge variant="secondary">{brand.type}</Badge.Badge>
+									<h4 class="font-medium">{brand.brandname}</h4>
 								</div>
 								<div class="flex items-center gap-2">
-									<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.id, Math.max(0, (selectedBrands[brand.id] || 0) - 1))}>-</Button.Button>
-									<span class="w-8 text-center">{selectedBrands[brand.id] || 0}</span>
-									<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.id, (selectedBrands[brand.id] || 0) + 1)}>+</Button.Button>
+									<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.max(0, (selectedBrands[brand.brandid.toString()] || 0) - 1))}>-</Button.Button>
+									<span class="w-8 text-center">{selectedBrands[brand.brandid.toString()] || 0}</span>
+									<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), (selectedBrands[brand.brandid.toString()] || 0) + 1)}>+</Button.Button>
 								</div>
 							</div>
 						</Card.Card>
@@ -285,8 +267,8 @@
 
 				<div class="p-4 bg-muted rounded-lg space-y-2">
 					<h4 class="font-medium">Final Summary</h4>
-					<p class="text-sm">Event: {event.title}</p>
-					<p class="text-sm">Venue: {event.venue_name}</p>
+					<p class="text-sm">Event: {event.eventtitle}</p>
+					<p class="text-sm">Venue: {venue.venuename}</p>
 					<p class="text-sm">Guests: {guestCount}</p>
 					<p class="text-sm">Total Amount: ${estimatedTotal}</p>
 				</div>
