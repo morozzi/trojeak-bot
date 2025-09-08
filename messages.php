@@ -12,10 +12,11 @@ class Messages {
     }
     
     private static function validateLanguage(string $language): string {
-        $activeLanguages = self::$languageService->getActiveLanguages();
-        return array_key_exists($language, $activeLanguages) 
+        $languages = self::$languageService->getLanguages();
+        $formattedLanguages = self::$languageService->formatLanguages($languages);
+        return array_key_exists($language, $formattedLanguages) 
             ? $language 
-            : array_keys($activeLanguages)[0];
+            : ($languages[0]['languagesid'] ?? 'en');
     }
     
     public static function load(string $language = 'en'): array {
@@ -79,8 +80,10 @@ class Messages {
         
         foreach ($keys as $part) {
             if (!isset($message[$part])) {
-                if ($language !== array_keys(self::$languageService->getActiveLanguages())[0]) {
-                    return self::get($key, $replacements, array_keys(self::$languageService->getActiveLanguages())[0]);
+                $languages = self::$languageService->getLanguages();
+                $defaultLang = $languages[0]['languagesid'] ?? 'en';
+                if ($language !== $defaultLang) {
+                    return self::get($key, $replacements, $defaultLang);
                 }
                 
                 if (self::$errorLogService) {

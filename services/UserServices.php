@@ -117,14 +117,16 @@ class UserService {
         if ($telegramUser !== null) {
             $languageCode = $telegramUser['language_code'] ?? null;
             if ($languageCode) {
-                $activeLanguages = $this->languageService->getActiveLanguages();
-                if (array_key_exists($languageCode, $activeLanguages)) {
+                $languages = $this->languageService->getLanguages();
+                $languageIds = array_column($languages, 'languagesid');
+                if (in_array($languageCode, $languageIds)) {
                     return $languageCode;
                 }
             }
         }
         
-        return array_keys($this->languageService->getActiveLanguages())[0] ?? 'en';
+        $languages = $this->languageService->getLanguages();
+        return $languages[0]['languagesid'] ?? 'en';
     }
     
     public function getUserByTelegramId(int $telegramId): ?array {
@@ -232,9 +234,10 @@ class UserService {
         string $lastName, 
         string $language
     ): int {
-        $activeLanguages = $this->languageService->getActiveLanguages();
-        if (!array_key_exists($language, $activeLanguages)) {
-            $language = array_keys($activeLanguages)[0];
+        $languages = $this->languageService->getLanguages();
+        $languageIds = array_column($languages, 'languagesid');
+        if (!in_array($language, $languageIds)) {
+            $language = $languages[0]['languagesid'] ?? 'en';
         }
         
         $data = [

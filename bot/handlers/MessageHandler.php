@@ -54,7 +54,8 @@ class MessageHandler {
             return;
         }
         
-        $userLanguage = $existingUser['language'] ?? array_keys($this->deps->languageService->getActiveLanguages())[0] ?? 'en';
+        $languages = $this->deps->languageService->getLanguages();
+        $userLanguage = $existingUser['language'] ?? ($languages[0]['languagesid'] ?? 'en');
         $config = $command['navigation'];
         
         $messageOptions = ['parse_mode' => 'HTML'];
@@ -131,7 +132,8 @@ class MessageHandler {
     }
     
     private function handleExistingUserStart(int $chatId, array $user, string $userInfo): void {
-        $userLanguage = $user['language'] ?? array_keys($this->deps->languageService->getActiveLanguages())[0] ?? 'en';
+        $languages = $this->deps->languageService->getLanguages();
+        $userLanguage = $user['language'] ?? ($languages[0]['languagesid'] ?? 'en');
         
         $this->deps->logService->info($this->deps->errorLogService->getMessage('bot', 'existing_user_start', [$userInfo]));
         

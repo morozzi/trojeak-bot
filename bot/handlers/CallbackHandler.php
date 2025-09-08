@@ -73,7 +73,8 @@ class CallbackHandler {
             return;
         }
         
-        $userLanguage = $user['language'] ?? array_keys($this->deps->languageService->getActiveLanguages())[0] ?? 'en';
+        $languages = $this->deps->languageService->getLanguages();
+        $userLanguage = $user['language'] ?? ($languages[0]['languagesid'] ?? 'en');
         
         $column = match($preferenceType) {
             'language' => UserTable::LANGUAGE,
@@ -119,16 +120,14 @@ class CallbackHandler {
             };
             
             $displayValue = match($preferenceType) {
-								'city' => (function() use ($value, $messageLanguage) {
-    								$cities = $this->deps->cityService->getCities($messageLanguage);
-    								$formattedCities = $this->deps->cityService->formatCities($cities);
-    								return $formattedCities[$value] ?? $value;
-								})(),
+                'city' => (function() use ($value, $messageLanguage) {
+                    $cities = $this->deps->cityService->getCities($messageLanguage);
+                    $formattedCities = $this->deps->cityService->formatCities($cities);
+                    return $formattedCities[$value] ?? $value;
+                })(),
                 'alerts' => $value === '1' ? 'enabled' : 'disabled',
                 default => $value
             };
-            
-            
             
             if ($preferenceType === 'language') {
                 sendMessage(BotConfig::TOKEN, $chatId, 
@@ -177,11 +176,12 @@ class CallbackHandler {
         $callbackData = $callbackQuery['data'];
         
         $user = $this->deps->userService->getUserByTelegramId($userId);
-        $userLanguage = $user['language'] ?? array_keys($this->deps->languageService->getActiveLanguages())[0] ?? 'en';
+        $languages = $this->deps->languageService->getLanguages();
+        $userLanguage = $user['language'] ?? ($languages[0]['languagesid'] ?? 'en');
         
         $this->deps->errorLogService->log('core', 'callback_unknown', 
             ErrorContext::create($userId, $username), [$callbackData]);
         
-        answerCallbackQuery(BotConfig::TOKEN, $callbackId, Messages::get('confirmations.unknown_callback', [], $userLanguage));
+        answerCallbackQuery(BotConfig::TOKEN, $callbackId, Messages::get('confirmations.operation_completed', [], $userLanguage));
     }
 }

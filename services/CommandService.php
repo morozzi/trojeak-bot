@@ -143,7 +143,9 @@ class CommandService {
     }
     
     private function isButtonCommand(string $text, string $buttonKey): bool {
-        foreach (array_keys($this->languageService->getActiveLanguages()) as $language) {
+        $languages = $this->languageService->getLanguages();
+        foreach ($languages as $lang) {
+            $language = $lang['languagesid'];
             if ($text === Messages::getButton($buttonKey, $language)) {
                 return true;
             }

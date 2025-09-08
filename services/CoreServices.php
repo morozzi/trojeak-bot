@@ -23,11 +23,16 @@ readonly class HandlerDependencies {
         if (!$method) return [];
         
         return match($preferenceType) {
-            'language' => $this->keyboardService->$method(
-                $this->languageService->getActiveLanguages(),
-                $user['language'],
-                'language'
-            ),
+            'language' => (function() use ($user, $method) {
+                $languages = $this->languageService->getLanguages();
+                $formattedLanguages = $this->languageService->formatLanguages($languages);
+                
+                return $this->keyboardService->$method(
+                    $formattedLanguages,
+                    $user['language'],
+                    'language'
+                );
+            })(),
             'city' => (function() use ($user, $language, $method) {
         				$cities = $this->cityService->getCities($language);
         				$formattedCities = $this->cityService->formatCities($cities);
@@ -132,7 +137,7 @@ class LanguageService {
     
     public function __construct(private readonly Database $db) {}
     
-    public function getActiveLanguages(): array {
+    public function getLanguages(): array {
         $success = false;
         $languages = apcu_fetch(Constants::NAMESPACE . ':languages:active', $success);
         
@@ -149,13 +154,16 @@ class LanguageService {
             'ASC'
         );
         
-        $languages = [];
-        foreach ($rows as $row) {
-            $languages[$row['languagesid']] = "{$row['languageflag']} {$row['languagename']}";
+        apcu_store(Constants::NAMESPACE . ':languages:active', $rows, APCuConfig::USER_TTL);
+        return $rows;
+    }
+    
+    public function formatLanguages(array $languages): array {
+        $formatted = [];
+        foreach ($languages as $row) {
+            $formatted[$row['languagesid']] = "{$row['languageflag']} {$row['languagename']}";
         }
-        
-        apcu_store(Constants::NAMESPACE . ':languages:active', $languages, APCuConfig::USER_TTL);
-        return $languages;
+        return $formatted;
     }
     
     public function clearCache(): void {
