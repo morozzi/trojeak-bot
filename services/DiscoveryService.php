@@ -71,7 +71,8 @@ class DiscoveryService {
     }
     
     private function handleNoMatchingEvents(int $chatId, array $user, string $language, array $cityEvents, array $venueTypes): void {
-        $venueTypeNames = $this->venueTypeService->getActiveVenueTypes();
+        $venueTypes = $this->venueTypeService->getVenueTypes();
+				$venueTypeNames = $this->venueTypeService->formatVenueTypes($venueTypes);
         $venueTypeLabels = array_intersect_key($venueTypeNames, array_flip($venueTypes));
         $venueTypeDisplay = implode(' & ', array_map('strip_tags', $venueTypeLabels));
         
@@ -121,11 +122,13 @@ class DiscoveryService {
     
     private function showCityOnboarding(int $chatId, array $user, string $language): void {
         $messageText = Messages::get('settings.city_menu', [], $language);
-        $cityKeyboard = $this->keyboardService->getSingleSelectButtons(
-            $this->cityService->getActiveCities($language),
-            $user['cityid'],
-            'city'
-        );
+        $cities = $this->cityService->getCities($language);
+				$formattedCities = $this->cityService->formatCities($cities);
+				$cityKeyboard = $this->keyboardService->getSingleSelectButtons(
+    				$formattedCities,
+    				$user['cityid'],
+    				'city'
+				);
         
         sendMessage(BotConfig::TOKEN, $chatId, $messageText, [
             'parse_mode' => 'HTML',
@@ -137,11 +140,13 @@ class DiscoveryService {
     
     private function showVenueTypeOnboarding(int $chatId, array $user, string $language): void {
         $messageText = Messages::get('settings.venue_types_menu', [], $language);
-        $venueTypesKeyboard = $this->keyboardService->getMultiSelectButtons(
-            $this->venueTypeService->getActiveVenueTypes(),
-            explode(',', $user['venue_types']),
-            'venue_types'
-        );
+        $venueTypes = $this->venueTypeService->getVenueTypes();
+				$formattedVenueTypes = $this->venueTypeService->formatVenueTypes($venueTypes);
+				$venueTypesKeyboard = $this->keyboardService->getMultiSelectButtons(
+    				$formattedVenueTypes,
+    				explode(',', $user['venue_types']),
+    				'venue_types'
+				);
         
         sendMessage(BotConfig::TOKEN, $chatId, $messageText, [
             'parse_mode' => 'HTML',

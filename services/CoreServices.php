@@ -28,16 +28,26 @@ readonly class HandlerDependencies {
                 $user['language'],
                 'language'
             ),
-            'city' => $this->keyboardService->$method(
-                $this->cityService->getActiveCities($language),
-                $user['cityid'],
-                'city'
-            ),
-            'venue_types' => $this->keyboardService->$method(
-                $this->venueTypeService->getActiveVenueTypes(),
-                explode(',', $user['venue_types']),
-                'venue_types'
-            ),
+            'city' => (function() use ($user, $language, $method) {
+        				$cities = $this->cityService->getCities($language);
+        				$formattedCities = $this->cityService->formatCities($cities);
+
+        				return $this->keyboardService->$method(
+            				$formattedCities,
+            				$user['cityid'],
+            				'city'
+        				);
+    				})(),
+    				'venue_types' => (function() use ($user, $method) {
+    						$venueTypes = $this->venueTypeService->getVenueTypes();
+								$formattedVenueTypes = $this->venueTypeService->formatVenueTypes($venueTypes);
+
+        				return $this->keyboardService->$method(
+            				$formattedVenueTypes,
+            				explode(',', $user['venue_types']),
+            				'venue_types'
+        				);
+    				})(),
             'alerts' => $this->keyboardService->$method(
                 'alerts',
                 $user['alerts'],

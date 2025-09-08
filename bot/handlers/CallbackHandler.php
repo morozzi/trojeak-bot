@@ -118,16 +118,17 @@ class CallbackHandler {
                 default => 'confirmations.operation_completed'
             };
             
-            if ($preferenceType === 'city') {
-                $cities = $this->deps->cityService->getCities($messageLanguage);
-                $formattedCities = $this->deps->cityService->formatCities($cities);
-                $displayValue = $formattedCities[$value] ?? $value;
-            } else {
-                $displayValue = match($preferenceType) {
-                    'alerts' => $value === '1' ? 'enabled' : 'disabled',
-                    default => $value
-                };
-            }
+            $displayValue = match($preferenceType) {
+								'city' => (function() use ($value, $messageLanguage) {
+    								$cities = $this->deps->cityService->getCities($messageLanguage);
+    								$formattedCities = $this->deps->cityService->formatCities($cities);
+    								return $formattedCities[$value] ?? $value;
+								})(),
+                'alerts' => $value === '1' ? 'enabled' : 'disabled',
+                default => $value
+            };
+            
+            
             
             if ($preferenceType === 'language') {
                 sendMessage(BotConfig::TOKEN, $chatId, 
