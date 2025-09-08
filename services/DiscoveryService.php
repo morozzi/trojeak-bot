@@ -164,7 +164,8 @@ class DiscoveryService {
     }
     
     private function getCityName(int $cityId, string $language): string {
-        $cities = $this->cityService->getActiveCities($language);
-        return $cities[$cityId] ?? 'Unknown City';
+        $cities = $this->cityService->getCities($language);
+        $formattedCities = $this->cityService->formatCities($cities);
+        return $formattedCities[$cityId] ?? 'Unknown City';
     }
 }

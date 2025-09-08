@@ -573,7 +573,8 @@ function handleClearCache(): void {
 
 function createTables(Database $db): void {
     global $container;
-    $venueTypes = $container->get('venue_type_service')->getActiveVenueTypes();
+    $venueTypes = $container->get('venue_type_service')->getVenueTypes();
+    $venueTypeKeys = array_column($venueTypes, 'venuetypesid');
     
     $db->rawQuery("CREATE TABLE IF NOT EXISTS `users` (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -584,7 +585,7 @@ function createTables(Database $db): void {
         `phone` varchar(20) DEFAULT NULL,
         `language` varchar(5) DEFAULT 'en',
         `cityid` smallint(5) unsigned NOT NULL DEFAULT '0',
-        `venue_types` set('".implode("','", array_keys($venueTypes))."') NOT NULL DEFAULT '',
+        `venue_types` set('".implode("','", $venueTypeKeys)."') NOT NULL DEFAULT '',
         `channel_member` tinyint(1) DEFAULT 0,
         `venue_staff` smallint(5) unsigned DEFAULT NULL,
         `alerts` tinyint(1) DEFAULT 0,

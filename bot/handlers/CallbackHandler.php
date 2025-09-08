@@ -118,11 +118,16 @@ class CallbackHandler {
                 default => 'confirmations.operation_completed'
             };
             
-            $displayValue = match($preferenceType) {
-                'city' => $this->deps->cityService->getActiveCities($messageLanguage)[$value] ?? $value,
-                'alerts' => $value === '1' ? 'enabled' : 'disabled',
-                default => $value
-            };
+            if ($preferenceType === 'city') {
+                $cities = $this->deps->cityService->getCities($messageLanguage);
+                $formattedCities = $this->deps->cityService->formatCities($cities);
+                $displayValue = $formattedCities[$value] ?? $value;
+            } else {
+                $displayValue = match($preferenceType) {
+                    'alerts' => $value === '1' ? 'enabled' : 'disabled',
+                    default => $value
+                };
+            }
             
             if ($preferenceType === 'language') {
                 sendMessage(BotConfig::TOKEN, $chatId, 
@@ -132,8 +137,9 @@ class CallbackHandler {
                 ]);
             } elseif ($preferenceType !== 'alerts') {
                 if ($preferenceType === 'venue_types') {
-                    $venueTypes = $this->deps->venueTypeService->getActiveVenueTypes();
-                    $venueName = $venueTypes[$clickedButton] ?? $clickedButton;
+                    $venueTypes = $this->deps->venueTypeService->getVenueTypes();
+                    $formattedVenueTypes = $this->deps->venueTypeService->formatVenueTypes($venueTypes);
+                    $venueName = $formattedVenueTypes[$clickedButton] ?? $clickedButton;
                     $actionKey = $wasRemoved ? 'confirmations.venue_removed' : 'confirmations.venue_added';
                     sendMessage(BotConfig::TOKEN, $chatId, 
                         Messages::get($actionKey, [$venueName], $messageLanguage));

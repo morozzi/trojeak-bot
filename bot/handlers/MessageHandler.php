@@ -93,7 +93,9 @@ class MessageHandler {
             } else {
                 $messageText = implode("\n\n", $formattedVenues);
             }
-            $cityName = $this->deps->cityService->getActiveCities($userLanguage)[$existingUser['cityid']] ?? '';
+            $cities = $this->deps->cityService->getCities($userLanguage);
+            $formattedCities = $this->deps->cityService->formatCities($cities);
+            $cityName = $formattedCities[$existingUser['cityid']] ?? '';
             $keyboard = $this->deps->keyboardService->getBrowseAllKeyboard('venues', $userLanguage, $cityName);
             if (!empty($keyboard)) {
                 $messageOptions['reply_markup'] = json_encode($keyboard);
@@ -155,7 +157,7 @@ class MessageHandler {
         
         if ($result > 0) {
             $this->deps->logService->info($this->deps->errorLogService->getMessage('bot', 'new_user_created', [$userInfo]));
-            
+        
             $welcomeMessage = Messages::get('welcome', [], $userLanguage);
             $menuMessage = Messages::get('menu', [], $userLanguage);
             $keyboard = $this->deps->keyboardService->buildMenuKeyboard(

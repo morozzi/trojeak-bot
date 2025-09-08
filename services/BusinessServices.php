@@ -7,7 +7,7 @@ class VenueTypeService {
         private readonly Database $db
     ) {}
     
-    public function getActiveVenueTypes(): array {
+    public function getVenueTypes(): array {
         $success = false;
         $venueTypes = apcu_fetch(Constants::NAMESPACE . ':venue_types:active', $success);
         
@@ -24,13 +24,17 @@ class VenueTypeService {
             'ASC'
         );
         
-        $venueTypes = [];
-        foreach ($rows as $row) {
-            $venueTypes[$row['venuetypesid']] = "{$row['venuetypeicon']} {$row['venuetypename']}";
+        apcu_store(Constants::NAMESPACE . ':venue_types:active', $rows, APCuConfig::LONG_TTL);
+        return $rows;
+    }
+    
+    public function formatVenueTypes(array $venueTypes): array {
+        $formattedVenueTypes = [];
+        foreach ($venueTypes as $venueType) {
+            $formattedVenueTypes[$venueType['venuetypesid']] = "{$venueType['venuetypeicon']} {$venueType['venuetypename']}";
         }
         
-        apcu_store(Constants::NAMESPACE . ':venue_types:active', $venueTypes, APCuConfig::LONG_TTL);
-        return $venueTypes;
+        return $formattedVenueTypes;
     }
     
     public function clearCache(): void {
@@ -44,7 +48,7 @@ class CityService {
         private readonly Database $db
     ) {}
     
-    public function getActiveCities(string $language): array {
+    public function getCities(string $language): array {
         $success = false;
         $cacheKey = Constants::NAMESPACE . ':cities:active:' . $language;
         $cities = apcu_fetch($cacheKey, $success);
@@ -62,13 +66,17 @@ class CityService {
             'ASC'
         );
         
-        $cities = [];
-        foreach ($rows as $row) {
-            $cities[$row['cityid']] = $row['cityname'];
+        apcu_store($cacheKey, $rows, APCuConfig::LONG_TTL);
+        return $rows;
+    }
+    
+    public function formatCities(array $cities): array {
+        $formattedCities = [];
+        foreach ($cities as $city) {
+            $formattedCities[$city['cityid']] = $city['cityname'];
         }
         
-        apcu_store($cacheKey, $cities, APCuConfig::LONG_TTL);
-        return $cities;
+        return $formattedCities;
     }
     
     public function clearCache(): void {
