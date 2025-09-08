@@ -86,30 +86,28 @@ class VenueService {
         private readonly Database $db
     ) {}
     
-    public function getActiveVenues(string $language, int $userCityId = 0, array $userVenueTypes = []): array {
+    public function getVenues(string $language, int $cityId = 0): array {
         $conditions = ['v.venuevisible' => 1, 'vl.languagesid' => $language, 'cl.languagesid' => $language];
         
-        if ($userCityId > 0) {
-            $conditions['v.cityid'] = $userCityId;
+        if ($cityId > 0) {
+            $conditions['v.cityid'] = $cityId;
         }
         
-        if (!empty($userVenueTypes)) {
-            $conditions['v.venuetype'] = ['IN', $userVenueTypes];
-        }
-        
-        $rows = $this->db->selectRows(
+        return $this->db->selectRows(
             'venue v JOIN venuelang vl ON v.venueid = vl.venueid JOIN citylang cl ON v.cityid = cl.cityid JOIN venuetype vt ON v.venuetype = vt.venuetypesid',
             $conditions,
-            ['v.venueid', 'vl.venuename', 'v.venuepic', 'v.venuelink', 'v.venuefeatured', 'cl.cityname', 'vt.venuetypeicon', 'vt.venuetypename', 'v.cityid', 'v.venuetype'],
+            ['v.venueid', 'vl.venuename', 'v.venuepic1', 'v.venuepic2', 'v.venuelocation', 'v.venuelink', 'v.venuefeatured', 'cl.cityname', 'vt.venuetypeicon', 'vt.venuetypename', 'v.cityid', 'v.venuetype'],
             null,
             'v.venuefeatured DESC, v.venuesort',
             'ASC'
         );
-        
+    }
+    
+    public function formatVenues(array $venues): array {
         $formattedVenues = [];
-        foreach ($rows as $venue) {
+        foreach ($venues as $venue) {
             $imageDisplay = '';
-            if (!empty($venue['venuepic']) && file_exists(__DIR__ . '/../pic/venue/' . $venue['venuepic'])) {
+            if (!empty($venue['venuepic1']) && file_exists(__DIR__ . '/../pic/venue/' . $venue['venuepic1'])) {
                 $imageDisplay = '[Image] ';
             }
             
@@ -135,18 +133,20 @@ class BrandService {
         private readonly Database $db
     ) {}
     
-    public function getActiveBrands(): array {
-        $rows = $this->db->selectRows(
+    public function getBrands(): array {
+        return $this->db->selectRows(
             'brand',
             ['brandvisible' => 1],
-            ['brandid', 'brandname', 'brandpic', 'brandfeatured'],
+            ['brandid', 'brandname', 'brandpic1', 'brandpic2', 'brandfeatured'],
             null,
             'brandfeatured DESC, brandsort',
             'ASC'
         );
-        
+    }
+    
+    public function formatBrands(array $brands): array {
         $formattedBrands = [];
-        foreach ($rows as $brand) {
+        foreach ($brands as $brand) {
             $featuredDisplay = $brand['brandfeatured'] ? ' ⭐' : '';
             $formattedBrands[$brand['brandid']] = "{$brand['brandname']}{$featuredDisplay}";
         }

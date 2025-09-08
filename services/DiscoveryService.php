@@ -13,20 +13,29 @@ class DiscoveryService {
     ) {}
     
     public function handleEventDiscovery(int $chatId, array $user, string $language): void {
-        $cityId = isset($user['cityid']) && $user['cityid'] > 0 ? (int)$user['cityid'] : null;
+        $cityId = isset($user['cityid']) && $user['cityid'] > 0 ? (int)$user['cityid'] : 0;
         $venueTypes = !empty($user['venue_types']) ? array_filter(explode(',', $user['venue_types'])) : [];
         
-        if ($cityId === null) {
+        if ($cityId === 0) {
             $this->showCityOnboarding($chatId, $user, $language);
         } else {
-            $cityEvents = $this->eventService->getEvents($language, $cityId, []);
+            $cityEventsRaw = $this->eventService->getEvents($language, $cityId);
+            $cityEvents = [
+                'events' => $this->eventService->formatEvents($cityEventsRaw),
+                'totalCount' => count($cityEventsRaw)
+            ];
             
             if (empty($cityEvents['events'])) {
                 $this->handleNoCityEvents($chatId, $user, $language);
             } elseif (empty($venueTypes)) {
                 $this->handleNoVenueTypes($chatId, $user, $language, $cityEvents);
             } else {
-                $userEvents = $this->eventService->getEvents($language, $cityId, $venueTypes);
+                $userEventsRaw = $this->eventService->getEvents($language, $cityId);
+                $filteredEventsRaw = array_filter($userEventsRaw, fn($event) => in_array($event['venuetype'], $venueTypes));
+                $userEvents = [
+                    'events' => $this->eventService->formatEvents($filteredEventsRaw),
+                    'totalCount' => count($filteredEventsRaw)
+                ];
                 
                 if (empty($userEvents['events'])) {
                     $this->handleNoMatchingEvents($chatId, $user, $language, $cityEvents, $venueTypes);

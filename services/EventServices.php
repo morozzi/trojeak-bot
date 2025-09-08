@@ -9,39 +9,47 @@ class EventService {
     ) {}
     
     public function getSmartEventList(array $user, string $language): array {
-        $cityId = isset($user['cityid']) && $user['cityid'] > 0 ? (int)$user['cityid'] : null;
+        $cityId = isset($user['cityid']) && $user['cityid'] > 0 ? (int)$user['cityid'] : 0;
         $venueTypes = !empty($user['venue_types']) ? array_filter(explode(',', $user['venue_types'])) : [];
         
-        return $this->getEvents($language, $cityId, $venueTypes);
+        $events = $this->getEvents($language, $cityId);
+        
+        if (!empty($venueTypes)) {
+            $events = array_filter($events, fn($event) => in_array($event['venuetype'], $venueTypes));
+        }
+        
+        $formattedEvents = $this->formatEvents($events);
+        
+        return [
+            'events' => $formattedEvents,
+            'totalCount' => count($events),
+            'totalQueried' => count($events)
+        ];
     }
     
-    public function getEvents(string $language, ?int $cityId = null, array $venueTypes = []): array {
-        $conditions = $this->buildConditions($language, $cityId, $venueTypes);
+    public function getEvents(string $language, int $cityId = 0): array {
+        $conditions = $this->buildConditions($language, $cityId);
         
-        $totalCount = $this->db->count('event e JOIN eventlang el ON e.eventid = el.eventid JOIN venue v ON e.venueid = v.venueid JOIN venuelang vl ON v.venueid = vl.venueid JOIN citylang cl ON v.cityid = cl.cityid', $conditions);
-        
-        $rows = $this->db->selectRows(
+        return $this->db->selectRows(
             'event e JOIN eventlang el ON e.eventid = el.eventid JOIN venue v ON e.venueid = v.venueid JOIN venuelang vl ON v.venueid = vl.venueid JOIN citylang cl ON v.cityid = cl.cityid',
             $conditions,
-            ['e.eventid', 'e.brandid', 'e.eventpic', 'e.eventschema', 'e.eventdate', 'e.eventfeatured', 'el.eventtitle', 'el.eventartist', 'vl.venuename', 'cl.cityname', 'v.venuetype'],
+            ['e.eventid', 'e.brandid', 'e.eventpic', 'e.eventschema', 'e.eventschemaprice', 'e.venueid', 'e.eventdate', 'e.eventfeatured', 'el.eventtitle', 'el.eventartist', 'vl.venuename', 'cl.cityname', 'v.venuetype'],
             SystemLimits::EVENTS_DISPLAY_LIMIT,
             'e.eventfeatured DESC, e.eventdate',
             'ASC'
         );
-        
+    }
+    
+    public function formatEvents(array $events): array {
         $formattedEvents = [];
-        foreach ($rows as $event) {
+        foreach ($events as $event) {
             $eventCard = $this->formatEventCard($event);
             if ($eventCard) {
                 $formattedEvents[] = $eventCard;
             }
         }
         
-        return [
-            'events' => $formattedEvents,
-            'totalCount' => $totalCount,
-            'totalQueried' => count($rows)
-        ];
+        return $formattedEvents;
     }
     
     private function formatEventCard(array $event): ?array {
@@ -78,7 +86,7 @@ class EventService {
         ];
     }
     
-    private function buildConditions(string $language, ?int $cityId, array $venueTypes): array {
+    private function buildConditions(string $language, int $cityId): array {
         $conditions = [
             'e.eventvisible' => 1,
             'v.venuevisible' => 1,
@@ -88,12 +96,8 @@ class EventService {
             'e.eventdate' => ['>=', date('Y-m-d H:i:s')]
         ];
         
-        if ($cityId !== null) {
+        if ($cityId > 0) {
             $conditions['v.cityid'] = $cityId;
-        }
-        
-        if (!empty($venueTypes)) {
-            $conditions['v.venuetype'] = ['IN', $venueTypes];
         }
         
         return $conditions;
@@ -104,12 +108,13 @@ class EventService {
             return [];
         }
         
-        $allBrands = $this->brandService->getActiveBrands();
+        $brands = $this->brandService->getBrands();
+        $formattedBrands = $this->brandService->formatBrands($brands);
         $visibleBrandNames = [];
         
         foreach ($brandIds as $brandId) {
-            if (isset($allBrands[$brandId])) {
-                $visibleBrandNames[] = strip_tags($allBrands[$brandId]);
+            if (isset($formattedBrands[$brandId])) {
+                $visibleBrandNames[] = strip_tags($formattedBrands[$brandId]);
             }
         }
         

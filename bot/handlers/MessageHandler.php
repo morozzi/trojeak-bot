@@ -70,7 +70,8 @@ class MessageHandler {
             );
             return;
         } elseif ($command['command'] === 'brands') {
-            $formattedBrands = $this->deps->brandService->getActiveBrands();
+            $brands = $this->deps->brandService->getBrands();
+            $formattedBrands = $this->deps->brandService->formatBrands($brands);
             if (empty($formattedBrands)) {
                 $messageText = Messages::get('no_results', ['brands'], $userLanguage);
             } else {
@@ -82,7 +83,11 @@ class MessageHandler {
             }
         } elseif ($command['command'] === 'venues') {
             $userVenueTypes = !empty($existingUser['venue_types']) ? explode(',', $existingUser['venue_types']) : [];
-            $formattedVenues = $this->deps->venueService->getActiveVenues($userLanguage, $existingUser['cityid'], $userVenueTypes);
+            $venues = $this->deps->venueService->getVenues($userLanguage, $existingUser['cityid']);
+            if (!empty($userVenueTypes)) {
+                $venues = array_filter($venues, fn($venue) => in_array($venue['venuetype'], $userVenueTypes));
+            }
+            $formattedVenues = $this->deps->venueService->formatVenues($venues);
             if (empty($formattedVenues)) {
                 $messageText = Messages::get('no_results', ['venues'], $userLanguage);
             } else {
