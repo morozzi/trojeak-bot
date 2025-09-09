@@ -34,20 +34,11 @@
 	let initData = $state('');
 	let userSelectedCity = $state<string | null>(null);
 	let userSelectedLanguage = $state<string | null>(null);
+	let userQuery = $state<any>(null);
 	let themeParams = $state({
 		backgroundColor: '#f9fafb',
 		textColor: '#1f2937'
 	});
-
-	const userQuery = createQuery(() => ({
-	queryKey: ['user', initData],
-	queryFn: async () => {
-		const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
-		if (!response.ok) throw new Error('Failed to fetch user');
-		return response.json();
-	},
-	enabled: !!initData
-}));
 
 	const selectedLanguage = $derived(
 		userSelectedLanguage || 
@@ -78,6 +69,17 @@
 				if (userParam) {
 					userInfo = JSON.parse(decodeURIComponent(userParam));
 				}
+
+				// Create user query after QueryClient context is available
+				userQuery = createQuery(() => ({
+					queryKey: ['user', initData],
+					queryFn: async () => {
+						const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
+						if (!response.ok) throw new Error('Failed to fetch user');
+						return response.json();
+					},
+					enabled: true
+				}));
 			}
 			
 			if (WebApp.themeParams) {
@@ -192,15 +194,15 @@
 			</div>
 		{:else}
 			<!-- DEBUG INFO - Remove after testing -->
-	<div class="fixed top-0 left-0 w-full bg-red-100 p-2 text-xs z-50">
-		<div>initData: {initData ? 'Present' : 'Missing'}</div>
-		<div>userQuery: {userQuery ? 'Created' : 'Not created'}</div>
-		<div>Query data: {userQuery?.data ? JSON.stringify(userQuery.data) : 'No data'}</div>
-		<div>Query error: {userQuery?.error ? userQuery.error.message : 'No error'}</div>
-		<div>selectedLanguage: {selectedLanguage}</div>
-		<div>selectedCity: {selectedCity}</div>
-	</div>
-	<!-- END DEBUG -->
+			<div class="fixed top-0 left-0 w-full bg-red-100 p-2 text-xs z-50">
+				<div>initData: {initData ? 'Present' : 'Missing'}</div>
+				<div>userQuery: {userQuery ? 'Created' : 'Not created'}</div>
+				<div>Query data: {userQuery?.data ? JSON.stringify(userQuery.data) : 'No data'}</div>
+				<div>Query error: {userQuery?.error ? userQuery.error.message : 'No error'}</div>
+				<div>selectedLanguage: {selectedLanguage}</div>
+				<div>selectedCity: {selectedCity}</div>
+			</div>
+			<!-- END DEBUG -->
 			{#if currentView !== 'booking'}
 				<Header 
 					{userInfo}
