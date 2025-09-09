@@ -96,7 +96,9 @@ class DiscoveryService {
         $showKeyboard = $cityEvents['totalCount'] > SystemLimits::EVENTS_DISPLAY_LIMIT && 
                        OnboardingTracker::hasShown($user['onboarding'] ?? 0, OnboardingTracker::VENUE_TYPES_SHOWN);
         
-        foreach ($events as $index => $eventData) {
+        $limitedEvents = array_slice($events, 0, SystemLimits::EVENTS_DISPLAY_LIMIT);
+        
+        foreach ($limitedEvents as $index => $eventData) {
             $currentOptions = $messageOptions;
             
             if ($showKeyboard && $index === count($events) - 1) {

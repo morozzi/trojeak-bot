@@ -34,7 +34,7 @@ class EventService {
             'event e JOIN eventlang el ON e.eventid = el.eventid JOIN venue v ON e.venueid = v.venueid JOIN venuelang vl ON v.venueid = vl.venueid JOIN citylang cl ON v.cityid = cl.cityid',
             $conditions,
             ['e.eventid', 'e.brandid', 'e.eventpic', 'e.eventschema', 'e.eventschemaprice', 'e.venueid', 'e.eventdate', 'e.eventfeatured', 'el.eventtitle', 'el.eventartist', 'vl.venuename', 'cl.cityname', 'v.venuetype'],
-            SystemLimits::EVENTS_DISPLAY_LIMIT,
+            null,
             'e.eventfeatured DESC, e.eventdate',
             'ASC'
         );
