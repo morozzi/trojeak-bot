@@ -60,7 +60,7 @@ class CityService {
         $rows = $this->db->selectRows(
             'city c JOIN citylang cl ON c.cityid = cl.cityid',
             ['c.cityvisible' => 1, 'cl.languagesid' => $language],
-            ['c.cityid', 'cl.cityname'],
+            ['c.cityid', 'c.citysid', 'cl.cityname'],
             null,
             'c.citysort',
             'ASC'
