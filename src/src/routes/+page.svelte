@@ -197,6 +197,16 @@
 				</div>
 			</div>
 		{:else}
+			<!-- DEBUG INFO - Remove after testing -->
+	<div class="fixed top-0 left-0 w-full bg-red-100 p-2 text-xs z-50">
+		<div>initData: {initData ? 'Present' : 'Missing'}</div>
+		<div>userQuery: {userQuery ? 'Created' : 'Not created'}</div>
+		<div>Query data: {userQuery?.data ? JSON.stringify(userQuery.data) : 'No data'}</div>
+		<div>Query error: {userQuery?.error ? userQuery.error.message : 'No error'}</div>
+		<div>selectedLanguage: {selectedLanguage}</div>
+		<div>selectedCity: {selectedCity}</div>
+	</div>
+	<!-- END DEBUG -->
 			{#if currentView !== 'booking'}
 				<Header 
 					{userInfo}
