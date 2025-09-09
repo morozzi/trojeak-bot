@@ -44,7 +44,7 @@
 			if (!response.ok) throw new Error('Failed to fetch events');
 			return response.json();
 		},
-		enabled: $derived(viewMode === 'detail')
+		enabled: () => viewMode === 'detail'
 	});
 
 	const brands = $derived(
@@ -200,7 +200,6 @@
 				{#if brandEvents.length > 0}
 					<EventList 
 						events={brandEvents} 
-						venueData={$venuesQuery.data || []}
 						brandData={$brandsQuery.data || []}
 						onEventClick={goToEvent} 
 					/>

@@ -30,16 +30,6 @@
 		}
 	});
 
-	const brandsQuery = createQuery({
-		queryKey: ['brands'],
-		queryFn: async () => {
-			const response = await fetch(`/api/brands.php`);
-			if (!response.ok) throw new Error('Failed to fetch brands');
-			return response.json();
-		},
-		enabled: $derived(viewMode === 'detail')
-	});
-
 	function handleEventClick(eventId: string) {
 		dispatch('eventClick', { eventId });
 	}
@@ -79,7 +69,6 @@
 	{:else if ($featuredEventsQuery.data || []).length > 0}
 		<EventList 
 			events={$featuredEventsQuery.data || []} 
-			brandData={$brandsQuery.data || []}
 			onEventClick={handleEventClick} 
 		/>
 	{:else}

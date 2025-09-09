@@ -45,7 +45,7 @@
 			if (!response.ok) throw new Error('Failed to fetch venues');
 			return response.json();
 		},
-		enabled: $derived(viewMode === 'detail')
+		enabled: () => viewMode === 'detail'
 	});
 
 	const brandsQuery = createQuery({
@@ -55,7 +55,7 @@
 			if (!response.ok) throw new Error('Failed to fetch brands');
 			return response.json();
 		},
-		enabled: $derived(viewMode === 'detail')
+		enabled: () => viewMode === 'detail'
 	});
 
 	const sortedEvents = $derived(
