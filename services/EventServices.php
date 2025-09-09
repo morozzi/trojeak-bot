@@ -136,12 +136,4 @@ class EventService {
         
         return [];
     }
-    
-    public function clearCache(): void {
-        $pattern = '/^' . preg_quote(Constants::NAMESPACE . ':events:active:') . '/';
-        $iterator = new APCUIterator($pattern);
-        foreach ($iterator as $item) {
-            apcu_delete($item['key']);
-        }
-    }
 }

@@ -9,7 +9,7 @@ class VenueTypeService {
     
     public function getVenueTypes(): array {
         $success = false;
-        $venueTypes = apcu_fetch(Constants::NAMESPACE . ':venue_types:active', $success);
+        $venueTypes = apcu_fetch(Constants::NAMESPACE . ':venue_types', $success);
         
         if ($success) {
             return $venueTypes;
@@ -24,7 +24,7 @@ class VenueTypeService {
             'ASC'
         );
         
-        apcu_store(Constants::NAMESPACE . ':venue_types:active', $rows, APCuConfig::LONG_TTL);
+        apcu_store(Constants::NAMESPACE . ':venue_types', $rows, APCuConfig::LONG_TTL);
         return $rows;
     }
     
@@ -38,7 +38,7 @@ class VenueTypeService {
     }
     
     public function clearCache(): void {
-        apcu_delete(Constants::NAMESPACE . ':venue_types:active');
+        apcu_delete(Constants::NAMESPACE . ':venue_types');
     }
 }
 
@@ -50,7 +50,7 @@ class CityService {
     
     public function getCities(string $language): array {
         $success = false;
-        $cacheKey = Constants::NAMESPACE . ':cities:active:' . $language;
+        $cacheKey = Constants::NAMESPACE . ':cities:' . $language;
         $cities = apcu_fetch($cacheKey, $success);
         
         if ($success) {
@@ -80,7 +80,7 @@ class CityService {
     }
     
     public function clearCache(): void {
-        $pattern = '/^' . preg_quote(Constants::NAMESPACE . ':cities:active:') . '/';
+        $pattern = '/^' . preg_quote(Constants::NAMESPACE . ':cities:') . '/';
         $iterator = new APCUIterator($pattern);
         foreach ($iterator as $item) {
             apcu_delete($item['key']);
@@ -125,14 +125,6 @@ class VenueService {
         
         return $formattedVenues;
     }
-    
-    public function clearCache(): void {
-        $pattern = '/^' . preg_quote(Constants::NAMESPACE . ':venues:active:') . '/';
-        $iterator = new APCUIterator($pattern);
-        foreach ($iterator as $item) {
-            apcu_delete($item['key']);
-        }
-    }
 }
 
 class BrandService {
@@ -160,9 +152,5 @@ class BrandService {
         }
         
         return $formattedBrands;
-    }
-    
-    public function clearCache(): void {
-        apcu_delete(Constants::NAMESPACE . ':brands:active');
     }
 }

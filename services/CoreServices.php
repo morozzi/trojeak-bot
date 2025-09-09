@@ -139,7 +139,7 @@ class LanguageService {
     
     public function getLanguages(): array {
         $success = false;
-        $languages = apcu_fetch(Constants::NAMESPACE . ':languages:active', $success);
+        $languages = apcu_fetch(Constants::NAMESPACE . ':languages', $success);
         
         if ($success) {
             return $languages;
@@ -154,7 +154,7 @@ class LanguageService {
             'ASC'
         );
         
-        apcu_store(Constants::NAMESPACE . ':languages:active', $rows, APCuConfig::USER_TTL);
+        apcu_store(Constants::NAMESPACE . ':languages', $rows, APCuConfig::USER_TTL);
         return $rows;
     }
     
@@ -167,6 +167,6 @@ class LanguageService {
     }
     
     public function clearCache(): void {
-        apcu_delete(Constants::NAMESPACE . ':languages:active');
+        apcu_delete(Constants::NAMESPACE . ':languages');
     }
 }
