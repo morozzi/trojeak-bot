@@ -69,17 +69,6 @@
 				if (userParam) {
 					userInfo = JSON.parse(decodeURIComponent(userParam));
 				}
-
-				// Create user query after QueryClient context is available
-				userQuery = createQuery(() => ({
-					queryKey: ['user', initData],
-					queryFn: async () => {
-						const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
-						if (!response.ok) throw new Error('Failed to fetch user');
-						return response.json();
-					},
-					enabled: true
-				}));
 			}
 			
 			if (WebApp.themeParams) {
@@ -103,6 +92,25 @@
 			error = 'Failed to initialize Telegram Web App';
 		} finally {
 			isLoading = false;
+		}
+	});
+	
+	// Create user query after mount
+	$effect(() => {
+		if (initData && !isLoading && !userQuery) {
+			try {
+				userQuery = createQuery(() => ({
+					queryKey: ['user', initData],
+					queryFn: async () => {
+						const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
+						if (!response.ok) throw new Error('Failed to fetch user');
+						return response.json();
+					},
+					enabled: true
+				}));
+			} catch (err) {
+				console.log('Query creation error:', err);
+			}
 		}
 	});
 
