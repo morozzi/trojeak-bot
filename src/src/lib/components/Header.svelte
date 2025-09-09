@@ -32,6 +32,11 @@
 			return response.json();
 		}
 	});
+	
+	const currentCitySid = $derived(() => {
+    const city = $commonQuery.data?.cities?.find(c => c.cityid.toString() === selectedCity);
+    return city?.citysid?.toUpperCase() || "...";
+	});
 
 	const userInitials = $derived(() => 
     !userInfo?.first_name ? '?' : 
@@ -92,7 +97,7 @@
 					{#if $commonQuery.isLoading}
 						...
 					{:else}
-						{selectedCity.toUpperCase()}
+						{currentCitySid()}
 					{/if}
 				</Select.Trigger>
 				<Select.Content>
