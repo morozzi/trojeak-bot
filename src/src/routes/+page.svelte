@@ -1,7 +1,7 @@
 <!-- routes/+page.svelte - Main application page -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { QueryClient, QueryClientProvider, createQuery } from '@tanstack/svelte-query';
+	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import type { WebApp } from '@twa-dev/sdk';
 	import type { TelegramUser, ViewType } from '$lib/types/components.js';
 	import type { Event, Brand, Venue } from '$lib/types/api.js';
@@ -42,19 +42,18 @@
 	});
 
 	$effect(() => {
-	if (initData && !userData && !userError) {
-		fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`)
-			.then(response => response.json())
-			.then(data => {
-				userData = data;
-				// Force refresh events when user data loads
-				queryClient.invalidateQueries({ queryKey: ['events'] });
-			})
-			.catch(err => {
-				userError = err.message;
-			});
-	}
-});
+		if (initData && !userData && !userError) {
+			fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`)
+				.then(response => response.json())
+				.then(data => {
+					userData = data;
+					queryClient.invalidateQueries({ queryKey: ['events'] });
+				})
+				.catch(err => {
+					userError = err.message;
+				});
+		}
+	});
 
 	const selectedLanguage = $derived(
 		userSelectedLanguage || 
@@ -198,15 +197,6 @@
 				</div>
 			</div>
 		{:else}
-			<!-- DEBUG INFO - Remove after testing -->
-			<div class="fixed top-0 left-0 w-full bg-red-100 p-2 text-xs z-50">
-				<div>initData: {initData ? 'Present' : 'Missing'}</div>
-				<div>userData: {userData ? JSON.stringify(userData) : 'No data'}</div>
-				<div>userError: {userError || 'No error'}</div>
-				<div>selectedLanguage: {selectedLanguage}</div>
-				<div>selectedCity: {selectedCity}</div>
-			</div>
-			<!-- END DEBUG -->
 			{#if currentView !== 'booking'}
 				<Header 
 					{userInfo}
@@ -221,10 +211,6 @@
 
 			<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)] mb-8">
 				{#if currentView === 'home'}
-					<!-- DEBUG: Events API URL -->
-<div class="bg-yellow-100 p-2 text-xs">
-	Events API: /api/events.php?lang={selectedLanguage}&city={selectedCity}&featured=1
-</div>
 					<Home 
 						{selectedCity}
 						{selectedLanguage}
