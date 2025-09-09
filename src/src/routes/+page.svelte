@@ -219,6 +219,10 @@
 
 			<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)] mb-8">
 				{#if currentView === 'home'}
+					<!-- DEBUG: Events API URL -->
+<div class="bg-yellow-100 p-2 text-xs">
+	Events API: /api/events.php?lang={selectedLanguage}&city={selectedCity}&featured=1
+</div>
 					<Home 
 						{selectedCity}
 						{selectedLanguage}
