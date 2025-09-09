@@ -1,10 +1,11 @@
 <!-- routes/+page.svelte - Main application page -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { QueryClient, QueryClientProvider, createQuery } from '@tanstack/svelte-query';
+	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import type { WebApp } from '@twa-dev/sdk';
 	import type { TelegramUser, ViewType } from '$lib/types/components.js';
 	import type { Event, Brand, Venue } from '$lib/types/api.js';
+	import { brandData } from '$lib/data/mockData.js';
 	import Loading from '$lib/components/Loading.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Home from '$lib/components/Home.svelte';
@@ -31,38 +32,12 @@
 	let selectedEvent: Event | null = $state(null);
 	let selectedVenue: Venue | null = $state(null);
 	let previousView: ViewType = $state('home');
-	let initData = $state('');
-	let userSelectedCity = $state<string | null>(null);
-	let userSelectedLanguage = $state<string | null>(null);
+	let selectedCity = $state('1');
+	let selectedLanguage = $state('en');
 	let themeParams = $state({
 		backgroundColor: '#f9fafb',
 		textColor: '#1f2937'
 	});
-
-	const userQuery = createQuery(() => ({
-		queryKey: ['user', initData],
-		queryFn: async () => {
-			if (!initData) throw new Error('No auth data');
-			const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
-			if (!response.ok) throw new Error('Failed to fetch user');
-			return response.json();
-		},
-		enabled: !!initData
-	}));
-
-	const selectedLanguage = $derived(
-		userSelectedLanguage || 
-		($userQuery.data?.success && $userQuery.data.user ? $userQuery.data.user.language : null) ||
-		($userQuery.error && webApp?.initDataUnsafe?.user?.language_code) ||
-		'en'
-	);
-
-	const selectedCity = $derived(
-		userSelectedCity ||
-		($userQuery.data?.success && $userQuery.data.user ? 
-			($userQuery.data.user.cityid === 0 ? '1' : $userQuery.data.user.cityid.toString()) : null) ||
-		'1'
-	);
 
 	onMount(async () => {
 		try {
@@ -72,7 +47,7 @@
 			WebApp.ready();
 			WebApp.expand();
 			
-			initData = WebApp.initData;
+			const initData = WebApp.initData;
 			if (initData) {
 				const urlParams = new URLSearchParams(initData);
 				const userParam = urlParams.get('user');
@@ -130,13 +105,13 @@
 	}
 
 	function handleCityChange(event: CustomEvent<{city: string}>) {
-		userSelectedCity = event.detail.city;
+		selectedCity = event.detail.city;
 		queryClient.invalidateQueries({ queryKey: ['events'] });
 		queryClient.invalidateQueries({ queryKey: ['venues'] });
 	}
 
 	function handleLanguageChange(event: CustomEvent<{language: string}>) {
-		userSelectedLanguage = event.detail.language;
+		selectedLanguage = event.detail.language;
 		queryClient.invalidateQueries({ queryKey: ['common'] });
 		queryClient.invalidateQueries({ queryKey: ['events'] });
 		queryClient.invalidateQueries({ queryKey: ['venues'] });
