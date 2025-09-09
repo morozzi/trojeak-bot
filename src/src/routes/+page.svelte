@@ -42,17 +42,19 @@
 	});
 
 	$effect(() => {
-		if (initData && !userData && !userError) {
-			fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`)
-				.then(response => response.json())
-				.then(data => {
-					userData = data;
-				})
-				.catch(err => {
-					userError = err.message;
-				});
-		}
-	});
+	if (initData && !userData && !userError) {
+		fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`)
+			.then(response => response.json())
+			.then(data => {
+				userData = data;
+				// Force refresh events when user data loads
+				queryClient.invalidateQueries({ queryKey: ['events'] });
+			})
+			.catch(err => {
+				userError = err.message;
+			});
+	}
+});
 
 	const selectedLanguage = $derived(
 		userSelectedLanguage || 
