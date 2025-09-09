@@ -34,33 +34,38 @@
 	let initData = $state('');
 	let userSelectedCity = $state<string | null>(null);
 	let userSelectedLanguage = $state<string | null>(null);
+	let userQuery = $state<any>(null);
 	let themeParams = $state({
 		backgroundColor: '#f9fafb',
 		textColor: '#1f2937'
 	});
 
-	const userQuery = createQuery(() => ({
-		queryKey: ['user', initData],
-		queryFn: async () => {
-			if (!initData) throw new Error('No auth data');
-			const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
-			if (!response.ok) throw new Error('Failed to fetch user');
-			return response.json();
-		},
-		enabled: !!initData
-	}));
+	$effect(() => {
+		if (initData) {
+			userQuery = createQuery(() => ({
+				queryKey: ['user', initData],
+				queryFn: async () => {
+					if (!initData) throw new Error('No auth data');
+					const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
+					if (!response.ok) throw new Error('Failed to fetch user');
+					return response.json();
+				},
+				enabled: !!initData
+			}));
+		}
+	});
 
 	const selectedLanguage = $derived(
 		userSelectedLanguage || 
-		($userQuery.data?.success && $userQuery.data.user ? $userQuery.data.user.language : null) ||
-		($userQuery.error && webApp?.initDataUnsafe?.user?.language_code) ||
+		(userQuery?.data?.success && userQuery.data.user ? userQuery.data.user.language : null) ||
+		(userQuery?.error && webApp?.initDataUnsafe?.user?.language_code) ||
 		'en'
 	);
 
 	const selectedCity = $derived(
 		userSelectedCity ||
-		($userQuery.data?.success && $userQuery.data.user ? 
-			($userQuery.data.user.cityid === 0 ? '1' : $userQuery.data.user.cityid.toString()) : null) ||
+		(userQuery?.data?.success && userQuery.data.user ? 
+			(userQuery.data.user.cityid === 0 ? '1' : userQuery.data.user.cityid.toString()) : null) ||
 		'1'
 	);
 
