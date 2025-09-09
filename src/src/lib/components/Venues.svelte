@@ -44,7 +44,6 @@
 			if (!response.ok) throw new Error('Failed to fetch events');
 			return response.json();
 		},
-		enabled: () => viewMode === 'detail'
 	});
 
 	const brandsQuery = createQuery({
