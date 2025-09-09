@@ -41,19 +41,20 @@
 	});
 
 	$effect(() => {
-		if (initData) {
+	if (initData && !userQuery) {
+		setTimeout(() => {
 			userQuery = createQuery(() => ({
 				queryKey: ['user', initData],
 				queryFn: async () => {
-					if (!initData) throw new Error('No auth data');
 					const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
 					if (!response.ok) throw new Error('Failed to fetch user');
 					return response.json();
 				},
-				enabled: !!initData
+				enabled: true
 			}));
-		}
-	});
+		}, 100);
+	}
+});
 
 	const selectedLanguage = $derived(
 		userSelectedLanguage || 
