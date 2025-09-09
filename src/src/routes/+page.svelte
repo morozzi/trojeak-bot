@@ -34,23 +34,37 @@
 	let initData = $state('');
 	let userSelectedCity = $state<string | null>(null);
 	let userSelectedLanguage = $state<string | null>(null);
-	let userQuery = $state<any>(null);
+	let userData = $state<any>(null);
+	let userError = $state<string | null>(null);
 	let themeParams = $state({
 		backgroundColor: '#f9fafb',
 		textColor: '#1f2937'
 	});
 
+	$effect(() => {
+		if (initData && !userData && !userError) {
+			fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`)
+				.then(response => response.json())
+				.then(data => {
+					userData = data;
+				})
+				.catch(err => {
+					userError = err.message;
+				});
+		}
+	});
+
 	const selectedLanguage = $derived(
 		userSelectedLanguage || 
-		(userQuery?.data?.success && userQuery.data.user ? userQuery.data.user.language : null) ||
-		(userQuery?.error && webApp?.initDataUnsafe?.user?.language_code) ||
+		(userData?.success && userData.user ? userData.user.language : null) ||
+		(userError && webApp?.initDataUnsafe?.user?.language_code) ||
 		'en'
 	);
 
 	const selectedCity = $derived(
 		userSelectedCity ||
-		(userQuery?.data?.success && userQuery.data.user ? 
-			(userQuery.data.user.cityid === 0 ? '1' : userQuery.data.user.cityid.toString()) : null) ||
+		(userData?.success && userData.user ? 
+			(userData.user.cityid === 0 ? '1' : userData.user.cityid.toString()) : null) ||
 		'1'
 	);
 
@@ -92,25 +106,6 @@
 			error = 'Failed to initialize Telegram Web App';
 		} finally {
 			isLoading = false;
-		}
-	});
-	
-	// Create user query after mount
-	$effect(() => {
-		if (initData && !isLoading && !userQuery) {
-			try {
-				userQuery = createQuery(() => ({
-					queryKey: ['user', initData],
-					queryFn: async () => {
-						const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
-						if (!response.ok) throw new Error('Failed to fetch user');
-						return response.json();
-					},
-					enabled: true
-				}));
-			} catch (err) {
-				console.log('Query creation error:', err);
-			}
 		}
 	});
 
@@ -204,9 +199,8 @@
 			<!-- DEBUG INFO - Remove after testing -->
 			<div class="fixed top-0 left-0 w-full bg-red-100 p-2 text-xs z-50">
 				<div>initData: {initData ? 'Present' : 'Missing'}</div>
-				<div>userQuery: {userQuery ? 'Created' : 'Not created'}</div>
-				<div>Query data: {userQuery?.data ? JSON.stringify(userQuery.data) : 'No data'}</div>
-				<div>Query error: {userQuery?.error ? userQuery.error.message : 'No error'}</div>
+				<div>userData: {userData ? JSON.stringify(userData) : 'No data'}</div>
+				<div>userError: {userError || 'No error'}</div>
 				<div>selectedLanguage: {selectedLanguage}</div>
 				<div>selectedCity: {selectedCity}</div>
 			</div>
