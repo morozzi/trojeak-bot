@@ -1,17 +1,18 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { createQuery } from '@tanstack/svelte-query';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import EventList from '$lib/components/EventList.svelte';
 	import type { Event } from '$lib/types/api.js';
+	import { brandData, venueData } from '$lib/data/mockData.js';
 
 	interface Props {
+		featuredEvents: Event[];
 		selectedCity: string;
 		selectedLanguage: string;
 		userInfo: any;
 	}
 
-	const { selectedCity, selectedLanguage, userInfo }: Props = $props();
+	const { featuredEvents, selectedCity, selectedLanguage, userInfo }: Props = $props();
 
 	let footerEl: HTMLElement | undefined = $state();
 
@@ -20,25 +21,6 @@
 		navigate: { page: string };
 		footerHeight: { height: number };
 	}>();
-
-	const featuredEventsQuery = createQuery({
-		queryKey: ['events', selectedLanguage, selectedCity, 'featured'],
-		queryFn: async () => {
-			const response = await fetch(`/api/events.php?lang=${selectedLanguage}&city=${selectedCity}&featured=1`);
-			if (!response.ok) throw new Error('Failed to fetch featured events');
-			return response.json();
-		}
-	});
-
-	const brandsQuery = createQuery({
-		queryKey: ['brands'],
-		queryFn: async () => {
-			const response = await fetch(`/api/brands.php`);
-			if (!response.ok) throw new Error('Failed to fetch brands');
-			return response.json();
-		},
-		enabled: $derived(viewMode === 'detail')
-	});
 
 	function handleEventClick(eventId: string) {
 		dispatch('eventClick', { eventId });
@@ -72,14 +54,11 @@
 		<p class="text-lg text-muted-foreground">🇰🇭 Cambodia #1 event app</p>
 	</div>
 
-	{#if $featuredEventsQuery.isLoading}
-		<div class="text-center py-8">
-			<p class="text-muted-foreground">Loading featured events...</p>
-		</div>
-	{:else if ($featuredEventsQuery.data || []).length > 0}
+	{#if featuredEvents.length > 0}
 		<EventList 
-			events={$featuredEventsQuery.data || []} 
-			brandData={$brandsQuery.data || []}
+			events={featuredEvents} 
+			{venueData} 
+			{brandData} 
 			onEventClick={handleEventClick} 
 		/>
 	{:else}

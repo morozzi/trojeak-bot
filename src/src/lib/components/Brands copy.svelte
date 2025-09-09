@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { createQuery } from '@tanstack/svelte-query';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Badge from '$lib/components/ui/badge/index.js';
@@ -9,15 +8,10 @@
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Brand, Event } from '$lib/types/api.js';
-
-	interface Props {
-		selectedCity: string;
-		selectedLanguage: string;
-	}
-
-	const { selectedCity, selectedLanguage }: Props = $props();
+	import { brandData, events, venueData } from '$lib/data/mockData.js';
 
 	let footerEl: HTMLElement | undefined = $state();
+	let isLoading: boolean = $state(false);
 
 	const dispatch = createEventDispatcher<{
 		goBack: void;
@@ -28,38 +22,17 @@
 	let viewMode: 'list' | 'detail' = $state('list');
 	let selectedBrandId: string | null = $state(null);
 
-	const brandsQuery = createQuery({
-		queryKey: ['brands'],
-		queryFn: async () => {
-			const response = await fetch(`/api/brands.php`);
-			if (!response.ok) throw new Error('Failed to fetch brands');
-			return response.json();
-		}
-	});
-
-	const eventsQuery = createQuery({
-		queryKey: ['events', selectedLanguage, selectedCity],
-		queryFn: async () => {
-			const response = await fetch(`/api/events.php?lang=${selectedLanguage}&city=${selectedCity}`);
-			if (!response.ok) throw new Error('Failed to fetch events');
-			return response.json();
-		},
-		enabled: $derived(viewMode === 'detail')
-	});
-
-	const brands = $derived(
-		($brandsQuery.data || []).sort((a, b) => Number(b.brandfeatured) - Number(a.brandfeatured))
-	);
+	const brands = brandData.sort((a, b) => Number(b.brandfeatured) - Number(a.brandfeatured));
 
 	const getBrandEventCount = $derived((brandId: number): number => {
-		return ($eventsQuery.data || []).filter(event => {
+		return events.filter(event => {
 			const brandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
 			return brandIds.includes(brandId.toString());
 		}).length;
 	});
 
 	const getBrandEvents = $derived((brandId: number): Event[] => {
-		const brandEvents = ($eventsQuery.data || []).filter(event => {
+		const brandEvents = events.filter(event => {
 			const brandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
 			return brandIds.includes(brandId.toString());
 		});
@@ -108,28 +81,28 @@
 <div class="space-y-6">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<h1 class="text-4xl font-bold">Brands</h1>
+			<h1 class="text-4xl font-bold text-center">Brands</h1>
 		</div>
 		
 		<div class="grid gap-8">
-			{#if $brandsQuery.isLoading}
+			{#if isLoading || brands.length === 0}
 				<Card.Card>
-					<Card.CardHeader class="gap-0 pb-4">
-						<div class="flex justify-between items-center">
-							<div class="flex items-center gap-3">
-								<Skeleton.Skeleton class="w-12 h-12 rounded-lg" />
-								<Skeleton.Skeleton class="h-5 w-32" />
+					<Card.CardHeader class="pb-2">
+						<div class="flex items-start justify-between">
+							<div class="space-y-2 flex-1">
+								<Skeleton.Root class="h-6 w-3/4" />
+								<Skeleton.Root class="h-4 w-1/2" />
 							</div>
 						</div>
 					</Card.CardHeader>
-					<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
-						<Skeleton.Skeleton class="h-4 w-24" />
-					</Card.CardContent>
-				</Card.Card>
-			{:else if brands.length === 0}
-				<Card.Card>
-					<Card.CardContent class="p-4">
-						<p class="text-muted-foreground">No brands available.</p>
+					<Card.CardContent class="space-y-4">
+						<Skeleton.Root class="h-4 w-full" />
+						<Skeleton.Root class="h-4 w-2/3" />
+						<div class="flex gap-2">
+							<Skeleton.Root class="h-8 w-8 rounded-lg" />
+							<Skeleton.Root class="h-8 w-8 rounded-lg" />
+							<Skeleton.Root class="h-8 w-8 rounded-lg" />
+						</div>
 					</Card.CardContent>
 				</Card.Card>
 			{:else}
@@ -159,7 +132,9 @@
 						{/if}
 
 						<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
-							<p class="text-md text-muted-foreground">{getBrandEventCount(brand.brandid)} upcoming events</p>
+							{#if viewMode === 'list' && $eventsQuery.data}
+								<p class="text-md text-muted-foreground">{getBrandEventCount(brand.brandid)} upcoming events</p>
+							{/if}
 						</Card.CardContent>
 					</Card.Card>
 				{/each}
@@ -195,13 +170,13 @@
 						</div>
 					</Card.CardHeader>
 				</Card.Card>
-				
+
 				<h3 class="text-3xl font-semibold mt-10 mb-4 text-center">Upcoming Events</h3>
 				{#if brandEvents.length > 0}
 					<EventList 
 						events={brandEvents} 
-						venueData={$venuesQuery.data || []}
-						brandData={$brandsQuery.data || []}
+						{venueData} 
+						{brandData} 
 						onEventClick={goToEvent} 
 					/>
 				{:else}
