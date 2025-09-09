@@ -34,27 +34,20 @@
 	let initData = $state('');
 	let userSelectedCity = $state<string | null>(null);
 	let userSelectedLanguage = $state<string | null>(null);
-	let userQuery = $state<any>(null);
 	let themeParams = $state({
 		backgroundColor: '#f9fafb',
 		textColor: '#1f2937'
 	});
 
-	$effect(() => {
-	if (initData && !userQuery) {
-		setTimeout(() => {
-			userQuery = createQuery(() => ({
-				queryKey: ['user', initData],
-				queryFn: async () => {
-					const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
-					if (!response.ok) throw new Error('Failed to fetch user');
-					return response.json();
-				},
-				enabled: true
-			}));
-		}, 100);
-	}
-});
+	const userQuery = createQuery(() => ({
+	queryKey: ['user', initData],
+	queryFn: async () => {
+		const response = await fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`);
+		if (!response.ok) throw new Error('Failed to fetch user');
+		return response.json();
+	},
+	enabled: !!initData
+}));
 
 	const selectedLanguage = $derived(
 		userSelectedLanguage || 
