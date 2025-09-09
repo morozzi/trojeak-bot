@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
@@ -7,7 +8,6 @@
 	import * as Separator from '$lib/components/ui/separator/index.js';
 	import { Share2 } from '@lucide/svelte';
 	import type { TelegramUser } from '$lib/types/components.js';
-	import { cityData, languageData } from '$lib/data/mockData.js';
 
 	interface Props {
 		userInfo: TelegramUser | null;
@@ -23,6 +23,15 @@
 		shareToStory: void;
 		accountAction: { action: string };
 	}>();
+
+	const commonQuery = createQuery({
+		queryKey: ['common', selectedLanguage],
+		queryFn: async () => {
+			const response = await fetch(`/api/common.php?lang=${selectedLanguage}`);
+			if (!response.ok) throw new Error('Failed to fetch common data');
+			return response.json();
+		}
+	});
 
 	const userInitials = $derived(() => 
     !userInfo?.first_name ? '?' : 
@@ -79,12 +88,16 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 			<Select.Root type="single" value={selectedCity} onValueChange={handleCityChange}>
-				<Select.Trigger class="w-20">
-					{selectedCity.toUpperCase()}
+				<Select.Trigger class="w-20" disabled={$commonQuery.isLoading}>
+					{#if $commonQuery.isLoading}
+						...
+					{:else}
+						{selectedCity.toUpperCase()}
+					{/if}
 				</Select.Trigger>
 				<Select.Content>
-					{#each cityData as city}
-						<Select.Item value={city.citysid}>{city.cityname}</Select.Item>
+					{#each $commonQuery.data?.cities || [] as city}
+						<Select.Item value={city.cityid.toString()}>{city.cityname}</Select.Item>
 					{/each}
 				</Select.Content>
 			</Select.Root>
@@ -93,11 +106,15 @@
 		</div>
 		<div class="flex items-center gap-2 justify-end">
 			<Select.Root type="single" value={selectedLanguage} onValueChange={handleLanguageChange}>
-				<Select.Trigger class="w-16">
-					{languageData.find(l => l.languagesid === selectedLanguage)?.languageflag}
+				<Select.Trigger class="w-16" disabled={$commonQuery.isLoading}>
+					{#if $commonQuery.isLoading}
+						...
+					{:else}
+						{$commonQuery.data?.languages?.find(l => l.languagesid === selectedLanguage)?.languageflag}
+					{/if}
 				</Select.Trigger>
 				<Select.Content>
-					{#each languageData as lang}
+					{#each $commonQuery.data?.languages || [] as lang}
 						<Select.Item value={lang.languagesid}>
 							{lang.languageflag} {lang.languagename}
 						</Select.Item>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createQuery } from '@tanstack/svelte-query';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Badge from '$lib/components/ui/badge/index.js';
@@ -8,10 +9,15 @@
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Venue, Event } from '$lib/types/api.js';
-	import { venueData, events, brandData, cityData } from '$lib/data/mockData.js';
+
+	interface Props {
+		selectedCity: string;
+		selectedLanguage: string;
+	}
+
+	const { selectedCity, selectedLanguage }: Props = $props();
 
 	let footerEl: HTMLElement | undefined = $state();
-	let isLoading: boolean = $state(false);
 
 	const dispatch = createEventDispatcher<{
 		goBack: void;
@@ -22,23 +28,50 @@
 	let viewMode: 'list' | 'detail' = $state('list');
 	let selectedVenueId: string | null = $state(null);
 
-	const venues = venueData.sort((a, b) => Number(b.venuefeatured) - Number(a.venuefeatured));
+	const venuesQuery = createQuery({
+		queryKey: ['venues', selectedLanguage, selectedCity],
+		queryFn: async () => {
+			const response = await fetch(`/api/venues.php?lang=${selectedLanguage}&city=${selectedCity}`);
+			if (!response.ok) throw new Error('Failed to fetch venues');
+			return response.json();
+		}
+	});
+
+	const eventsQuery = createQuery({
+		queryKey: ['events', selectedLanguage, selectedCity],
+		queryFn: async () => {
+			const response = await fetch(`/api/events.php?lang=${selectedLanguage}&city=${selectedCity}`);
+			if (!response.ok) throw new Error('Failed to fetch events');
+			return response.json();
+		},
+		enabled: $derived(viewMode === 'detail')
+	});
+
+	const brandsQuery = createQuery({
+		queryKey: ['brands'],
+		queryFn: async () => {
+			const response = await fetch(`/api/brands.php`);
+			if (!response.ok) throw new Error('Failed to fetch brands');
+			return response.json();
+		},
+		enabled: $derived(viewMode === 'detail')
+	});
+
+	const venues = $derived(
+		($venuesQuery.data || []).sort((a: Venue, b: Venue) => Number(b.venuefeatured) - Number(a.venuefeatured))
+	);
 
 	const getVenueEventCount = $derived((venueId: number): number => {
-		return events.filter(event => event.venueid === venueId).length;
+		return ($eventsQuery.data || []).filter(event => event.venueid === venueId).length;
 	});
 
 	const getVenueEvents = $derived((venueId: number): Event[] => {
-		return events.filter(event => event.venueid === venueId)
+		return ($eventsQuery.data || []).filter(event => event.venueid === venueId)
 			.sort((a, b) => {
 				if (a.eventfeatured !== b.eventfeatured) 
 					return Number(b.eventfeatured) - Number(a.eventfeatured);
 				return new Date(a.eventdate).getTime() - new Date(b.eventdate).getTime();
 			});
-	});
-
-	const getCityName = $derived((cityId: number): string => {
-		return cityData.find(city => city.cityid === cityId)?.cityname || '';
 	});
 
 	function selectVenue(venueId: string): void {
@@ -84,7 +117,7 @@
 		</div>
 		
 		<div class="grid gap-8">
-			{#if isLoading || venues.length === 0}
+			{#if $venuesQuery.isLoading}
 				<Card.Card>
 					<Card.CardHeader class="pb-2">
 						<div class="flex items-start justify-between">
@@ -102,6 +135,18 @@
 							<Skeleton.Root class="h-8 w-8 rounded-lg" />
 							<Skeleton.Root class="h-8 w-8 rounded-lg" />
 						</div>
+					</Card.CardContent>
+				</Card.Card>
+			{:else if $venuesQuery.error}
+				<Card.Card>
+					<Card.CardContent class="p-4">
+						<p class="text-destructive">Failed to load venues. Please try again.</p>
+					</Card.CardContent>
+				</Card.Card>
+			{:else if venues.length === 0}
+				<Card.Card>
+					<Card.CardContent class="p-4">
+						<p class="text-muted-foreground">No venues available for this location.</p>
 					</Card.CardContent>
 				</Card.Card>
 			{:else}
@@ -169,7 +214,7 @@
 					</Card.CardHeader>
 					<Card.CardContent class="pt-3 px-6">
 						<div class="text-sm text-muted-foreground">
-							📍 {getCityName(selectedVenue.cityid)} • <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer" class="hover:underline">Location</a>
+							📍 <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer" class="hover:underline">Location</a>
 						</div>
 					</Card.CardContent>
 				</Card.Card>
@@ -178,8 +223,8 @@
 				{#if venueEvents.length > 0}
 					<EventList 
 						events={venueEvents} 
-						{venueData} 
-						{brandData} 
+						venueData={$venuesQuery.data || []}
+						brandData={$brandsQuery.data || []}
 						onEventClick={goToEvent} 
 					/>
 				{:else}

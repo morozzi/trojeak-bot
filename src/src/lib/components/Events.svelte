@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createQuery } from '@tanstack/svelte-query';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Badge from '$lib/components/ui/badge/index.js';
@@ -8,13 +9,14 @@
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Event } from '$lib/types/api.js';
-	import { events, brandData, venueData } from '$lib/data/mockData.js';
 
 	interface Props {
+		selectedCity: string;
+		selectedLanguage: string;
 		initialEventId?: string;
 	}
 
-	const { initialEventId }: Props = $props();
+	const { selectedCity, selectedLanguage, initialEventId }: Props = $props();
 
 	let footerEl: HTMLElement | undefined = $state();
 
@@ -27,7 +29,38 @@
 	let viewMode: 'list' | 'detail' = $state(initialEventId ? 'detail' : 'list');
 	let selectedEventId: string | null = $state(initialEventId || null);
 
-	const sortedEvents = events.sort((a, b) => Number(b.eventfeatured) - Number(a.eventfeatured));
+	const eventsQuery = createQuery({
+		queryKey: ['events', selectedLanguage, selectedCity],
+		queryFn: async () => {
+			const response = await fetch(`/api/events.php?lang=${selectedLanguage}&city=${selectedCity}`);
+			if (!response.ok) throw new Error('Failed to fetch events');
+			return response.json();
+		}
+	});
+
+	const venuesQuery = createQuery({
+		queryKey: ['venues', selectedLanguage, selectedCity],
+		queryFn: async () => {
+			const response = await fetch(`/api/venues.php?lang=${selectedLanguage}&city=${selectedCity}`);
+			if (!response.ok) throw new Error('Failed to fetch venues');
+			return response.json();
+		},
+		enabled: $derived(viewMode === 'detail')
+	});
+
+	const brandsQuery = createQuery({
+		queryKey: ['brands'],
+		queryFn: async () => {
+			const response = await fetch(`/api/brands.php`);
+			if (!response.ok) throw new Error('Failed to fetch brands');
+			return response.json();
+		},
+		enabled: $derived(viewMode === 'detail')
+	});
+
+	const sortedEvents = $derived(
+		($eventsQuery.data || []).sort((a: Event, b: Event) => Number(b.eventfeatured) - Number(a.eventfeatured))
+	);
 
 	function selectEvent(eventId: string): void {
 		selectedEventId = eventId;
@@ -71,7 +104,7 @@
 		</div>
 		
 		<div class="grid gap-4">
-			{#if sortedEvents.length === 0}
+			{#if $eventsQuery.isLoading}
 				<Card.Card>
 					<Skeleton.Skeleton class="h-16 w-full" />
 					<Card.CardContent class="p-4 space-y-2">
@@ -80,11 +113,23 @@
 						<Skeleton.Skeleton class="h-4 w-1/2" />
 					</Card.CardContent>
 				</Card.Card>
+			{:else if $eventsQuery.error}
+				<Card.Card>
+					<Card.CardContent class="p-4">
+						<p class="text-destructive">Failed to load events. Please try again.</p>
+					</Card.CardContent>
+				</Card.Card>
+			{:else if sortedEvents.length === 0}
+				<Card.Card>
+					<Card.CardContent class="p-4">
+						<p class="text-muted-foreground">No events available for this location.</p>
+					</Card.CardContent>
+				</Card.Card>
 			{:else}
 				<EventList 
 					events={sortedEvents} 
-					{venueData} 
-					{brandData} 
+					venueData={[]}
+					brandData={[]}
 					onEventClick={selectEvent} 
 				/>
 			{/if}
@@ -92,9 +137,9 @@
 	{:else if viewMode === 'detail' && selectedEventId}
 		{@const selectedEvent = sortedEvents.find(e => e.eventid.toString() === selectedEventId)}
 		{#if selectedEvent}
-			{@const venue = venueData.find(v => v.venueid === selectedEvent.venueid)}
+			{@const venue = $venuesQuery.data?.find(v => v.venueid === selectedEvent.venueid)}
 			{@const eventBrandIds = selectedEvent.brandid.split(',').map(id => id.replace(/\^/g, ''))}
-			{@const eventBrands = brandData.filter(b => eventBrandIds.includes(b.brandid.toString()))}
+			{@const eventBrands = $brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []}
 			<div class="space-y-6">
 				<AspectRatio.Root class="pb-2" ratio={16/9}>
 					<img src="/pic/event/{selectedEvent.eventpic}" alt={selectedEvent.eventtitle} class="w-full h-full object-cover" />
