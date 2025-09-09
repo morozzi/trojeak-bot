@@ -56,9 +56,7 @@
 		enabled: () => viewMode === 'detail'
 	});
 
-	const venues = $derived(
-		($venuesQuery.data || []).sort((a: Venue, b: Venue) => Number(b.venuefeatured) - Number(a.venuefeatured))
-	);
+	const venues = $derived($venuesQuery.data || []);
 
 	const getVenueEventCount = $derived((venueId: number): number => {
 		return ($eventsQuery.data || []).filter(event => event.venueid === venueId).length;

@@ -45,7 +45,6 @@
 			if (!response.ok) throw new Error('Failed to fetch venues');
 			return response.json();
 		},
-		enabled: () => viewMode === 'detail'
 	});
 
 	const brandsQuery = createQuery({
@@ -55,12 +54,9 @@
 			if (!response.ok) throw new Error('Failed to fetch brands');
 			return response.json();
 		},
-		enabled: () => viewMode === 'detail'
 	});
 
-	const sortedEvents = $derived(
-		($eventsQuery.data || []).sort((a: Event, b: Event) => Number(b.eventfeatured) - Number(a.eventfeatured))
-	);
+	const events = $derived($eventsQuery.data || []);
 
 	function selectEvent(eventId: string): void {
 		selectedEventId = eventId;
@@ -119,7 +115,7 @@
 						<p class="text-destructive">Failed to load events. Please try again.</p>
 					</Card.CardContent>
 				</Card.Card>
-			{:else if sortedEvents.length === 0}
+			{:else if events.length === 0}
 				<Card.Card>
 					<Card.CardContent class="p-4">
 						<p class="text-muted-foreground">No events available for this location.</p>
@@ -127,7 +123,7 @@
 				</Card.Card>
 			{:else}
 				<EventList 
-					events={sortedEvents} 
+					events={events} 
 					venueData={[]}
 					brandData={[]}
 					onEventClick={selectEvent} 
@@ -135,7 +131,7 @@
 			{/if}
 		</div>
 	{:else if viewMode === 'detail' && selectedEventId}
-		{@const selectedEvent = sortedEvents.find(e => e.eventid.toString() === selectedEventId)}
+		{@const selectedEvent = events.find(e => e.eventid.toString() === selectedEventId)}
 		{#if selectedEvent}
 			{@const venue = $venuesQuery.data?.find(v => v.venueid === selectedEvent.venueid)}
 			{@const eventBrandIds = selectedEvent.brandid.split(',').map(id => id.replace(/\^/g, ''))}

@@ -46,9 +46,7 @@
 		},
 	});
 
-	const brands = $derived(
-		($brandsQuery.data || []).sort((a, b) => Number(b.brandfeatured) - Number(a.brandfeatured))
-	);
+	const brands = $derived($brandsQuery.data || []);
 
 	const getBrandEventCount = $derived((brandId: number): number => {
 		return ($eventsQuery.data || []).filter(event => {
