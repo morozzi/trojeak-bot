@@ -32,9 +32,9 @@
 	});
 
 	const eventsQuery = createQuery({
-		queryKey: ['events', userStore.selectedLanguage, userStore.selectedCity],
+		queryKey: ['events', $userStore.selectedLanguage, $userStore.selectedCity],
 		queryFn: async () => {
-			const response = await fetch(`/api/events.php?lang=${userStore.selectedLanguage}&city=${userStore.selectedCity}`);
+			const response = await fetch(`/api/events.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}`);
 			if (!response.ok) throw new Error('Failed to fetch events');
 			return response.json();
 		},
