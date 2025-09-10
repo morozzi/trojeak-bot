@@ -9,7 +9,7 @@
 	let footerEl: HTMLElement | undefined = $state();
 
 	const dispatch = createEventDispatcher<{
-		eventClick: { eventId: string };
+		goToEvent: { eventId: string };
 		navigate: { page: string };
 		footerHeight: { height: number };
 	}>();
@@ -43,8 +43,8 @@
 		enabled: () => ($featuredEventsQuery.data || []).length > 0
 	});
 
-	function handleEventClick(eventId: string) {
-		dispatch('eventClick', { eventId });
+	function handleGoToEvent(eventId: string) {
+		dispatch('goToEvent', { eventId });
 	}
 
 	function handleNavigate(page: string) {
@@ -84,7 +84,7 @@
 			events={$featuredEventsQuery.data || []} 
 			venueData={$venuesQuery.data || []}
 			brandData={$brandsQuery.data || []}
-			onEventClick={handleEventClick} 
+			onEventClick={handleGoToEvent} 
 		/>
 	{:else}
 		<div class="text-center py-8 space-y-4">

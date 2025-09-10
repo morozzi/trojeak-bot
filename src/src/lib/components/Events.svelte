@@ -21,6 +21,7 @@
 
 	const dispatch = createEventDispatcher<{
 		goBack: void;
+		goToEvent: { eventId: string };
 		startBooking: { event: Event };
 		footerHeight: { height: number };
 	}>();
@@ -57,10 +58,18 @@
 
 	const events = $derived($eventsQuery.data || []);
 
-	function selectEvent(eventId: string): void {
-		selectedEventId = eventId;
-		viewMode = 'detail';
-		window.scrollTo(0, 0);
+	$effect(() => {
+		if (initialEventId) {
+			selectedEventId = initialEventId;
+			viewMode = 'detail';
+		} else {
+			selectedEventId = null;
+			viewMode = 'list';
+		}
+	});
+
+	function handleGoToEvent(eventId: string): void {
+		dispatch('goToEvent', { eventId });
 	}
 
 	function goToList(): void {
@@ -125,7 +134,7 @@
 					events={events} 
 					venueData={$venuesQuery.data || []}
 					brandData={$brandsQuery.data || []}
-					onEventClick={selectEvent} 
+					onEventClick={handleGoToEvent} 
 				/>
 			{/if}
 		</div>

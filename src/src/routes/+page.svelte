@@ -126,11 +126,6 @@
 		const action = event.detail.action;
 	}
 
-	function handleEventClick(event: CustomEvent<{eventId: string}>) {
-		appActions.setSelectedEventId(event.detail.eventId);
-		appActions.navigate('events');
-	}
-
 	function handleNavigate(event: CustomEvent<{page: string}>) {
 		appActions.navigate(event.detail.page as ViewType);
 	}
@@ -174,7 +169,7 @@
 			<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)] mb-8">
 				{#if $appStore.currentView === 'home'}
 					<Home 
-						on:eventClick={handleEventClick}
+						on:goToEvent={handleGoToEvent}
 						on:navigate={handleNavigate}
 						on:footerHeight={handleFooterHeight}
 					/>
