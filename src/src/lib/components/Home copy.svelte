@@ -4,7 +4,14 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import EventList from '$lib/components/EventList.svelte';
 	import type { Event } from '$lib/types/api.js';
-	import { userStore } from '$lib/stores/user.js';
+
+	interface Props {
+		selectedCity: string;
+		selectedLanguage: string;
+		userInfo: any;
+	}
+
+	const { selectedCity, selectedLanguage, userInfo }: Props = $props();
 
 	let footerEl: HTMLElement | undefined = $state();
 
@@ -15,9 +22,9 @@
 	}>();
 
 	const featuredEventsQuery = createQuery({
-		queryKey: ['events', userStore.selectedLanguage, userStore.selectedCity, 'featured'],
+		queryKey: ['events', selectedLanguage, selectedCity, 'featured'],
 		queryFn: async () => {
-			const response = await fetch(`/api/events.php?lang=${userStore.selectedLanguage}&city=${userStore.selectedCity}&featured=1`);
+			const response = await fetch(`/api/events.php?lang=${selectedLanguage}&city=${selectedCity}&featured=1`);
 			if (!response.ok) throw new Error('Failed to fetch featured events');
 			return response.json();
 		}

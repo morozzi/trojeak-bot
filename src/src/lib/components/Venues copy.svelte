@@ -9,7 +9,13 @@
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Venue, Event } from '$lib/types/api.js';
-	import { userStore } from '$lib/stores/user.js';
+
+	interface Props {
+		selectedCity: string;
+		selectedLanguage: string;
+	}
+
+	const { selectedCity, selectedLanguage }: Props = $props();
 
 	let footerEl: HTMLElement | undefined = $state();
 
@@ -23,18 +29,18 @@
 	let selectedVenueId: string | null = $state(null);
 
 	const venuesQuery = createQuery({
-		queryKey: ['venues', userStore.selectedLanguage, userStore.selectedCity],
+		queryKey: ['venues', selectedLanguage, selectedCity],
 		queryFn: async () => {
-			const response = await fetch(`/api/venues.php?lang=${userStore.selectedLanguage}&city=${userStore.selectedCity}`);
+			const response = await fetch(`/api/venues.php?lang=${selectedLanguage}&city=${selectedCity}`);
 			if (!response.ok) throw new Error('Failed to fetch venues');
 			return response.json();
 		}
 	});
 
 	const eventsQuery = createQuery({
-		queryKey: ['events', userStore.selectedLanguage, userStore.selectedCity],
+		queryKey: ['events', selectedLanguage, selectedCity],
 		queryFn: async () => {
-			const response = await fetch(`/api/events.php?lang=${userStore.selectedLanguage}&city=${userStore.selectedCity}`);
+			const response = await fetch(`/api/events.php?lang=${selectedLanguage}&city=${selectedCity}`);
 			if (!response.ok) throw new Error('Failed to fetch events');
 			return response.json();
 		},
