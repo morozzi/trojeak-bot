@@ -68,7 +68,7 @@
 		}
 	});
 
-	function handleGoToEvent(eventId: string): void {
+	function goToEvent(eventId: string): void {
 		dispatch('goToEvent', { eventId });
 	}
 
@@ -134,7 +134,7 @@
 					events={events} 
 					venueData={$venuesQuery.data || []}
 					brandData={$brandsQuery.data || []}
-					onEventClick={handleGoToEvent} 
+					onEventClick={goToEvent} 
 				/>
 			{/if}
 		</div>

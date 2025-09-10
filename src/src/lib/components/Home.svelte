@@ -43,7 +43,7 @@
 		enabled: () => ($featuredEventsQuery.data || []).length > 0
 	});
 
-	function handleGoToEvent(eventId: string) {
+	function goToEvent(eventId: string) {
 		dispatch('goToEvent', { eventId });
 	}
 
@@ -84,7 +84,7 @@
 			events={$featuredEventsQuery.data || []} 
 			venueData={$venuesQuery.data || []}
 			brandData={$brandsQuery.data || []}
-			onEventClick={handleGoToEvent} 
+			onEventClick={goToEvent} 
 		/>
 	{:else}
 		<div class="text-center py-8 space-y-4">
