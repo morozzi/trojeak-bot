@@ -127,6 +127,9 @@
 	}
 
 	function handleNavigate(event: CustomEvent<{page: string}>) {
+		if (event.detail.page === 'events') {
+			appActions.setSelectedEventId('');
+		}
 		appActions.navigate(event.detail.page as ViewType);
 	}
 
