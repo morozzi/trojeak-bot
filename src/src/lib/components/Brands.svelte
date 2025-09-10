@@ -40,6 +40,15 @@
 		},
 	});
 
+	const venuesQuery = createQuery({
+		queryKey: ['venues', $userStore.selectedLanguage, $userStore.selectedCity],
+		queryFn: async () => {
+			const response = await fetch(`/api/venues.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}`);
+			if (!response.ok) throw new Error('Failed to fetch venues');
+			return response.json();
+		},
+	});
+
 	const brands = $derived($brandsQuery.data || []);
 
 	const getBrandEventCount = $derived((brandId: number): number => {
@@ -54,8 +63,10 @@
 			const brandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
 			return brandIds.includes(brandId.toString());
 		});
+		
 		return brandEvents.sort((a, b) => {
-			if (a.eventfeatured !== b.eventfeatured) return Number(b.eventfeatured) - Number(a.eventfeatured);
+			if (a.eventfeatured !== b.eventfeatured) 
+				return Number(b.eventfeatured) - Number(a.eventfeatured);
 			return new Date(a.eventdate).getTime() - new Date(b.eventdate).getTime();
 		});
 	});
@@ -99,22 +110,23 @@
 <div class="space-y-6">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<h1 class="text-4xl font-bold">Brands</h1>
+			<h1 class="text-3xl font-bold">Brands</h1>
 		</div>
 		
-		<div class="grid gap-8">
+		<div class="grid gap-4">
 			{#if $brandsQuery.isLoading}
 				<Card.Card>
-					<Card.CardHeader class="gap-0 pb-4">
-						<div class="flex justify-between items-center">
-							<div class="flex items-center gap-3">
-								<Skeleton.Skeleton class="w-12 h-12 rounded-lg" />
-								<Skeleton.Skeleton class="h-5 w-32" />
-							</div>
-						</div>
-					</Card.CardHeader>
-					<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
-						<Skeleton.Skeleton class="h-4 w-24" />
+					<Skeleton.Skeleton class="h-16 w-full" />
+					<Card.CardContent class="p-4 space-y-2">
+						<Skeleton.Skeleton class="h-4 w-full" />
+						<Skeleton.Skeleton class="h-4 w-3/4" />
+						<Skeleton.Skeleton class="h-4 w-1/2" />
+					</Card.CardContent>
+				</Card.Card>
+			{:else if $brandsQuery.error}
+				<Card.Card>
+					<Card.CardContent class="p-4">
+						<p class="text-destructive">Failed to load brands. Please try again.</p>
 					</Card.CardContent>
 				</Card.Card>
 			{:else if brands.length === 0}
@@ -191,6 +203,7 @@
 				{#if brandEvents.length > 0}
 					<EventList 
 						events={brandEvents} 
+						venueData={$venuesQuery.data || []}
 						brandData={$brandsQuery.data || []}
 						onEventClick={goToEvent} 
 					/>

@@ -123,8 +123,8 @@
 			{:else}
 				<EventList 
 					events={events} 
-					venueData={[]}
-					brandData={[]}
+					venueData={$venuesQuery.data || []}
+					brandData={$brandsQuery.data || []}
 					onEventClick={selectEvent} 
 				/>
 			{/if}

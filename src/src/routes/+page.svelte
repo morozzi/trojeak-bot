@@ -89,6 +89,7 @@
 	}
 	
 	function handleGoToEvent(event: CustomEvent<{eventId: string}>) {
+		appActions.setSelectedEventId(event.detail.eventId);
 		appActions.navigate('events');
 	}
 
@@ -126,6 +127,7 @@
 	}
 
 	function handleEventClick(event: CustomEvent<{eventId: string}>) {
+		appActions.setSelectedEventId(event.detail.eventId);
 		appActions.navigate('events');
 	}
 
