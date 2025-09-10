@@ -1,4 +1,5 @@
 // lib/stores/user.ts
+import { writable, derived } from 'svelte/store';
 import type { TelegramUser } from '$lib/types/components.js';
 
 interface UserState {
@@ -8,15 +9,10 @@ interface UserState {
 	userSelectedCity: string | null;
 	userSelectedLanguage: string | null;
 	initData: string;
-}
-
-interface UserActions {
-	setUserData: (data: any) => void;
-	setUserError: (error: string | null) => void;
-	setUserDataLoaded: (loaded: boolean) => void;
-	setPreference: (key: 'city' | 'language', value: string) => void;
-	setInitData: (data: string) => void;
-	resetUser: () => void;
+	selectedLanguage: string;
+	selectedCity: string | null;
+	isUserDataLoaded: boolean;
+	userInfo: TelegramUser | null;
 }
 
 const initialState: UserState = {
@@ -25,83 +21,72 @@ const initialState: UserState = {
 	userDataLoaded: false,
 	userSelectedCity: null,
 	userSelectedLanguage: null,
-	initData: ''
+	initData: '',
+	selectedLanguage: 'en',
+	selectedCity: null,
+	isUserDataLoaded: false,
+	userInfo: null
 };
 
-let userData = $state<any | null>(initialState.userData);
-let userError = $state<string | null>(initialState.userError);
-let userDataLoaded = $state<boolean>(initialState.userDataLoaded);
-let userSelectedCity = $state<string | null>(initialState.userSelectedCity);
-let userSelectedLanguage = $state<string | null>(initialState.userSelectedLanguage);
-let initData = $state<string>(initialState.initData);
+const baseUserStore = writable(initialState);
 
-const selectedLanguage = $derived(
-	userSelectedLanguage || 
-	(userData?.success && userData.user ? userData.user.language : null) ||
-	'en'
+export const userStore = derived(
+	baseUserStore,
+	($base) => {
+		const selectedLanguage = $base.userSelectedLanguage || 
+			($base.userData?.success && $base.userData.user ? $base.userData.user.language : null) ||
+			'en';
+
+		const selectedCity = $base.userSelectedCity ||
+			($base.userData?.success && $base.userData.user ? 
+				($base.userData.user.cityid === 0 ? null : $base.userData.user.cityid.toString()) :
+				null);
+
+		const isUserDataLoaded = $base.userDataLoaded;
+
+		const userInfo: TelegramUser | null = $base.userData?.success && $base.userData.user ? {
+			id: $base.userData.user.telegram_id,
+			first_name: $base.userData.user.firstname || '',
+			last_name: $base.userData.user.lastname || '',
+			username: $base.userData.user.username || '',
+			language_code: $base.userData.user.language || 'en'
+		} : null;
+
+		return {
+			...$base,
+			selectedLanguage,
+			selectedCity,
+			isUserDataLoaded,
+			userInfo
+		};
+	}
 );
 
-const selectedCity = $derived(
-	userSelectedCity ||
-	(userData?.success && userData.user ? 
-		(userData.user.cityid === 0 ? null : userData.user.cityid.toString()) :
-		null)
-);
-
-const isUserDataLoaded = $derived(userDataLoaded);
-
-const userInfo = $derived<TelegramUser | null>(
-	userData?.success && userData.user ? {
-		id: userData.user.telegram_id,
-		first_name: userData.user.firstname || '',
-		last_name: userData.user.lastname || '',
-		username: userData.user.username || '',
-		language_code: userData.user.language || 'en'
-	} : null
-);
-
-export const userStore = {
-	get userData() { return userData; },
-	get userError() { return userError; },
-	get userDataLoaded() { return userDataLoaded; },
-	get userSelectedCity() { return userSelectedCity; },
-	get userSelectedLanguage() { return userSelectedLanguage; },
-	get initData() { return initData; },
-	get selectedLanguage() { return selectedLanguage; },
-	get selectedCity() { return selectedCity; },
-	get isUserDataLoaded() { return isUserDataLoaded; },
-	get userInfo() { return userInfo; },
-
+export const userActions = {
 	setUserData: (data: any) => {
-		userData = data;
+		baseUserStore.update(state => ({ ...state, userData: data }));
 	},
 
 	setUserError: (error: string | null) => {
-		userError = error;
+		baseUserStore.update(state => ({ ...state, userError: error }));
 	},
 
 	setUserDataLoaded: (loaded: boolean) => {
-		userDataLoaded = loaded;
+		baseUserStore.update(state => ({ ...state, userDataLoaded: loaded }));
 	},
 
 	setPreference: (key: 'city' | 'language', value: string) => {
-		if (key === 'city') {
-			userSelectedCity = value;
-		} else {
-			userSelectedLanguage = value;
-		}
+		baseUserStore.update(state => ({
+			...state,
+			[key === 'city' ? 'userSelectedCity' : 'userSelectedLanguage']: value
+		}));
 	},
 
 	setInitData: (data: string) => {
-		initData = data;
+		baseUserStore.update(state => ({ ...state, initData: data }));
 	},
 
 	resetUser: () => {
-		userData = initialState.userData;
-		userError = initialState.userError;
-		userDataLoaded = initialState.userDataLoaded;
-		userSelectedCity = initialState.userSelectedCity;
-		userSelectedLanguage = initialState.userSelectedLanguage;
-		initData = initialState.initData;
+		baseUserStore.set(initialState);
 	}
 };

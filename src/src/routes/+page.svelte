@@ -4,8 +4,9 @@
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import type { WebApp } from '@twa-dev/sdk';
 	import type { Event } from '$lib/types/api.js';
-	import { userStore } from '$lib/stores/user.js';
-	import { appStore } from '$lib/stores/app.js';
+	import type { ViewType } from '$lib/types/components.js';
+	import { userStore, userActions } from '$lib/stores/user.js';
+	import { appStore, appActions } from '$lib/stores/app.js';
 	import Loading from '$lib/components/Loading.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Home from '$lib/components/Home.svelte';
@@ -24,33 +25,33 @@
 	});
 
 	$effect(() => {
-		if (userStore.initData && !userStore.userData && !userStore.userError) {
-			fetch(`/api/user.php?_auth=${encodeURIComponent(userStore.initData)}`)
+		if ($userStore.initData && !$userStore.userData && !$userStore.userError) {
+			fetch(`/api/user.php?_auth=${encodeURIComponent($userStore.initData)}`)
 				.then(response => response.json())
 				.then(data => {
-					userStore.setUserData(data);
-					userStore.setUserDataLoaded(true);
+					userActions.setUserData(data);
+					userActions.setUserDataLoaded(true);
 					queryClient.invalidateQueries({ queryKey: ['events'] });
 				})
 				.catch(err => {
-					userStore.setUserError(err.message);
-					userStore.setUserDataLoaded(true);
+					userActions.setUserError(err.message);
+					userActions.setUserDataLoaded(true);
 				});
 		}
 	});
 
 	$effect(() => {
-		if (appStore.webApp) {
-			appStore.webApp.onEvent('backButtonClicked', () => {
-				if (appStore.canGoBack) {
-					appStore.goBack();
+		if ($appStore.webApp) {
+			$appStore.webApp.onEvent('backButtonClicked', () => {
+				if ($appStore.canGoBack) {
+					appActions.goBack();
 				}
 			});
 
-			if (appStore.canGoBack) {
-				appStore.webApp.BackButton.show();
+			if ($appStore.canGoBack) {
+				$appStore.webApp.BackButton.show();
 			} else {
-				appStore.webApp.BackButton.hide();
+				$appStore.webApp.BackButton.hide();
 			}
 		}
 	});
@@ -58,56 +59,56 @@
 	onMount(async () => {
 		try {
 			const WebApp = (await import('@twa-dev/sdk')).default;
-			appStore.setWebApp(WebApp);
+			appActions.setWebApp(WebApp);
 			
 			WebApp.ready();
 			WebApp.expand();
 			
-			userStore.setInitData(WebApp.initData);
+			userActions.setInitData(WebApp.initData);
 			
-			appStore.setThemeFromWebApp();
+			appActions.setThemeFromWebApp();
 			if (WebApp.themeParams?.header_bg_color) {
-				WebApp.setHeaderColor(appStore.backgroundColor);
+				WebApp.setHeaderColor($appStore.backgroundColor);
 			}
 			
 			const urlParams = new URLSearchParams(window.location.search);
 			const startParam = urlParams.get('start');
-			appStore.handleDeepLink(startParam || undefined);
+			appActions.handleDeepLink(startParam || undefined);
 			
 		} catch (err) {
-			appStore.setError('Failed to initialize Telegram Web App');
+			appActions.setError('Failed to initialize Telegram Web App');
 		} finally {
-			appStore.setLoading(false);
+			appActions.setLoading(false);
 		}
 	});
 
 	function handleStartBooking(event: CustomEvent<{event: Event}>) {
-		appStore.setSelectedEvent(event.detail.event);
-		appStore.startBooking(event.detail.event.eventid);
-		appStore.navigate('booking');
+		appActions.setSelectedEvent(event.detail.event);
+		appActions.startBooking(event.detail.event.eventid);
+		appActions.navigate('booking');
 	}
 	
 	function handleGoToEvent(event: CustomEvent<{eventId: string}>) {
-		appStore.navigate('events');
+		appActions.navigate('events');
 	}
 
 	function handleCityChange(event: CustomEvent<{city: string}>) {
-		userStore.setPreference('city', event.detail.city);
+		userActions.setPreference('city', event.detail.city);
 		queryClient.invalidateQueries({ queryKey: ['events'] });
 		queryClient.invalidateQueries({ queryKey: ['venues'] });
 	}
 
 	function handleLanguageChange(event: CustomEvent<{language: string}>) {
-		userStore.setPreference('language', event.detail.language);
+		userActions.setPreference('language', event.detail.language);
 		queryClient.invalidateQueries({ queryKey: ['common'] });
 		queryClient.invalidateQueries({ queryKey: ['events'] });
 		queryClient.invalidateQueries({ queryKey: ['venues'] });
 	}
 
 	function handleShareToStory() {
-		if (appStore.webApp?.shareToStory) {
+		if ($appStore.webApp?.shareToStory) {
 			try {
-				appStore.webApp.shareToStory('https://trojeak.morozzi.com', {
+				$appStore.webApp.shareToStory('https://trojeak.morozzi.com', {
 					text: 'Check out these amazing events in Cambodia! 🇰🇭',
 					widget_link: {
 						url: 'https://trojeak.morozzi.com',
@@ -125,11 +126,11 @@
 	}
 
 	function handleEventClick(event: CustomEvent<{eventId: string}>) {
-		appStore.navigate('events');
+		appActions.navigate('events');
 	}
 
 	function handleNavigate(event: CustomEvent<{page: string}>) {
-		appStore.navigate(event.detail.page as ViewType);
+		appActions.navigate(event.detail.page as ViewType);
 	}
 
 	function handleFooterHeight(event: CustomEvent<{height: number}>) {
@@ -137,8 +138,8 @@
 	}
 
 	function goToPreviousBookingView() {
-		appStore.clearBooking();
-		appStore.goBack();
+		appActions.clearBooking();
+		appActions.goBack();
 	}
 </script>
 
@@ -147,19 +148,19 @@
 		class="min-h-[100svh] bg-background"
 		style="--app-footer-h: calc(var(--footer-h, 72px) + env(safe-area-inset-bottom, 0px));"
 	>
-		{#if appStore.isLoading}
+		{#if $appStore.isLoading}
 			<Loading message="Loading Trojeak..." />
-		{:else if appStore.error}
+		{:else if $appStore.error}
 			<div class="flex items-center justify-center min-h-screen">
 				<div class="w-full max-w-2xl mx-auto p-6 bg-card text-card-foreground shadow-sm border rounded-lg">
 					<div class="text-center">
 						<h2 class="text-xl font-semibold mb-2">Connection Error</h2>
-						<p class="text-muted-foreground">{appStore.error}</p>
+						<p class="text-muted-foreground">{$appStore.error}</p>
 					</div>
 				</div>
 			</div>
-		{:else if userStore.isUserDataLoaded}
-			{#if appStore.currentView !== 'booking'}
+		{:else if $userStore.isUserDataLoaded}
+			{#if $appStore.currentView !== 'booking'}
 				<Header 
 					on:cityChange={handleCityChange}
 					on:languageChange={handleLanguageChange}
@@ -169,36 +170,36 @@
 			{/if}
 
 			<main class="mx-auto w-full max-w-2xl px-4 pt-0 pb-[var(--app-footer-h)] mb-8">
-				{#if appStore.currentView === 'home'}
+				{#if $appStore.currentView === 'home'}
 					<Home 
 						on:eventClick={handleEventClick}
 						on:navigate={handleNavigate}
 						on:footerHeight={handleFooterHeight}
 					/>
-				{:else if appStore.currentView === 'events'}
+				{:else if $appStore.currentView === 'events'}
 					<Events 
-						initialEventId={appStore.selectedEventId} 
-						on:goBack={appStore.goBack} 
+						initialEventId={$appStore.selectedEventId} 
+						on:goBack={appActions.goBack} 
 						on:startBooking={handleStartBooking} 
 						on:footerHeight={handleFooterHeight}
 					/>
-				{:else if appStore.currentView === 'venues'}
+				{:else if $appStore.currentView === 'venues'}
 					<Venues 
-						on:goBack={appStore.goBack} 
+						on:goBack={appActions.goBack} 
 						on:goToEvent={handleGoToEvent} 
 						on:footerHeight={handleFooterHeight}
 					/>
-				{:else if appStore.currentView === 'brands'}
+				{:else if $appStore.currentView === 'brands'}
 					<Brands 
-						on:goBack={appStore.goBack} 
+						on:goBack={appActions.goBack} 
 						on:goToEvent={handleGoToEvent} 
 						on:footerHeight={handleFooterHeight}
 					/>
-				{:else if appStore.currentView === 'booking'}
-					{#if appStore.selectedEvent}
+				{:else if $appStore.currentView === 'booking'}
+					{#if $appStore.selectedEvent}
 						<Booking 
-							event={appStore.selectedEvent}
-							venue={appStore.selectedVenue}
+							event={$appStore.selectedEvent}
+							venue={$appStore.selectedVenue}
 							onComplete={goToPreviousBookingView}
 							onCancel={goToPreviousBookingView}
 							on:footerHeight={handleFooterHeight}

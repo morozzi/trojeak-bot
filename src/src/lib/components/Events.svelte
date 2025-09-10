@@ -29,18 +29,18 @@
 	let selectedEventId: string | null = $state(initialEventId || null);
 
 	const eventsQuery = createQuery({
-		queryKey: ['events', userStore.selectedLanguage, userStore.selectedCity],
+		queryKey: ['events', $userStore.selectedLanguage, $userStore.selectedCity],
 		queryFn: async () => {
-			const response = await fetch(`/api/events.php?lang=${userStore.selectedLanguage}&city=${userStore.selectedCity}`);
+			const response = await fetch(`/api/events.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}`);
 			if (!response.ok) throw new Error('Failed to fetch events');
 			return response.json();
 		}
 	});
 
 	const venuesQuery = createQuery({
-		queryKey: ['venues', userStore.selectedLanguage, userStore.selectedCity],
+		queryKey: ['venues', $userStore.selectedLanguage, $userStore.selectedCity],
 		queryFn: async () => {
-			const response = await fetch(`/api/venues.php?lang=${userStore.selectedLanguage}&city=${userStore.selectedCity}`);
+			const response = await fetch(`/api/venues.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}`);
 			if (!response.ok) throw new Error('Failed to fetch venues');
 			return response.json();
 		},
@@ -175,7 +175,7 @@
 								</Avatar.Root>
 							{/each}
 						</div>
-
+						
 						{#if selectedEvent.eventdesc}
 							<p>{selectedEvent.eventdesc}</p>
 						{/if}
@@ -186,6 +186,12 @@
 					</Card.CardContent>
 				</Card.Card>
 			</div>
+		{:else}
+			<Card.Card>
+				<Card.CardContent class="p-4">
+					<p class="text-muted-foreground">Event not found.</p>
+				</Card.CardContent>
+			</Card.Card>
 		{/if}
 	{/if}
 </div>

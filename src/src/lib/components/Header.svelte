@@ -17,22 +17,22 @@
 	}>();
 
 	const commonQuery = createQuery({
-		queryKey: ['common', userStore.selectedLanguage],
+		queryKey: ['common', $userStore.selectedLanguage],
 		queryFn: async () => {
-			const response = await fetch(`/api/common.php?lang=${userStore.selectedLanguage}`);
+			const response = await fetch(`/api/common.php?lang=${$userStore.selectedLanguage}`);
 			if (!response.ok) throw new Error('Failed to fetch common data');
 			return response.json();
 		}
 	});
 	
 	const currentCitySid = $derived(() => {
-    const city = $commonQuery.data?.cities?.find(c => c.cityid.toString() === userStore.selectedCity);
+    const city = $commonQuery.data?.cities?.find(c => c.cityid.toString() === $userStore.selectedCity);
     return city?.citysid?.toUpperCase() || "...";
 	});
 
 	const userInitials = $derived(() => 
-    !userStore.userInfo?.first_name ? '?' : 
-    userStore.userInfo.first_name.charAt(0).toUpperCase() + (userStore.userInfo.last_name?.charAt(0)?.toUpperCase() || '')
+    !$userStore.userInfo?.first_name ? '?' : 
+    $userStore.userInfo.first_name.charAt(0).toUpperCase() + ($userStore.userInfo.last_name?.charAt(0)?.toUpperCase() || '')
 	);
 
 	function handleCityChange(city: string) {
@@ -59,8 +59,8 @@
 				<DropdownMenu.Trigger>
 					{#snippet child({ props })}
 						<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
-							{#if userStore.userInfo?.photo_url}
-								<Avatar.Image src={userStore.userInfo.photo_url} alt="User" />
+							{#if $userStore.userInfo?.photo_url}
+								<Avatar.Image src={$userStore.userInfo.photo_url} alt="User" />
 							{/if}
 							<Avatar.Fallback>{userInitials()}</Avatar.Fallback>
 						</Avatar.Root>
@@ -84,7 +84,7 @@
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
-			<Select.Root type="single" value={userStore.selectedCity} onValueChange={handleCityChange}>
+			<Select.Root type="single" value={$userStore.selectedCity} onValueChange={handleCityChange}>
 				<Select.Trigger class="w-20" disabled={$commonQuery.isLoading}>
 					{#if $commonQuery.isLoading}
 						...
@@ -102,12 +102,12 @@
 		<div class="flex items-center justify-center">
 		</div>
 		<div class="flex items-center gap-2 justify-end">
-			<Select.Root type="single" value={userStore.selectedLanguage} onValueChange={handleLanguageChange}>
+			<Select.Root type="single" value={$userStore.selectedLanguage} onValueChange={handleLanguageChange}>
 				<Select.Trigger class="w-16" disabled={$commonQuery.isLoading}>
 					{#if $commonQuery.isLoading}
 						...
 					{:else}
-						{$commonQuery.data?.languages?.find(l => l.languagesid === userStore.selectedLanguage)?.languageflag}
+						{$commonQuery.data?.languages?.find(l => l.languagesid === $userStore.selectedLanguage)?.languageflag}
 					{/if}
 				</Select.Trigger>
 				<Select.Content>

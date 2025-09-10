@@ -15,9 +15,9 @@
 	}>();
 
 	const featuredEventsQuery = createQuery({
-		queryKey: ['events', userStore.selectedLanguage, userStore.selectedCity, 'featured'],
+		queryKey: ['events', $userStore.selectedLanguage, $userStore.selectedCity, 'featured'],
 		queryFn: async () => {
-			const response = await fetch(`/api/events.php?lang=${userStore.selectedLanguage}&city=${userStore.selectedCity}&featured=1`);
+			const response = await fetch(`/api/events.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}&featured=1`);
 			if (!response.ok) throw new Error('Failed to fetch featured events');
 			return response.json();
 		}

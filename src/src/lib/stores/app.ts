@@ -1,4 +1,5 @@
 // lib/stores/app.ts
+import { writable, derived } from 'svelte/store';
 import type { WebApp } from '@twa-dev/sdk';
 import type { ViewType } from '$lib/types/components.js';
 import type { Event, Venue } from '$lib/types/api.js';
@@ -33,6 +34,7 @@ interface AppState {
 	backgroundColor: string;
 	textColor: string;
 	bookingState: BookingState | null;
+	canGoBack: boolean;
 }
 
 const MAX_NAVIGATION_ENTRIES = 20;
@@ -49,149 +51,155 @@ const initialState: AppState = {
 	navigationHistory: [],
 	backgroundColor: '#f9fafb',
 	textColor: '#1f2937',
-	bookingState: null
+	bookingState: null,
+	canGoBack: false
 };
 
-let webApp = $state<WebApp | null>(initialState.webApp);
-let isLoading = $state<boolean>(initialState.isLoading);
-let error = $state<string>(initialState.error);
-let currentView = $state<ViewType>(initialState.currentView);
-let selectedEventId = $state<string | undefined>(initialState.selectedEventId);
-let selectedEvent = $state<Event | null>(initialState.selectedEvent);
-let selectedVenue = $state<Venue | null>(initialState.selectedVenue);
-let previousView = $state<ViewType>(initialState.previousView);
-let navigationHistory = $state<NavigationEntry[]>(initialState.navigationHistory);
-let backgroundColor = $state<string>(initialState.backgroundColor);
-let textColor = $state<string>(initialState.textColor);
-let bookingState = $state<BookingState | null>(initialState.bookingState);
+const baseAppStore = writable(initialState);
 
-const canGoBack = $derived(navigationHistory.length > 0);
+export const appStore = derived(
+	baseAppStore,
+	($base) => ({
+		...$base,
+		canGoBack: $base.navigationHistory.length > 0
+	})
+);
 
-export const appStore = {
-	get webApp() { return webApp; },
-	get isLoading() { return isLoading; },
-	get error() { return error; },
-	get currentView() { return currentView; },
-	get selectedEventId() { return selectedEventId; },
-	get selectedEvent() { return selectedEvent; },
-	get selectedVenue() { return selectedVenue; },
-	get previousView() { return previousView; },
-	get navigationHistory() { return navigationHistory; },
-	get backgroundColor() { return backgroundColor; },
-	get textColor() { return textColor; },
-	get bookingState() { return bookingState; },
-	get canGoBack() { return canGoBack; },
-
+export const appActions = {
 	setWebApp: (app: WebApp | null) => {
-		webApp = app;
+		baseAppStore.update(state => ({ ...state, webApp: app }));
 	},
 
 	setLoading: (loading: boolean) => {
-		isLoading = loading;
+		baseAppStore.update(state => ({ ...state, isLoading: loading }));
 	},
 
 	setError: (err: string) => {
-		error = err;
+		baseAppStore.update(state => ({ ...state, error: err }));
 	},
 
 	navigate: (view: ViewType, metadata?: Record<string, any>) => {
-		if (view !== 'booking') {
-			navigationHistory.push({
-				view: currentView,
-				scrollPosition: window.scrollY || 0,
-				timestamp: Date.now(),
-				metadata
-			});
+		baseAppStore.update(state => {
+			let newHistory = [...state.navigationHistory];
+			
+			if (view !== 'booking') {
+				newHistory.push({
+					view: state.currentView,
+					scrollPosition: window.scrollY || 0,
+					timestamp: Date.now(),
+					metadata
+				});
 
-			if (navigationHistory.length > MAX_NAVIGATION_ENTRIES) {
-				navigationHistory.shift();
+				if (newHistory.length > MAX_NAVIGATION_ENTRIES) {
+					newHistory.shift();
+				}
 			}
-		}
 
-		previousView = currentView;
-		currentView = view;
+			return {
+				...state,
+				navigationHistory: newHistory,
+				previousView: state.currentView,
+				currentView: view
+			};
+		});
 	},
 
 	goBack: () => {
-		if (navigationHistory.length > 0) {
-			const lastEntry = navigationHistory.pop();
-			if (lastEntry) {
-				previousView = currentView;
-				currentView = lastEntry.view;
-				setTimeout(() => {
-					window.scrollTo(0, lastEntry.scrollPosition);
-				}, 0);
+		baseAppStore.update(state => {
+			if (state.navigationHistory.length > 0) {
+				const newHistory = [...state.navigationHistory];
+				const lastEntry = newHistory.pop();
+				
+				if (lastEntry) {
+					setTimeout(() => {
+						window.scrollTo(0, lastEntry.scrollPosition);
+					}, 0);
+					
+					return {
+						...state,
+						navigationHistory: newHistory,
+						previousView: state.currentView,
+						currentView: lastEntry.view
+					};
+				}
 			}
-		}
+			return state;
+		});
 	},
 
 	clearHistory: () => {
-		navigationHistory.length = 0;
+		baseAppStore.update(state => ({ ...state, navigationHistory: [] }));
 	},
 
 	setSelectedEvent: (event: Event | null, venue?: Venue | null) => {
-		selectedEvent = event;
-		selectedEventId = event?.eventid;
-		selectedVenue = venue || null;
+		baseAppStore.update(state => ({
+			...state,
+			selectedEvent: event,
+			selectedEventId: event?.eventid,
+			selectedVenue: venue || null
+		}));
 	},
 
 	setThemeFromWebApp: () => {
-		if (webApp?.themeParams) {
-			backgroundColor = webApp.themeParams.header_bg_color || backgroundColor;
-			textColor = webApp.themeParams.text_color || textColor;
-		}
+		baseAppStore.update(state => {
+			if (state.webApp?.themeParams) {
+				return {
+					...state,
+					backgroundColor: state.webApp.themeParams.header_bg_color || initialState.backgroundColor,
+					textColor: state.webApp.themeParams.text_color || initialState.textColor
+				};
+			}
+			return state;
+		});
 	},
 
 	startBooking: (eventId: string) => {
-		bookingState = {
-			eventId,
-			selectedBrands: [],
-			guests: 1,
-			phone: '',
-			comment: '',
-			paymentMethod: '',
-			currentStep: 0
-		};
+		baseAppStore.update(state => ({
+			...state,
+			bookingState: {
+				eventId,
+				selectedBrands: [],
+				guests: 1,
+				phone: '',
+				comment: '',
+				paymentMethod: '',
+				currentStep: 0
+			}
+		}));
 	},
 
 	updateBookingState: (updates: Partial<BookingState>) => {
-		if (bookingState) {
-			bookingState = { ...bookingState, ...updates };
-		}
+		baseAppStore.update(state => ({
+			...state,
+			bookingState: state.bookingState ? { ...state.bookingState, ...updates } : state.bookingState
+		}));
 	},
 
 	clearBooking: () => {
-		bookingState = null;
+		baseAppStore.update(state => ({ ...state, bookingState: null }));
 	},
 
 	handleDeepLink: (startParam?: string) => {
-		appStore.clearHistory();
-		
-		if (startParam) {
-			const [type, id] = startParam.split('_');
-			if (type === 'event' && id) {
-				selectedEventId = id;
-				currentView = 'events';
-			} else if (type === 'venue' && id) {
-				currentView = 'venues';
-			} else if (type === 'brand' && id) {
-				currentView = 'brands';
+		baseAppStore.update(state => {
+			let updates: Partial<AppState> = { navigationHistory: [] };
+			
+			if (startParam) {
+				const [type, id] = startParam.split('_');
+				if (type === 'event' && id) {
+					updates.selectedEventId = id;
+					updates.currentView = 'events';
+				} else if (type === 'venue' && id) {
+					updates.currentView = 'venues';
+				} else if (type === 'brand' && id) {
+					updates.currentView = 'brands';
+				}
 			}
-		}
+			
+			return { ...state, ...updates };
+		});
 	},
 
 	reset: () => {
-		webApp = initialState.webApp;
-		isLoading = initialState.isLoading;
-		error = initialState.error;
-		currentView = initialState.currentView;
-		selectedEventId = initialState.selectedEventId;
-		selectedEvent = initialState.selectedEvent;
-		selectedVenue = initialState.selectedVenue;
-		previousView = initialState.previousView;
-		navigationHistory = [];
-		backgroundColor = initialState.backgroundColor;
-		textColor = initialState.textColor;
-		bookingState = initialState.bookingState;
+		baseAppStore.set(initialState);
 	}
 };
