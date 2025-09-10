@@ -35,28 +35,28 @@
 	let userSelectedCity = $state<string | null>(null);
 	let userSelectedLanguage = $state<string | null>(null);
 	let userData = $state<any>(null);
-	let userError = $state<string | null>(null);
 	let userDataLoaded = $state(false);
+	let userError = $state<string | null>(null);
 	let themeParams = $state({
 		backgroundColor: '#f9fafb',
 		textColor: '#1f2937'
 	});
 
 	$effect(() => {
-		if (initData && !userData && !userError) {
-			fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`)
-				.then(response => response.json())
-				.then(data => {
-					userData = data;
-					userDataLoaded = true;
-					queryClient.invalidateQueries({ queryKey: ['events'] });
-				})
-				.catch(err => {
-					userError = err.message;
-					userDataLoaded = true;
-				});
-		}
-	});
+    if (initData && !userData && !userError) {
+        fetch(`/api/user.php?_auth=${encodeURIComponent(initData)}`)
+            .then(response => response.json())
+            .then(data => {
+                userData = data;
+                userDataLoaded = true; // Add this line
+                queryClient.invalidateQueries({ queryKey: ['events'] });
+            })
+            .catch(err => {
+                userError = err.message;
+                userDataLoaded = true; // Add this line
+            });
+    }
+});
 
 	const selectedLanguage = $derived(
 		userSelectedLanguage || 
@@ -199,7 +199,7 @@
 					</div>
 				</div>
 			</div>
-		{:else if userDataLoaded || userError}
+		{:else}
 			{#if currentView !== 'booking'}
 				<Header 
 					{userInfo}
@@ -259,8 +259,6 @@
 					{/if}
 				{/if}
 			</main>
-		{:else}
-			<Loading message="Loading user preferences..." />
 		{/if}
 	</div>
 </QueryClientProvider>
