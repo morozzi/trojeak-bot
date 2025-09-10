@@ -1,6 +1,7 @@
 // lib/stores/user.ts
 import { writable, derived } from 'svelte/store';
 import type { TelegramUser } from '$lib/types/components.js';
+import { appStore } from './app.js';
 
 interface UserState {
 	userData: any | null;
@@ -31,8 +32,8 @@ const initialState: UserState = {
 const baseUserStore = writable(initialState);
 
 export const userStore = derived(
-	baseUserStore,
-	($base) => {
+	[baseUserStore, appStore],
+	([$base, $app]) => {
 		const selectedLanguage = $base.userSelectedLanguage || 
 			($base.userData?.success && $base.userData.user ? $base.userData.user.language : null) ||
 			'en';
@@ -44,13 +45,7 @@ export const userStore = derived(
 
 		const isUserDataLoaded = $base.userDataLoaded;
 
-		const userInfo: TelegramUser | null = $base.userData?.success && $base.userData.user ? {
-			id: $base.userData.user.telegram_id,
-			first_name: $base.userData.user.firstname || '',
-			last_name: $base.userData.user.lastname || '',
-			username: $base.userData.user.username || '',
-			language_code: $base.userData.user.language || 'en'
-		} : null;
+		const userInfo: TelegramUser | null = $app.webApp?.initDataUnsafe?.user || null;
 
 		return {
 			...$base,
