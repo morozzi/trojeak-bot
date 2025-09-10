@@ -131,11 +131,18 @@ export const appActions = {
 		baseAppStore.update(state => ({ ...state, navigationHistory: [] }));
 	},
 
+	setSelectedEventId: (eventId: string) => {
+		baseAppStore.update(state => ({ 
+			...state, 
+			selectedEventId: eventId 
+		}));
+	},
+
 	setSelectedEvent: (event: Event | null, venue?: Venue | null) => {
 		baseAppStore.update(state => ({
 			...state,
 			selectedEvent: event,
-			selectedEventId: event?.eventid,
+			selectedEventId: event?.eventid.toString(),
 			selectedVenue: venue || null
 		}));
 	},

@@ -177,6 +177,7 @@
 					<Events 
 						initialEventId={$appStore.selectedEventId} 
 						on:goBack={appActions.goBack} 
+						on:goToEvent={handleGoToEvent}
 						on:startBooking={handleStartBooking} 
 						on:footerHeight={handleFooterHeight}
 					/>
