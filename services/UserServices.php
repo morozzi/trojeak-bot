@@ -7,14 +7,18 @@ final class UserTable {
     public const string USERNAME = 'username';
     public const string FIRST_NAME = 'first_name';
     public const string LAST_NAME = 'last_name';
+    public const string PHONE = 'phone';
     public const string LANGUAGE = 'language';
     public const string CITYID = 'cityid';
     public const string VENUE_TYPES = 'venue_types';
     public const string ALERTS = 'alerts';
     public const string CHANNEL_MEMBER = 'channel_member';
+    public const string VENUE_STAFF = 'venue_staff';
     public const string ONBOARDING = 'onboarding';
     public const string STATUS = 'status';
     public const string IS_BOT = 'is_bot';
+    public const string CREATED_AT = 'created_at';
+    public const string UPDATED_AT = 'updated_at';
 }
 
 final class OnboardingTracker {
@@ -146,13 +150,17 @@ class UserService {
                 UserTable::USERNAME,
                 UserTable::FIRST_NAME,
                 UserTable::LAST_NAME,
+                UserTable::PHONE,
                 UserTable::LANGUAGE,
                 UserTable::CITYID,
                 UserTable::VENUE_TYPES,
                 UserTable::ALERTS,
                 UserTable::CHANNEL_MEMBER,
+                UserTable::VENUE_STAFF,
                 UserTable::ONBOARDING,
-                UserTable::STATUS
+                UserTable::STATUS,
+                UserTable::CREATED_AT,
+                UserTable::UPDATED_AT
             ]
         );
         
