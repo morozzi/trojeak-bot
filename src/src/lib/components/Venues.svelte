@@ -161,7 +161,7 @@
 						
 						{#if venue.venuefeatured}
 							<AspectRatio ratio={16/9}>
-								<img src="/pic/venue/{venue.venuepic1}" alt="{venue.venuename}" class="w-full h-full object-cover" />
+								<img src="/pic/venue/{venue.venuepic2}" alt="{venue.venuename}" class="w-full h-full object-cover" />
 							</AspectRatio>
 						{/if}
 
