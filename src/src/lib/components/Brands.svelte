@@ -6,6 +6,7 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import { Star } from '@lucide/svelte';
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Brand, Event } from '$lib/types/api.js';
@@ -146,17 +147,20 @@
 					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectBrand(brand.brandid.toString())}>
 						<Card.CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
-								<div class="flex items-center gap-3">
-									<Avatar.Root class="w-12 h-12 rounded-lg">
+								<div class="flex items-center gap-4">
+									<Avatar.Root class="w-16 h-16 rounded-lg">
 										<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
 										<Avatar.Fallback class="rounded-lg bg-muted">{brand.brandname.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
-									<Card.CardTitle class="text-lg font-semibold">{brand.brandname}</Card.CardTitle>
-								</div>
-								<div class="flex gap-2">
-									{#if brand.brandfeatured}
-										<Badge>Featured</Badge>
-									{/if}
+									<div class="space-y-1">
+										<Card.CardTitle class="text-lg font-semibold">{brand.brandname}</Card.CardTitle>
+										<div class="flex gap-2">
+											<Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge>
+											{#if brand.brandfeatured}
+												<Badge><Star /> Featured</Badge>
+											{/if}
+										</div>
+									</div>
 								</div>
 							</div>
 						</Card.CardHeader>

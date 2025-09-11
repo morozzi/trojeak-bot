@@ -3,6 +3,7 @@
 	import { Badge } from "$lib/components/ui/badge/index.js";
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import { Star } from '@lucide/svelte';
 	import type { Event, Venue, Brand } from '$lib/types/api.js';
 
 	interface Props {
@@ -21,13 +22,19 @@
 		{@const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''))}
 		{@const eventBrands = brandData.filter(b => eventBrandIds.includes(b.brandid.toString()))}
 		
-		<Card.Card class="mb-8 py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => onEventClick(event.eventid.toString())}>
+		<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => onEventClick(event.eventid.toString())}>
 			<Card.CardHeader class="gap-0 pb-4">
 				<div class="flex justify-between items-center">
-					<Card.CardTitle class="text-lg font-semibold">{event.eventtitle}</Card.CardTitle>
-					{#if event.eventfeatured}
-						<Badge>Featured</Badge>
-					{/if}
+					<div class="flex items-center gap-4">
+						<div class="space-y-1">
+							<Card.CardTitle class="text-lg font-semibold">{event.eventtitle}</Card.CardTitle>
+								<div class="flex gap-2">
+									{#if event.eventfeatured}
+										<Badge><Star /> Featured</Badge>
+									{/if}
+								</div>
+						</div>
+					</div>
 				</div>
 			</Card.CardHeader>
 			
