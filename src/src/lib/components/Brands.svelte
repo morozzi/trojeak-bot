@@ -155,7 +155,6 @@
 									<div class="space-y-1">
 										<Card.CardTitle class="text-lg font-semibold">{brand.brandname}</Card.CardTitle>
 										<div class="flex gap-2">
-											<Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge>
 											{#if brand.brandfeatured}
 												<Badge><Star /> Featured</Badge>
 											{/if}
