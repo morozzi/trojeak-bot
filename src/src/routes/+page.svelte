@@ -132,6 +132,7 @@
 			appActions.setSelectedEventId('');
 		}
 		appActions.navigate(event.detail.page as ViewType);
+		window.scrollTo(0, 0);
 	}
 
 	function handleFooterHeight(event: CustomEvent<{height: number}>) {
