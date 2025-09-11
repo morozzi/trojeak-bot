@@ -25,20 +25,25 @@
 	});
 
 	$effect(() => {
-		if ($userStore.initData && !$userStore.userData && !$userStore.userError) {
-			fetch(`/api/user.php?_auth=${encodeURIComponent($userStore.initData)}`)
-				.then(response => response.json())
-				.then(data => {
-					userActions.setUserData(data);
-					userActions.setUserDataLoaded(true);
-					queryClient.invalidateQueries({ queryKey: ['events'] });
-				})
-				.catch(err => {
-					userActions.setUserError(err.message);
-					userActions.setUserDataLoaded(true);
-				});
-		}
-	});
+    if ($userStore.initData && !$userStore.userData && !$userStore.userError) {
+        fetch(`/api/user.php?_auth=${encodeURIComponent($userStore.initData)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                userActions.setUserData(data);
+                userActions.setUserDataLoaded(true);
+                queryClient.invalidateQueries({ queryKey: ['events'] });
+            })
+            .catch(err => {
+                userActions.setUserError(`API Error: ${err.message}`);
+                userActions.setUserDataLoaded(true);
+            });
+    }
+});
 
 	$effect(() => {
 		if ($appStore.webApp) {
