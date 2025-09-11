@@ -62,15 +62,15 @@
 				{/if}
 
 				<div class="flex gap-2 items-center">
-					{#if event.eventschema}
-						<span class="text-sm text-muted-foreground mr-2">💰 {event.eventschema}</span>
-					{/if}
 					{#each eventBrands as brand}
 						<Avatar.Root class="w-8 h-8 rounded-lg">
 							<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
 							<Avatar.Fallback class="rounded-lg bg-muted" />
 						</Avatar.Root>
 					{/each}
+					{#if event.eventschema}
+						<span class="text-sm text-muted-foreground mr-2">💰 {event.eventschema}</span>
+					{/if}
 				</div>
 			</Card.CardContent>
 		</Card.Card>
