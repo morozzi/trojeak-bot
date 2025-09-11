@@ -145,6 +145,11 @@
 </script>
 
 <QueryClientProvider client={queryClient}>
+<div class="fixed top-0 left-0 bg-red-500 text-white p-2 text-xs z-50">
+  initData: {$userStore.initData ? 'OK' : 'MISSING'} | 
+  userData: {$userStore.userData ? 'OK' : 'MISSING'} | 
+  error: {$userStore.userError || 'NONE'}
+</div>
 	<div 
 		class="min-h-[100svh] bg-background"
 		style="--app-footer-h: calc(var(--footer-h, 72px) + env(safe-area-inset-bottom, 0px));"
