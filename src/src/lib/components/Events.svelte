@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
+	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
-	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Event } from '$lib/types/api.js';
@@ -112,19 +112,19 @@
 				<Card.Card class="mb-8 py-4 pb-0 overflow-hidden">
     			<Card.CardHeader class="pb-4">
       			<div class="flex justify-between items-center">
-        			<Skeleton.Skeleton class="h-6 w-40" />
-        			<Skeleton.Skeleton class="h-6 w-16 rounded-full" />
+        			<Skeleton class="h-6 w-40" />
+        			<Skeleton class="h-6 w-16 rounded-full" />
       			</div>
     			</Card.CardHeader>
-    			<Skeleton.Skeleton class="h-48 w-full" />
+    			<Skeleton class="h-48 w-full" />
     			<Card.CardContent class="p-4 space-y-4">
-      			<Skeleton.Skeleton class="h-4 w-40" />
-      			<Skeleton.Skeleton class="h-4 w-40" />
-      			<Skeleton.Skeleton class="h-4 w-40" />
+      			<Skeleton class="h-4 w-40" />
+      			<Skeleton class="h-4 w-40" />
+      			<Skeleton class="h-4 w-40" />
       			<div class="flex gap-2">
-        			<Skeleton.Skeleton class="w-8 h-8 rounded-lg" />
-        			<Skeleton.Skeleton class="w-8 h-8 rounded-lg" />
-        			<Skeleton.Skeleton class="w-8 h-8 rounded-lg" />
+        			<Skeleton class="w-8 h-8 rounded-lg" />
+        			<Skeleton class="w-8 h-8 rounded-lg" />
+        			<Skeleton class="w-8 h-8 rounded-lg" />
       			</div>
     			</Card.CardContent>
   			</Card.Card>
