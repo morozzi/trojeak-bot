@@ -32,7 +32,7 @@
 			</Card.CardHeader>
 			
 			{#if event.eventfeatured && event.eventpic}
-				<AspectRatio class="pb-2" ratio={1/1}>
+				<AspectRatio class="pb-2" ratio={4/5}>
 					<img src="/pic/event/{event.eventpic}" alt={event.eventtitle} class="w-full h-full object-cover" />
 				</AspectRatio>
 			{/if}
