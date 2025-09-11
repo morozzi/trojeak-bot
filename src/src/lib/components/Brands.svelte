@@ -153,7 +153,7 @@
 										<Avatar.Fallback class="rounded-lg bg-muted">{brand.brandname.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
 									<div class="space-y-1">
-										<Card.CardTitle class="text-lg font-semibold">{brand.brandname}</Card.CardTitle>
+										<Card.CardTitle class="text-xl font-semibold">{brand.brandname}</Card.CardTitle>
 										<div class="flex gap-2">
 											{#if brand.brandfeatured}
 												<Badge><Star /> Featured</Badge>

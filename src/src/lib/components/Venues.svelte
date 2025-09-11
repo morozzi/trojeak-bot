@@ -147,7 +147,7 @@
 										<Avatar.Fallback class="rounded-lg bg-muted">{venue.venuename.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
 									<div class="space-y-1">
-										<Card.CardTitle class="text-lg font-semibold">{venue.venuename}</Card.CardTitle>
+										<Card.CardTitle class="text-xl font-semibold">{venue.venuename}</Card.CardTitle>
 										<div class="flex gap-2">
 											<Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge>
 											{#if venue.venuefeatured}
