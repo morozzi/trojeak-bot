@@ -145,7 +145,7 @@
 										<Avatar.Image src="/pic/venue/{venue.venuepic1}" alt={venue.venuename} class="rounded-lg" />
 										<Avatar.Fallback class="rounded-lg bg-muted">{venue.venuename.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
-									<div class="space-y-3">
+									<div class="space-y-1">
 										<Card.CardTitle class="text-lg font-semibold">{venue.venuename}</Card.CardTitle>
 										<div class="flex gap-2">
 											<Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge>
