@@ -191,7 +191,7 @@
 								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedVenue.venuename.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
 							<div class="space-y-3">
-								<h1 class="text-4xl font-bold">{selectedVenue.venuename}</h1>
+								<h1 class="text-3xl font-bold">{selectedVenue.venuename}</h1>
 								<div class="flex gap-2">
 									<Badge variant="secondary">{selectedVenue.venuetype.toUpperCase()}</Badge>
 									{#if selectedVenue.venuefeatured}
@@ -203,7 +203,7 @@
 					</Card.CardHeader>
 					<Card.CardContent class="pt-3 px-6">
 						<div class="text-sm text-muted-foreground">
-							📍 <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer" class="hover:underline">Location</a>
+							📍 <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer" class="hover:underline">{selectedVenue.cityname}</a>
 						</div>
 					</Card.CardContent>
 				</Card.Card>
