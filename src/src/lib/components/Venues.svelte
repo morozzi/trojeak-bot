@@ -6,6 +6,7 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import { Star } from '@lucide/svelte';
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Venue, Event } from '$lib/types/api.js';
@@ -150,7 +151,7 @@
 										<div class="flex gap-2">
 											<Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge>
 											{#if venue.venuefeatured}
-												<Badge>Featured</Badge>
+												<Badge> <Star /> Featured</Badge>
 											{/if}
 										</div>
 									</div>
