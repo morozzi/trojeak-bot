@@ -2,9 +2,9 @@
 	import { createQuery } from '@tanstack/svelte-query';
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import { AspectRatio } from "$lib/components/ui/aspect-ratio/index.js";
+	import { Badge } from "$lib/components/ui/badge/index.js";
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
@@ -146,11 +146,11 @@
 										<Avatar.Fallback class="rounded-lg bg-muted">{venue.venuename.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
 									<Card.CardTitle class="text-lg font-semibold">{venue.venuename}</Card.CardTitle>
-									<Badge.Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge.Badge>
+									<Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge>
 								</div>
 								<div class="flex gap-2">
 									{#if venue.venuefeatured}
-										<Badge.Badge>Featured</Badge.Badge>
+										<Badge>Featured</Badge>
 									{/if}
 								</div>
 							</div>
@@ -190,9 +190,9 @@
 							<div class="space-y-3">
 								<h1 class="text-4xl font-bold">{selectedVenue.venuename}</h1>
 								<div class="flex gap-2">
-									<Badge.Badge variant="secondary">{selectedVenue.venuetype.toUpperCase()}</Badge.Badge>
+									<Badge variant="secondary">{selectedVenue.venuetype.toUpperCase()}</Badge>
 									{#if selectedVenue.venuefeatured}
-										<Badge.Badge>Featured</Badge.Badge>
+										<Badge>Featured</Badge>
 									{/if}
 								</div>
 							</div>

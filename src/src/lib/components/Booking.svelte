@@ -6,7 +6,6 @@
 	import * as Textarea from '$lib/components/ui/textarea/index.js';
 	import * as RadioGroup from '$lib/components/ui/radio-group/index.js';
 	import * as Progress from '$lib/components/ui/progress/index.js';
-	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import { createEventDispatcher } from 'svelte';

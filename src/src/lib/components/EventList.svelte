@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { AspectRatio } from "$lib/components/ui/aspect-ratio/index.js";
+	import { Badge } from "$lib/components/ui/badge/index.js";
 	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import type { Event, Venue, Brand } from '$lib/types/api.js';
 
@@ -26,7 +26,7 @@
 				<div class="flex justify-between items-center">
 					<Card.CardTitle class="text-lg font-semibold">{event.eventtitle}</Card.CardTitle>
 					{#if event.eventfeatured}
-						<Badge.Badge>Featured</Badge.Badge>
+						<Badge>Featured</Badge>
 					{/if}
 				</div>
 			</Card.CardHeader>
