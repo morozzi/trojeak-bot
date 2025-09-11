@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
+	import { Separator } from "$lib/components/ui/separator/index.js";
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Button from '$lib/components/ui/button/index.js';
-	import * as Separator from '$lib/components/ui/separator/index.js';
 	import { Share2 } from '@lucide/svelte';
 	import { userStore } from '$lib/stores/user.js';
 
@@ -123,5 +123,5 @@
 			</Button.Button>
 		</div>
 	</div>
-	<Separator.Separator class="mb-6" />
+	<Separator class="mb-6" />
 </header>
