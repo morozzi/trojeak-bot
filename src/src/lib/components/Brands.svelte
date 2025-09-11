@@ -195,12 +195,12 @@
 								<Avatar.Image src="/pic/brand/{selectedBrand.brandpic1}" alt={selectedBrand.brandname} class="rounded-lg" />
 								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedBrand.brandname.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
-							<div class="space-y-2">
+							<div class="space-y-1">
 								<Card.CardTitle class="text-3xl font-bold">{selectedBrand.brandname}</Card.CardTitle>
 								{#if selectedBrand.brandfeatured}
 									<Badge>Featured</Badge>
 								{/if}
-								<p class="text-md text-muted-foreground">{brandEvents.length} upcoming events</p>
+								<p class="mb-3 text-md text-muted-foreground">{brandEvents.length} upcoming events</p>
 							</div>
 						</div>
 					</Card.CardHeader>
