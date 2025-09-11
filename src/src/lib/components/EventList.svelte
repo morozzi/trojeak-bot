@@ -26,8 +26,8 @@
 			<Card.CardHeader class="gap-0 pb-4">
 				<div class="flex justify-between items-center">
 					<div class="flex items-center gap-4">
-						<div class="space-y-1">
-							<Card.CardTitle class="text-xl font-semibold">{event.eventtitle}</Card.CardTitle>
+						<div class="space-y-2">
+							<Card.CardTitle class="text-2xl font-semibold">{event.eventtitle}</Card.CardTitle>
 								<div class="flex gap-2">
 									{#if event.eventfeatured}
 										<Badge><Star /> Featured</Badge>
