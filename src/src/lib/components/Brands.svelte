@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
+	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Badge from '$lib/components/ui/badge/index.js';
 	import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
-	import * as Skeleton from '$lib/components/ui/skeleton/index.js';
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Brand, Event } from '$lib/types/api.js';
@@ -114,14 +114,21 @@
 		
 		<div class="grid gap-4">
 			{#if $brandsQuery.isLoading}
-				<Card.Card>
-					<Skeleton.Skeleton class="h-16 w-full" />
-					<Card.CardContent class="p-4 space-y-2">
-						<Skeleton.Skeleton class="h-4 w-full" />
-						<Skeleton.Skeleton class="h-4 w-3/4" />
-						<Skeleton.Skeleton class="h-4 w-1/2" />
-					</Card.CardContent>
-				</Card.Card>
+				<Card.Card class="py-4 pb-0 overflow-hidden">
+    			<Card.CardHeader class="pb-4">
+      			<div class="flex justify-between items-center">
+        			<div class="flex items-center gap-3">
+          			<Skeleton class="w-12 h-12 rounded-lg" />
+          			<Skeleton class="h-6 w-32" />
+        			</div>
+        			<Skeleton class="h-6 w-16 rounded-full" />
+      			</div>
+    			</Card.CardHeader>
+    			<Skeleton class="h-48 w-full" />
+    			<Card.CardContent class="p-4">
+      			<Skeleton class="h-4 w-32" />
+    			</Card.CardContent>
+  			</Card.Card>
 			{:else if $brandsQuery.error}
 				<Card.Card>
 					<Card.CardContent class="p-4">
