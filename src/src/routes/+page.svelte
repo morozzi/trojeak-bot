@@ -91,6 +91,7 @@
 	function handleGoToEvent(event: CustomEvent<{eventId: string}>) {
 		appActions.setSelectedEventId(event.detail.eventId);
 		appActions.navigate('events');
+		window.scrollTo(0, 0);
 	}
 
 	function handleCityChange(event: CustomEvent<{city: string}>) {

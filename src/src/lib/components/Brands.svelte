@@ -80,7 +80,6 @@
 	function goToList(): void {
 		viewMode = 'list';
 		selectedBrandId = null;
-		window.scrollTo(0, 0);
 	}
 
 	function goBack(): void {
