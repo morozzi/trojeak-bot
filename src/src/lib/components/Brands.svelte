@@ -110,7 +110,7 @@
 <div class="space-y-6">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<h1 class="text-3xl font-bold">Brands</h1>
+			<h1 class="text-4xl font-bold text-center">Brands</h1>
 		</div>
 		
 		<div class="grid gap-4">
@@ -200,7 +200,7 @@
 								{#if selectedBrand.brandfeatured}
 									<Badge>Featured</Badge>
 								{/if}
-								<p class="mb-3 text-md text-muted-foreground">{brandEvents.length} upcoming events</p>
+								<p class="pt-3 text-md text-muted-foreground">{brandEvents.length} upcoming events</p>
 							</div>
 						</div>
 					</Card.CardHeader>
