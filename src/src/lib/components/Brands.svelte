@@ -199,7 +199,7 @@
 								<Card.CardTitle class="text-3xl font-bold">{selectedBrand.brandname}</Card.CardTitle>
 								<div class="flex gap-2">
 									{#if selectedBrand.brandfeatured}
-										<Badge>Featured</Badge>
+										<Badge><Star /> Featured</Badge>
 									{/if}
 								</div>
 								<p class="pt-3 text-md text-muted-foreground">{brandEvents.length} upcoming events</p>

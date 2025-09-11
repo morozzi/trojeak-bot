@@ -6,6 +6,7 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import { Star } from '@lucide/svelte';
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Event } from '$lib/types/api.js';
@@ -162,12 +163,14 @@
 
 				<Card.Card>
 					<Card.CardHeader class="pb-3">
-						<h1 class="text-3xl font-bold">{selectedEvent.eventtitle}</h1>
-						{#if selectedEvent.eventfeatured}
+						<div class="space-y-1">
+							<Card.CardTitle class="text-3xl font-bold">{selectedEvent.eventtitle}</Card.CardTitle>
 							<div class="flex gap-2">
-								<Badge>Featured</Badge>
+								{#if selectedEvent.eventfeatured}
+									<Badge><Star /> Featured</Badge>
+								{/if}
 							</div>
-						{/if}
+						</div>
 					</Card.CardHeader>
 					<Card.CardContent class="p-6 py-0 space-y-4">
 						<div class="text-sm text-muted-foreground">

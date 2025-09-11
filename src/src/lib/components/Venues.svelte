@@ -195,7 +195,7 @@
 								<div class="flex gap-2">
 									<Badge variant="secondary">{selectedVenue.venuetype.toUpperCase()}</Badge>
 									{#if selectedVenue.venuefeatured}
-										<Badge>Featured</Badge>
+										<Badge><Star /> Featured</Badge>
 									{/if}
 								</div>
 								<p class="pt-3 text-md text-muted-foreground">{venueEvents.length} upcoming events</p>
