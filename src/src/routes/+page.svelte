@@ -25,25 +25,20 @@
 	});
 
 	$effect(() => {
-    if ($userStore.initData && !$userStore.userData && !$userStore.userError) {
-        fetch(`/api/user.php?_auth=${encodeURIComponent($userStore.initData)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                userActions.setUserData(data);
-                userActions.setUserDataLoaded(true);
-                queryClient.invalidateQueries({ queryKey: ['events'] });
-            })
-            .catch(err => {
-                userActions.setUserError(`API Error: ${err.message}`);
-                userActions.setUserDataLoaded(true);
-            });
-    }
-});
+		if ($userStore.initData && !$userStore.userData && !$userStore.userError) {
+			fetch(`/api/user.php?_auth=${encodeURIComponent($userStore.initData)}`)
+				.then(response => response.json())
+				.then(data => {
+					userActions.setUserData(data);
+					userActions.setUserDataLoaded(true);
+					queryClient.invalidateQueries({ queryKey: ['events'] });
+				})
+				.catch(err => {
+					userActions.setUserError(err.message);
+					userActions.setUserDataLoaded(true);
+				});
+		}
+	});
 
 	$effect(() => {
 		if ($appStore.webApp) {
@@ -150,11 +145,6 @@
 </script>
 
 <QueryClientProvider client={queryClient}>
-<div class="fixed top-0 left-0 bg-red-500 text-white p-2 text-xs z-50">
-  initData: {$userStore.initData ? 'OK' : 'MISSING'} | 
-  userData: {$userStore.userData ? 'OK' : 'MISSING'} | 
-  error: {$userStore.userError || 'NONE'}
-</div>
 	<div 
 		class="min-h-[100svh] bg-background"
 		style="--app-footer-h: calc(var(--footer-h, 72px) + env(safe-area-inset-bottom, 0px));"
