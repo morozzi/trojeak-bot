@@ -141,7 +141,7 @@
 						<Card.CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
 								<div class="flex items-center gap-3">
-									<Avatar.Root class="w-24 h-24 rounded-lg">
+									<Avatar.Root class="w-20 h-20 rounded-lg">
 										<Avatar.Image src="/pic/venue/{venue.venuepic1}" alt={venue.venuename} class="rounded-lg" />
 										<Avatar.Fallback class="rounded-lg bg-muted">{venue.venuename.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
