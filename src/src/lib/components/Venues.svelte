@@ -145,13 +145,17 @@
 										<Avatar.Image src="/pic/venue/{venue.venuepic1}" alt={venue.venuename} class="rounded-lg" />
 										<Avatar.Fallback class="rounded-lg bg-muted">{venue.venuename.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
-									<Card.CardTitle class="text-lg font-semibold">{venue.venuename}</Card.CardTitle>
-									<Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge>
-								</div>
-								<div class="flex gap-2">
-									{#if venue.venuefeatured}
-										<Badge>Featured</Badge>
-									{/if}
+									<div class="space-y-3">
+										<Card.CardTitle class="text-lg font-semibold">{venue.venuename}</Card.CardTitle>
+										<div class="flex gap-2">
+											<Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge>
+										</div>
+									</div>
+									<div class="flex gap-2">
+										{#if venue.venuefeatured}
+											<Badge>Featured</Badge>
+										{/if}
+									</div>
 								</div>
 							</div>
 						</Card.CardHeader>
