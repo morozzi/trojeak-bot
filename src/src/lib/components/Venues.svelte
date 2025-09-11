@@ -185,19 +185,20 @@
 				
 				<Card.Card>
 					<Card.CardHeader class="gap-0">
-						<div class="flex items-center gap-8">
+						<div class="flex items-center gap-6">
 							<Avatar.Root class="w-32 h-32 rounded-lg">
 								<Avatar.Image src="/pic/venue/{selectedVenue.venuepic1}" alt={selectedVenue.venuename} class="rounded-lg" />
 								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedVenue.venuename.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
-							<div class="space-y-3">
-								<h1 class="text-3xl font-bold">{selectedVenue.venuename}</h1>
+							<div class="space-y-1">
+								<Card.CardTitle class="text-3xl font-bold">{selectedVenue.venuename}</Card.CardTitle>
 								<div class="flex gap-2">
 									<Badge variant="secondary">{selectedVenue.venuetype.toUpperCase()}</Badge>
 									{#if selectedVenue.venuefeatured}
 										<Badge>Featured</Badge>
 									{/if}
 								</div>
+								<p class="pt-3 text-md text-muted-foreground">{venueEvents.length} upcoming events</p>
 							</div>
 						</div>
 					</Card.CardHeader>

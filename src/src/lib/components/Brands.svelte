@@ -190,16 +190,18 @@
 
 				<Card.Card>
 					<Card.CardHeader class="gap-0">
-						<div class="flex items-center gap-8">
+						<div class="flex items-center gap-6">
 							<Avatar.Root class="w-32 h-32 rounded-lg">
 								<Avatar.Image src="/pic/brand/{selectedBrand.brandpic1}" alt={selectedBrand.brandname} class="rounded-lg" />
 								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedBrand.brandname.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
 							<div class="space-y-1">
 								<Card.CardTitle class="text-3xl font-bold">{selectedBrand.brandname}</Card.CardTitle>
-								{#if selectedBrand.brandfeatured}
-									<Badge>Featured</Badge>
-								{/if}
+								<div class="flex gap-2">
+									{#if selectedBrand.brandfeatured}
+										<Badge>Featured</Badge>
+									{/if}
+								</div>
 								<p class="pt-3 text-md text-muted-foreground">{brandEvents.length} upcoming events</p>
 							</div>
 						</div>
