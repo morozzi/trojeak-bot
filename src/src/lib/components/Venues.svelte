@@ -141,14 +141,14 @@
 					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectVenue(venue.venueid.toString())}>
 						<Card.CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
-								<div class="flex items-center gap-4">
+								<div class="flex items-center gap-5">
 									<Avatar.Root class="w-16 h-16 rounded-lg">
 										<Avatar.Image src="/pic/venue/{venue.venuepic1}" alt={venue.venuename} class="rounded-lg" />
 										<Avatar.Fallback class="rounded-lg bg-muted">{venue.venuename.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
 									<div class="space-y-1">
 										<Card.CardTitle class="text-lg font-semibold">{venue.venuename}</Card.CardTitle>
-										<div class="flex gap-2">
+										<div class="flex gap-3">
 											<Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge>
 											{#if venue.venuefeatured}
 												<Badge><Star /> Featured</Badge>
