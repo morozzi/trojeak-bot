@@ -157,9 +157,9 @@
 						</Card.CardHeader>
 						
 						{#if venue.venuefeatured}
-							<AspectRatio.Root ratio={16/9}>
+							<AspectRatio ratio={16/9}>
 								<img src="/pic/venue/{venue.venuepic1}" alt="{venue.venuename}" class="w-full h-full object-cover" />
-							</AspectRatio.Root>
+							</AspectRatio>
 						{/if}
 
 						<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
@@ -175,9 +175,9 @@
 			{@const venueEvents = getVenueEvents(selectedVenue.venueid)}
 			<div class="space-y-6">
 				{#if selectedVenue.venuefeatured}
-					<AspectRatio.Root class="pb-2" ratio={16/9}>
+					<AspectRatio class="pb-2" ratio={16/9}>
 						<img src="/pic/venue/{selectedVenue.venuepic2}" alt="{selectedVenue.venuename} Banner" class="w-full h-full object-cover" />
-					</AspectRatio.Root>
+					</AspectRatio>
 				{/if}
 				
 				<Card.Card>

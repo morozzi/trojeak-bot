@@ -162,9 +162,9 @@
 						</Card.CardHeader>
 						
 						{#if brand.brandfeatured}
-							<AspectRatio.Root ratio={16/9}>
+							<AspectRatio ratio={16/9}>
 								<img src="/pic/brand/{brand.brandpic2}" alt="{brand.brandname}" class="w-full h-full object-cover" />
-							</AspectRatio.Root>
+							</AspectRatio>
 						{/if}
 
 						<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
@@ -180,9 +180,9 @@
 			{@const brandEvents = getBrandEvents(selectedBrand.brandid)}
 			<div class="space-y-6">
 				{#if selectedBrand.brandfeatured}
-					<AspectRatio.Root class="pb-2" ratio={16/9}>
+					<AspectRatio class="pb-2" ratio={16/9}>
 						<img src="/pic/brand/{selectedBrand.brandpic2}" alt="{selectedBrand.brandname} Banner" class="w-full h-full object-cover" />
-					</AspectRatio.Root>
+					</AspectRatio>
 				{/if}
 
 				<Card.Card>
