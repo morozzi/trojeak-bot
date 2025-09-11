@@ -162,8 +162,8 @@
 				</AspectRatio>
 
 				<Card.Card>
-					<Card.CardHeader class="pb-3">
-						<div class="space-y-1">
+					<Card.CardHeader class="pb-2">
+						<div class="space-y-2">
 							<Card.CardTitle class="text-3xl font-bold">{selectedEvent.eventtitle}</Card.CardTitle>
 							<div class="flex gap-2">
 								{#if selectedEvent.eventfeatured}
