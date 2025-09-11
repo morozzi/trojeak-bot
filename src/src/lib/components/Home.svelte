@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
+	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import EventList from '$lib/components/EventList.svelte';
 	import type { Event } from '$lib/types/api.js';
