@@ -149,12 +149,10 @@
 										<Card.CardTitle class="text-lg font-semibold">{venue.venuename}</Card.CardTitle>
 										<div class="flex gap-2">
 											<Badge variant="secondary">{venue.venuetype.toUpperCase()}</Badge>
+											{#if venue.venuefeatured}
+												<Badge>Featured</Badge>
+											{/if}
 										</div>
-									</div>
-									<div class="flex gap-2">
-										{#if venue.venuefeatured}
-											<Badge>Featured</Badge>
-										{/if}
 									</div>
 								</div>
 							</div>
