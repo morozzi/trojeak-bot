@@ -181,7 +181,7 @@
 		{@const selectedBrand = brands.find(b => b.brandid.toString() === selectedBrandId)}
 		{#if selectedBrand}
 			{@const brandEvents = getBrandEvents(selectedBrand.brandid)}
-			<div class="space-y-6">
+			<div class="space-y-8">
 				{#if selectedBrand.brandfeatured}
 					<AspectRatio class="pb-2" ratio={16/9}>
 						<img src="/pic/brand/{selectedBrand.brandpic2}" alt="{selectedBrand.brandname} Banner" class="w-full h-full object-cover" />

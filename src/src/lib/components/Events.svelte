@@ -156,7 +156,7 @@
 			{@const venue = $venuesQuery.data?.find(v => v.venueid === selectedEvent.venueid)}
 			{@const eventBrandIds = selectedEvent.brandid.split(',').map(id => id.replace(/\^/g, ''))}
 			{@const eventBrands = $brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []}
-			<div class="space-y-6">
+			<div class="space-y-8">
 				<AspectRatio class="pb-2" ratio={4/5}>
 					<img src="/pic/event/{selectedEvent.eventpic}" alt={selectedEvent.eventtitle} class="w-full h-full object-cover" />
 				</AspectRatio>

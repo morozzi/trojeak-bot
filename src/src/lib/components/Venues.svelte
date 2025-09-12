@@ -176,7 +176,7 @@
 		{@const selectedVenue = venues.find(v => v.venueid.toString() === selectedVenueId)}
 		{#if selectedVenue}
 			{@const venueEvents = getVenueEvents(selectedVenue.venueid)}
-			<div class="space-y-6">
+			<div class="space-y-8">
 				{#if selectedVenue.venuefeatured}
 					<AspectRatio class="pb-2" ratio={16/9}>
 						<img src="/pic/venue/{selectedVenue.venuepic2}" alt="{selectedVenue.venuename} Banner" class="w-full h-full object-cover" />
