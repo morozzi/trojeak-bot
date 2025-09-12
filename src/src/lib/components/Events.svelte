@@ -108,7 +108,7 @@
 			<h1 class="text-4xl font-bold text-center">Events</h1>
 		</div>
 		
-		<div class="grid gap-4">
+		<div class="grid gap-8">
 			{#if $eventsQuery.isLoading}
 				<Card.Card class="py-4 pb-0 overflow-hidden">
     			<Card.CardHeader class="pb-4">
