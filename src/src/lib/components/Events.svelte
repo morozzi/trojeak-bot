@@ -105,7 +105,7 @@
 <div class="space-y-6">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
-			<h1 class="text-3xl font-bold">Events</h1>
+			<h1 class="text-4xl font-bold text-center">Events</h1>
 		</div>
 		
 		<div class="grid gap-4">
