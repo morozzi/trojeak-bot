@@ -102,7 +102,7 @@
 	});
 </script>
 
-<div class="space-y-6">
+<div class="space-y-8">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
 			<h1 class="text-4xl font-bold text-center">Events</h1>
@@ -110,7 +110,7 @@
 		
 		<div class="grid gap-4">
 			{#if $eventsQuery.isLoading}
-				<Card.Card class="mb-8 py-4 pb-0 overflow-hidden">
+				<Card.Card class="py-4 pb-0 overflow-hidden">
     			<Card.CardHeader class="pb-4">
       			<div class="flex justify-between items-center">
         			<Skeleton class="h-6 w-40" />

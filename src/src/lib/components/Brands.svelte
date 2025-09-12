@@ -107,7 +107,7 @@
 	});
 </script>
 
-<div class="space-y-6">
+<div class="space-y-8">
 	{#if viewMode === 'list'}
 		<div class="space-y-4">
 			<h1 class="text-4xl font-bold text-center">Brands</h1>
