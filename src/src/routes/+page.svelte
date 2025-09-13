@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import type { WebApp } from '@twa-dev/sdk';
-	import type { Event } from '$lib/types/api.js';
+	import type { Event, Venue } from '$lib/types/api.js';
 	import type { ViewType } from '$lib/types/components.js';
 	import { userStore, userActions } from '$lib/stores/user.js';
 	import { appStore, appActions } from '$lib/stores/app.js';
@@ -82,10 +82,11 @@
 		}
 	});
 
-	function handleStartBooking(event: CustomEvent<{event: Event}>) {
-		appActions.setSelectedEvent(event.detail.event);
+	function handleStartBooking(event: CustomEvent<{event: Event; venue: Venue | null}>) {
+		appActions.setSelectedEvent(event.detail.event, event.detail.venue);
 		appActions.startBooking(event.detail.event.eventid);
 		appActions.navigate('booking');
+		window.scrollTo(0, 0);
 	}
 	
 	function handleGoToEvent(event: CustomEvent<{eventId: string}>) {

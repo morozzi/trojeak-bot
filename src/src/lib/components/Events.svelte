@@ -9,7 +9,7 @@
 	import { Star } from '@lucide/svelte';
 	import EventList from '$lib/components/EventList.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import type { Event } from '$lib/types/api.js';
+	import type { Event, Venue } from '$lib/types/api.js';
 	import { userStore } from '$lib/stores/user.js';
 
 	interface Props {
@@ -23,7 +23,7 @@
 	const dispatch = createEventDispatcher<{
 		goBack: void;
 		goToEvent: { eventId: string };
-		startBooking: { event: Event };
+		startBooking: { event: Event; venue: Venue | null };
 		footerHeight: { height: number };
 	}>();
 
@@ -83,7 +83,8 @@
 	}
 
 	function startBooking(event: Event): void {
-		dispatch('startBooking', { event });
+		const venue = $venuesQuery.data?.find(v => v.venueid === event.venueid) || null;
+		dispatch('startBooking', { event, venue });
 	}
 
 	function updateFooterHeight() {

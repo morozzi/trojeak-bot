@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createQuery } from '@tanstack/svelte-query';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Input from '$lib/components/ui/input/index.js';
@@ -14,18 +15,26 @@
 	interface Props {
 		event: Event;
 		venue: Venue;
-		availableBrands: Brand[];
 		onComplete: () => void;
 		onCancel: () => void;
 	}
 
-	const { event, venue, availableBrands, onComplete, onCancel }: Props = $props();
+	const { event, venue, onComplete, onCancel }: Props = $props();
 	
 	let footerEl: HTMLElement | undefined = $state();
 
 	const dispatch = createEventDispatcher<{
 		footerHeight: { height: number };
 	}>();
+
+	const brandsQuery = createQuery({
+		queryKey: ['brands'],
+		queryFn: async () => {
+			const response = await fetch(`/api/brands.php`);
+			if (!response.ok) throw new Error('Failed to fetch brands');
+			return response.json();
+		},
+	});
 
 	let currentStep = $state(1);
 	let selectedBrands = $state<{[key: string]: number}>({});
@@ -38,7 +47,7 @@
 	let footerVisible = $state(true);
 
 	const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
-	const eventBrands = availableBrands.filter(b => eventBrandIds.includes(b.brandid.toString()));
+	const eventBrands = $derived($brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []);
 
 	$effect(() => {
 		if (guestCountString && !isNaN(parseInt(guestCountString))) {
