@@ -11,7 +11,6 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { Event, Venue } from '$lib/types/api.js';
 	import { userStore } from '$lib/stores/user.js';
-	import { appStore } from '$lib/stores/app.js';
 
 	interface Props {
 		initialEventId?: string;
@@ -61,9 +60,6 @@
 	const events = $derived($eventsQuery.data || []);
 
 	$effect(() => {
-		if ($appStore.webApp) {
-        $appStore.webApp.showAlert(`Events Debug: initialEventId=${initialEventId}, viewMode=${viewMode}`);
-    }
 		if (initialEventId) {
 			selectedEventId = initialEventId;
 			viewMode = 'detail';
