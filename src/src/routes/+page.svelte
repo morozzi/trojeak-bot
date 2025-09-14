@@ -140,14 +140,9 @@
 		document.documentElement.style.setProperty('--footer-h', `${event.detail.height}px`);
 	}
 
-	
 	function handleBooking() {
-    // Debug current state before navigation
-    if ($appStore.webApp) {
-        $appStore.webApp.showAlert(`Debug: selectedEventId=${$appStore.selectedEventId}, selectedEvent=${$appStore.selectedEvent?.eventtitle}`);
-    }
-    appActions.goBack();
-}
+		appActions.goBack();
+	}
 </script>
 
 <QueryClientProvider client={queryClient}>
