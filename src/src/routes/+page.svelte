@@ -140,7 +140,7 @@
 		document.documentElement.style.setProperty('--footer-h', `${event.detail.height}px`);
 	}
 
-	function goToPreviousBookingView() {
+	function handleBooking() {
 		appActions.clearBooking();
 		appActions.goBack();
 	}
@@ -204,8 +204,9 @@
 						<Booking 
 							event={$appStore.selectedEvent}
 							venue={$appStore.selectedVenue}
-							onComplete={goToPreviousBookingView}
-							onCancel={goToPreviousBookingView}
+							on:goBack={appActions.goBack}
+							on:complete={handleBooking}
+							on:cancel={handleBooking}
 							on:footerHeight={handleFooterHeight}
 						/>
 					{/if}

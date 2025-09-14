@@ -15,15 +15,16 @@
 	interface Props {
 		event: Event;
 		venue: Venue;
-		onComplete: () => void;
-		onCancel: () => void;
 	}
 
-	const { event, venue, onComplete, onCancel }: Props = $props();
+	const { event, venue }: Props = $props();
 	
 	let footerEl: HTMLElement | undefined = $state();
 
 	const dispatch = createEventDispatcher<{
+		goBack: void;
+		complete: void;
+		cancel: void;
 		footerHeight: { height: number };
 	}>();
 
@@ -107,14 +108,20 @@
 		if (currentStep > 1) {
 			currentStep -= 1;
 			window.scrollTo(0, 0);
+		} else {
+			dispatch('goBack');
 		}
+	}
+
+	function handleCancel() {
+		dispatch('cancel');
 	}
 
 	async function handleCompleteBooking() {
 		isProcessing = true;
 		await new Promise(resolve => setTimeout(resolve, 2000));
 		isProcessing = false;
-		onComplete();
+		dispatch('complete');
 	}
 
 	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
@@ -302,7 +309,7 @@
 				{/if}
 			</div>
 			<div class="flex items-center justify-center">
-				<Button.Button variant="outline" onclick={onCancel}>
+				<Button.Button variant="outline" onclick={handleCancel}>
 					Cancel
 				</Button.Button>
 			</div>
