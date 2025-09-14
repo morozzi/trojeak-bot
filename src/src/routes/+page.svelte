@@ -141,7 +141,6 @@
 	}
 
 	function handleBooking() {
-		appActions.clearBooking();
 		appActions.goBack();
 	}
 </script>
