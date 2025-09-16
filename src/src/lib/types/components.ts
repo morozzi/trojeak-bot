@@ -8,7 +8,12 @@ export interface TelegramUser {
   photo_url?: string;
 }
 
-export type ViewType = 'home' | 'events' | 'venues' | 'brands' | 'booking';
+export type ViewType = 
+  | 'home'
+  | 'events-list' | 'events-detail' 
+  | 'venues-list' | 'venues-detail'
+  | 'brands-list' | 'brands-detail'
+  | 'booking-step-1' | 'booking-step-2' | 'booking-step-3' | 'booking-step-4';
 
 export interface FilterState {
   cityId?: number;
@@ -20,7 +25,6 @@ export interface FilterState {
 export interface NavigationState {
   currentView: ViewType;
   showBackButton: boolean;
-  canGoBack: boolean;
 }
 
 export interface LoadingState {

@@ -85,13 +85,13 @@
 	function handleStartBooking(event: CustomEvent<{event: Event; venue: Venue | null}>) {
 		appActions.setSelectedEvent(event.detail.event, event.detail.venue);
 		appActions.startBooking(event.detail.event.eventid.toString());
-		appActions.navigate('booking');
+		appActions.navigate('booking-step-1');
 		window.scrollTo(0, 0);
 	}
 	
 	function handleGoToEvent(event: CustomEvent<{eventId: string}>) {
 		appActions.setSelectedEventId(event.detail.eventId);
-		appActions.navigate('events');
+		appActions.navigate('events-detail');
 		window.scrollTo(0, 0);
 	}
 
@@ -129,10 +129,25 @@
 	}
 
 	function handleNavigate(event: CustomEvent<{page: string}>) {
-		if (event.detail.page === 'events') {
-			appActions.setSelectedEventId('');
+		const { page } = event.detail;
+		let targetView: ViewType;
+		
+		switch (page) {
+			case 'events':
+				targetView = 'events-list';
+				appActions.setSelectedEventId('');
+				break;
+			case 'venues':
+				targetView = 'venues-list';
+				break;
+			case 'brands':
+				targetView = 'brands-list';
+				break;
+			default:
+				targetView = page as ViewType;
 		}
-		appActions.navigate(event.detail.page as ViewType);
+		
+		appActions.navigate(targetView);
 		window.scrollTo(0, 0);
 	}
 
@@ -141,7 +156,12 @@
 	}
 
 	function handleBooking() {
-		appActions.goBack();
+		appActions.clearBooking();
+		if ($appStore.selectedEventId) {
+			appActions.navigate('events-detail');
+		} else {
+			appActions.navigate('events-list');
+		}
 	}
 </script>
 
@@ -162,7 +182,7 @@
 				</div>
 			</div>
 		{:else if $userStore.isUserDataLoaded}
-			{#if $appStore.currentView !== 'booking'}
+			{#if !$appStore.currentView.startsWith('booking-step-')}
 				<Header 
 					on:cityChange={handleCityChange}
 					on:languageChange={handleLanguageChange}
@@ -178,7 +198,7 @@
 						on:navigate={handleNavigate}
 						on:footerHeight={handleFooterHeight}
 					/>
-				{:else if $appStore.currentView === 'events'}
+				{:else if $appStore.currentView.startsWith('events-')}
 					<Events 
 						initialEventId={$appStore.selectedEventId} 
 						on:goBack={appActions.goBack} 
@@ -186,19 +206,19 @@
 						on:startBooking={handleStartBooking} 
 						on:footerHeight={handleFooterHeight}
 					/>
-				{:else if $appStore.currentView === 'venues'}
+				{:else if $appStore.currentView.startsWith('venues-')}
 					<Venues 
 						on:goBack={appActions.goBack} 
 						on:goToEvent={handleGoToEvent} 
 						on:footerHeight={handleFooterHeight}
 					/>
-				{:else if $appStore.currentView === 'brands'}
+				{:else if $appStore.currentView.startsWith('brands-')}
 					<Brands 
 						on:goBack={appActions.goBack} 
 						on:goToEvent={handleGoToEvent} 
 						on:footerHeight={handleFooterHeight}
 					/>
-				{:else if $appStore.currentView === 'booking'}
+				{:else if $appStore.currentView.startsWith('booking-step-')}
 					{#if $appStore.selectedEvent && $appStore.selectedVenue}
 						<Booking 
 							event={$appStore.selectedEvent}

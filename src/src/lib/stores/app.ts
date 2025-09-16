@@ -4,11 +4,11 @@ import type { WebApp } from '@twa-dev/sdk';
 import type { ViewType } from '$lib/types/components.js';
 import type { Event, Venue } from '$lib/types/api.js';
 
+const SCROLL_RESTORE_VIEWS = ['home', 'events-list', 'brands-detail', 'venues-detail'];
+
 interface NavigationEntry {
 	view: ViewType;
 	scrollPosition: number;
-	timestamp: number;
-	metadata?: Record<string, any>;
 }
 
 interface BookingState {
@@ -29,12 +29,10 @@ interface AppState {
 	selectedEventId: string | undefined;
 	selectedEvent: Event | null;
 	selectedVenue: Venue | null;
-	previousView: ViewType;
 	navigationHistory: NavigationEntry[];
 	backgroundColor: string;
 	textColor: string;
 	bookingState: BookingState | null;
-	canGoBack: boolean;
 }
 
 const MAX_NAVIGATION_ENTRIES = 20;
@@ -47,12 +45,10 @@ const initialState: AppState = {
 	selectedEventId: undefined,
 	selectedEvent: null,
 	selectedVenue: null,
-	previousView: 'home',
 	navigationHistory: [],
 	backgroundColor: '#f9fafb',
 	textColor: '#1f2937',
-	bookingState: null,
-	canGoBack: false
+	bookingState: null
 };
 
 const baseAppStore = writable(initialState);
@@ -78,16 +74,14 @@ export const appActions = {
 		baseAppStore.update(state => ({ ...state, error: err }));
 	},
 
-	navigate: (view: ViewType, metadata?: Record<string, any>) => {
+	navigate: (view: ViewType) => {
 		baseAppStore.update(state => {
 			let newHistory = [...state.navigationHistory];
 			
-			if (view !== 'booking') {
+			if (!view.startsWith('booking-step-')) {
 				newHistory.push({
 					view: state.currentView,
-					scrollPosition: window.scrollY || 0,
-					timestamp: Date.now(),
-					metadata
+					scrollPosition: window.scrollY || 0
 				});
 
 				if (newHistory.length > MAX_NAVIGATION_ENTRIES) {
@@ -98,7 +92,6 @@ export const appActions = {
 			return {
 				...state,
 				navigationHistory: newHistory,
-				previousView: state.currentView,
 				currentView: view
 			};
 		});
@@ -111,14 +104,15 @@ export const appActions = {
 				const lastEntry = newHistory.pop();
 				
 				if (lastEntry) {
-					setTimeout(() => {
-						window.scrollTo(0, lastEntry.scrollPosition);
-					}, 0);
+					if (SCROLL_RESTORE_VIEWS.includes(lastEntry.view)) {
+						setTimeout(() => {
+							window.scrollTo(0, lastEntry.scrollPosition);
+						}, 0);
+					}
 					
 					return {
 						...state,
 						navigationHistory: newHistory,
-						previousView: state.currentView,
 						currentView: lastEntry.view
 					};
 				}
@@ -194,11 +188,11 @@ export const appActions = {
 				const [type, id] = startParam.split('_');
 				if (type === 'event' && id) {
 					updates.selectedEventId = id;
-					updates.currentView = 'events';
+					updates.currentView = 'events-detail';
 				} else if (type === 'venue' && id) {
-					updates.currentView = 'venues';
+					updates.currentView = 'venues-detail';
 				} else if (type === 'brand' && id) {
-					updates.currentView = 'brands';
+					updates.currentView = 'brands-detail';
 				}
 			}
 			

@@ -11,6 +11,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { Venue, Event } from '$lib/types/api.js';
 	import { userStore } from '$lib/stores/user.js';
+	import { appStore } from '$lib/stores/app.js';
 
 	let footerEl: HTMLElement | undefined = $state();
 
@@ -18,10 +19,11 @@
 		goBack: void;
 		goToEvent: { eventId: string };
 		footerHeight: { height: number };
+		navigate: { view: string; venueId?: string };
 	}>();
 
-	let viewMode: 'list' | 'detail' = $state('list');
-	let selectedVenueId: string | null = $state(null);
+	const viewMode = $derived($appStore.currentView === 'venues-detail' ? 'detail' : 'list');
+	const selectedVenueId = $derived($appStore.selectedVenueId || null);
 
 	const venuesQuery = createQuery({
 		queryKey: ['venues', $userStore.selectedLanguage, $userStore.selectedCity],
@@ -67,18 +69,16 @@
 	});
 
 	function selectVenue(venueId: string): void {
-		selectedVenueId = venueId;
-		viewMode = 'detail';
+		dispatch('navigate', { view: 'venues-detail', venueId });
 		window.scrollTo(0, 0);
 	}
 
-	function goToList(): void {
-		viewMode = 'list';
-		selectedVenueId = null;
+	function goHome(): void {
+		dispatch('navigate', { view: 'home' });
 	}
 
-	function goBack(): void {
-		dispatch('goBack');
+	function goToList(): void {
+		dispatch('navigate', { view: 'venues-list' });
 	}
 
 	function goToEvent(eventId: string): void {
@@ -234,7 +234,7 @@
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 			<div class="flex items-center justify-start">
 				{#if viewMode === 'list'}
-					<Button.Button variant="outline" size="sm" onclick={goBack}>
+					<Button.Button variant="outline" size="sm" onclick={goHome}>
 						Home
 					</Button.Button>
 				{:else}

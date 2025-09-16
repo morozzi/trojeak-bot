@@ -6,13 +6,14 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import EventList from '$lib/components/EventList.svelte';
 	import type { Event } from '$lib/types/api.js';
+	import type { ViewType } from '$lib/types/components.js';
 	import { userStore } from '$lib/stores/user.js';
 
 	let footerEl: HTMLElement | undefined = $state();
 
 	const dispatch = createEventDispatcher<{
 		goToEvent: { eventId: string };
-		navigate: { page: string };
+		navigate: { view: string };
 		footerHeight: { height: number };
 	}>();
 
@@ -49,8 +50,8 @@
 		dispatch('goToEvent', { eventId });
 	}
 
-	function handleNavigate(page: string) {
-		dispatch('navigate', { page });
+	function handleNavigate(page: string): void {
+		dispatch('navigate', { view: `${page}-list` as ViewType });
 	}
 
 	function updateFooterHeight() {

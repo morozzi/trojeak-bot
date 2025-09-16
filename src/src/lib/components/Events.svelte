@@ -11,6 +11,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { Event, Venue } from '$lib/types/api.js';
 	import { userStore } from '$lib/stores/user.js';
+	import { appStore } from '$lib/stores/app.js';
 
 	interface Props {
 		initialEventId?: string;
@@ -25,10 +26,11 @@
 		goToEvent: { eventId: string };
 		startBooking: { event: Event; venue: Venue | null };
 		footerHeight: { height: number };
+		navigate: { view: string };
 	}>();
 
-	let viewMode: 'list' | 'detail' = $state(initialEventId ? 'detail' : 'list');
-	let selectedEventId: string | null = $state(initialEventId || null);
+	const viewMode = $derived($appStore.currentView === 'events-detail' ? 'detail' : 'list');
+	const selectedEventId = $derived($appStore.selectedEventId);
 
 	const eventsQuery = createQuery({
 		queryKey: ['events', $userStore.selectedLanguage, $userStore.selectedCity],
@@ -59,27 +61,16 @@
 
 	const events = $derived($eventsQuery.data || []);
 
-	$effect(() => {
-		if (initialEventId) {
-			selectedEventId = initialEventId;
-			viewMode = 'detail';
-		} else {
-			selectedEventId = null;
-			viewMode = 'list';
-		}
-	});
-
 	function goToEvent(eventId: string): void {
 		dispatch('goToEvent', { eventId });
 	}
 
-	function goToList(): void {
-		viewMode = 'list';
-		selectedEventId = null;
+	function goHome(): void {
+		dispatch('navigate', { view: 'home' });
 	}
 
-	function goBack(): void {
-		dispatch('goBack');
+	function goToList(): void {
+		dispatch('navigate', { view: 'events-list' });
 	}
 
 	function startBooking(event: Event): void {
@@ -225,7 +216,7 @@
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 			<div class="flex items-center justify-start">
 				{#if viewMode === 'list'}
-					<Button.Button variant="outline" size="sm" onclick={goBack}>
+					<Button.Button variant="outline" size="sm" onclick={goHome}>
 						Home
 					</Button.Button>
 				{:else}
