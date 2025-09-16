@@ -175,9 +175,7 @@
 					</div>
 				{/each}
 			</div>
-			<Progress.Root class="h-2">
-				<Progress.Indicator class="h-full transition-all" style="width: {progressPercentage}%" />
-			</Progress.Root>
+			<Progress.Progress value={progressPercentage} class="w-full" />
 		</div>
 
 		{#if currentStep === 1}

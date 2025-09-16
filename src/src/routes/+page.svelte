@@ -128,40 +128,13 @@
 		const action = event.detail.action;
 	}
 
-	function handleNavigate(event: CustomEvent<{page: string}>) {
-		const { page } = event.detail;
-		let targetView: ViewType;
-		
-		switch (page) {
-			case 'events':
-				targetView = 'events-list';
-				appActions.setSelectedEventId('');
-				break;
-			case 'venues':
-				targetView = 'venues-list';
-				break;
-			case 'brands':
-				targetView = 'brands-list';
-				break;
-			default:
-				targetView = page as ViewType;
-		}
-		
-		appActions.navigate(targetView);
+	function handleNavigate(event: CustomEvent<{view: string}>) {
+		appActions.navigate(event.detail.view as ViewType);
 		window.scrollTo(0, 0);
 	}
 
 	function handleFooterHeight(event: CustomEvent<{height: number}>) {
 		document.documentElement.style.setProperty('--footer-h', `${event.detail.height}px`);
-	}
-
-	function handleBooking() {
-		appActions.clearBooking();
-		if ($appStore.selectedEventId) {
-			appActions.navigate('events-detail');
-		} else {
-			appActions.navigate('events-list');
-		}
 	}
 </script>
 
@@ -201,20 +174,20 @@
 				{:else if $appStore.currentView.startsWith('events-')}
 					<Events 
 						initialEventId={$appStore.selectedEventId} 
-						on:goBack={appActions.goBack} 
+						on:navigate={handleNavigate}
 						on:goToEvent={handleGoToEvent}
 						on:startBooking={handleStartBooking} 
 						on:footerHeight={handleFooterHeight}
 					/>
 				{:else if $appStore.currentView.startsWith('venues-')}
 					<Venues 
-						on:goBack={appActions.goBack} 
+						on:navigate={handleNavigate}
 						on:goToEvent={handleGoToEvent} 
 						on:footerHeight={handleFooterHeight}
 					/>
 				{:else if $appStore.currentView.startsWith('brands-')}
 					<Brands 
-						on:goBack={appActions.goBack} 
+						on:navigate={handleNavigate}
 						on:goToEvent={handleGoToEvent} 
 						on:footerHeight={handleFooterHeight}
 					/>
@@ -223,9 +196,7 @@
 						<Booking 
 							event={$appStore.selectedEvent}
 							venue={$appStore.selectedVenue}
-							on:goBack={appActions.goBack}
-							on:complete={handleBooking}
-							on:cancel={handleBooking}
+							on:navigate={handleNavigate}
 							on:footerHeight={handleFooterHeight}
 						/>
 					{/if}
