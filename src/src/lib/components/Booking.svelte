@@ -27,9 +27,7 @@
 	let phoneInputTouched = $state(false);
 
 	const dispatch = createEventDispatcher<{
-		goBack: void;
-		complete: void;
-		cancel: void;
+		navigate: { view: string };
 		footerHeight: { height: number };
 	}>();
 
@@ -129,30 +127,28 @@
 
 	function nextStep() {
 		if (currentStep < 4) {
-			appActions.updateBookingState({ currentStep: currentStep + 1 });
-			window.scrollTo(0, 0);
+			dispatch('navigate', { view: `booking-step-${currentStep + 1}` });
 		}
 	}
 
 	function prevStep() {
 		if (currentStep > 1) {
-			appActions.updateBookingState({ currentStep: currentStep - 1 });
-			window.scrollTo(0, 0);
+			dispatch('navigate', { view: `booking-step-${currentStep - 1}` });
 		} else {
-			dispatch('goBack');
+			dispatch('navigate', { view: 'events-detail' });
 		}
 	}
 
 	function handleCancel() {
 		appActions.clearBooking();
-		dispatch('cancel');
+		dispatch('navigate', { view: 'events-detail' });
 	}
 
 	async function handleCompleteBooking() {
 		isProcessing = true;
 		await new Promise(resolve => setTimeout(resolve, 2000));
 		isProcessing = false;
-		dispatch('complete');
+		dispatch('navigate', { view: 'events-detail' });
 	}
 
 	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
@@ -179,7 +175,9 @@
 					</div>
 				{/each}
 			</div>
-			<Progress.Progress value={progressPercentage} class="w-full" />
+			<Progress.Root class="h-2">
+				<Progress.Indicator class="h-full transition-all" style="width: {progressPercentage}%" />
+			</Progress.Root>
 		</div>
 
 		{#if currentStep === 1}
@@ -192,7 +190,7 @@
 								<div class="flex items-center gap-3">
 									<Avatar.Root class="w-8 h-8 rounded-lg">
 										<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
-										<Avatar.Fallback class="rounded-lg bg-muted" />
+										<Avatar.Fallback>{brand.brandname.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
 									<h4 class="font-medium">{brand.brandname}</h4>
 								</div>
