@@ -13,11 +13,11 @@ interface NavigationEntry {
 
 interface BookingState {
 	eventId: string;
-	selectedBrands: { brandId: string; quantity: number }[];
+	selectedBrands: {[key: string]: number};
 	guests: number;
 	phone: string;
 	comment: string;
-	paymentMethod: string;
+	paymentMethod: 'aba' | 'ipay88' | 'telegram_stars' | '';
 	currentStep: number;
 }
 
@@ -165,12 +165,12 @@ export const appActions = {
 			...state,
 			bookingState: {
 				eventId,
-				selectedBrands: [],
+				selectedBrands: {},
 				guests: 1,
 				phone: '',
 				comment: '',
 				paymentMethod: '',
-				currentStep: 0
+				currentStep: 1
 			}
 		}));
 	},

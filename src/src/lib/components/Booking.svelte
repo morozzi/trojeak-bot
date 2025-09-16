@@ -10,7 +10,9 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import { createEventDispatcher } from 'svelte';
-	import type { Event, Brand, Venue } from '$lib/types/api.js';
+	import type { Event, Venue } from '$lib/types/api.js';
+	import { appStore, appActions } from '$lib/stores/app.js';
+	import { userStore } from '$lib/stores/user.js';
 
 	interface Props {
 		event: Event;
@@ -20,6 +22,8 @@
 	const { event, venue }: Props = $props();
 	
 	let footerEl: HTMLElement | undefined = $state();
+	let footerVisible = $state(true);
+	let isProcessing = $state(false);
 
 	const dispatch = createEventDispatcher<{
 		goBack: void;
@@ -37,25 +41,34 @@
 		},
 	});
 
-	let currentStep = $state(1);
-	let selectedBrands = $state<{[key: string]: number}>({});
-	let guestCount = $state(1);
-	let guestCountString = $state("1");
-	let phoneNumber = $state('+855');
-	let comment = $state('');
-	let paymentMethod = $state<'aba' | 'ipay88' | 'telegram_stars' | null>(null);
-	let isProcessing = $state(false);
-	let footerVisible = $state(true);
+	const currentStep = $derived($appStore.bookingState?.currentStep || 1);
+	const selectedBrands = $derived($appStore.bookingState?.selectedBrands || {});
+	const guests = $derived($appStore.bookingState?.guests || 1);
+	const phone = $derived($appStore.bookingState?.phone || $userStore.userData?.user?.phone || '+855');
+	const comment = $derived($appStore.bookingState?.comment || '');
+	const paymentMethod = $derived($appStore.bookingState?.paymentMethod || '');
 
 	const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
 	const eventBrands = $derived($brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []);
 
+	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
+	const estimatedTotal = $derived(totalItems * (event.eventschemaprice || 0));
+	
+	const phoneValidation = $derived(/^\+[1-9]\d{7,14}$/.test(phone));
+	const commentValidation = $derived(comment.length <= 200);
+	
+	const canProceedFromStep1 = $derived(totalItems > 0);
+	const canProceedFromStep2 = $derived(phoneValidation);
+	const canProceedFromStep3 = $derived(commentValidation);
+	const canCompleteBooking = $derived(paymentMethod !== '');
+	const progressPercentage = $derived((currentStep / 4) * 100);
+
 	$effect(() => {
-		if (guestCountString && !isNaN(parseInt(guestCountString))) {
-			guestCount = parseInt(guestCountString);
+		if (!$appStore.bookingState) {
+			appActions.startBooking(event.eventid.toString());
 		}
 	});
-	
+
 	function updateFooterHeight() {
 		if (!footerEl) return;
 		const height = footerEl.offsetHeight;
@@ -71,14 +84,6 @@
 		}
 	});
 
-	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
-	const estimatedTotal = $derived(totalItems * (event.eventschemaprice || 0));
-	const canProceedFromStep1 = $derived(totalItems > 0);
-	const canProceedFromStep2 = $derived(guestCount >= 1 && phoneNumber.length > 4);
-	const canProceedFromStep3 = $derived(comment.length <= 200);
-	const canCompleteBooking = $derived(paymentMethod !== null);
-	const progressPercentage = $derived((currentStep / 4) * 100);
-
 	function toggleFooter(show: boolean) {
 		if (!show) {
 			setTimeout(() => footerVisible = false, 300);
@@ -88,25 +93,44 @@
 	}
 
 	function updateBrandQuantity(brandId: string, quantity: number) {
+		const newBrands = { ...selectedBrands };
 		if (quantity === 0) {
-			delete selectedBrands[brandId];
-			selectedBrands = {...selectedBrands};
+			delete newBrands[brandId];
 		} else {
-			selectedBrands[brandId] = quantity;
-			selectedBrands = {...selectedBrands};
+			newBrands[brandId] = quantity;
 		}
+		appActions.updateBookingState({ selectedBrands: newBrands });
+	}
+
+	function updateGuests(value: string) {
+		const guestCount = parseInt(value);
+		if (!isNaN(guestCount)) {
+			appActions.updateBookingState({ guests: guestCount });
+		}
+	}
+
+	function updatePhone(value: string) {
+		appActions.updateBookingState({ phone: value });
+	}
+
+	function updateComment(value: string) {
+		appActions.updateBookingState({ comment: value });
+	}
+
+	function updatePaymentMethod(value: 'aba' | 'ipay88' | 'telegram_stars') {
+		appActions.updateBookingState({ paymentMethod: value });
 	}
 
 	function nextStep() {
 		if (currentStep < 4) {
-			currentStep += 1;
+			appActions.updateBookingState({ currentStep: currentStep + 1 });
 			window.scrollTo(0, 0);
 		}
 	}
 
 	function prevStep() {
 		if (currentStep > 1) {
-			currentStep -= 1;
+			appActions.updateBookingState({ currentStep: currentStep - 1 });
 			window.scrollTo(0, 0);
 		} else {
 			dispatch('goBack');
@@ -114,6 +138,7 @@
 	}
 
 	function handleCancel() {
+		appActions.clearBooking();
 		dispatch('cancel');
 	}
 
@@ -187,9 +212,9 @@
 				<div class="space-y-4">
 					<div class="space-y-2">
 						<Label.Label for="guestCount">Number of Guests</Label.Label>
-						<Select.Root type="single" bind:value={guestCountString}>
+						<Select.Root type="single" value={guests.toString()} onValueChange={updateGuests}>
 							<Select.Trigger>
-								{guestCount} Guest{guestCount > 1 ? 's' : ''}
+								{guests} Guest{guests > 1 ? 's' : ''}
 							</Select.Trigger>
 							<Select.Content>
 								{#each Array(10) as _, i}
@@ -203,11 +228,15 @@
 						<Input.Input 
 							id="phone" 
 							type="tel" 
-							bind:value={phoneNumber} 
+							value={phone}
+							oninput={(e) => updatePhone(e.target.value)}
 							placeholder="+855 12 345 678"
 							onfocus={() => toggleFooter(false)}
 							onblur={() => toggleFooter(true)}
 						/>
+						{#if !phoneValidation && phone.length > 0}
+							<p class="text-xs text-destructive">Please enter a valid international phone number</p>
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -219,13 +248,14 @@
 						<Label.Label for="comment">Special Requests (Optional)</Label.Label>
 						<Textarea.Textarea 
 							id="comment" 
-							bind:value={comment} 
+							value={comment}
+							oninput={(e) => updateComment(e.target.value)}
 							placeholder="Any special requests or notes..." 
 							maxlength="200"
 							onfocus={() => toggleFooter(false)}
 							onblur={() => toggleFooter(true)}
 						/>
-						<p class="text-xs text-muted-foreground">{comment.length}/200 characters</p>
+						<p class="text-xs {commentValidation ? 'text-muted-foreground' : 'text-destructive'}">{comment.length}/200 characters</p>
 					</div>
 				</div>
 
@@ -238,49 +268,26 @@
 		{:else if currentStep === 4}
 			<div class="space-y-4">
 				<h3 class="text-lg font-semibold">Payment Method</h3>
-				<RadioGroup.Root bind:value={paymentMethod} class="space-y-3">
+				<RadioGroup.Root value={paymentMethod} onValueChange={updatePaymentMethod} class="space-y-3">
 					<div class="flex items-center space-x-2">
-						<RadioGroup.RadioGroupItem value="aba" id="aba" />
-						<Label.Label for="aba" class="flex-1 cursor-pointer">
-							<Card.Card class="p-4">
-								<div class="flex items-center gap-3">
-									<div class="text-2xl">🏦</div>
-									<div>
-										<h4 class="font-medium">ABA QR Pay</h4>
-										<p class="text-sm text-muted-foreground">Pay with ABA Bank mobile app</p>
-									</div>
-								</div>
-							</Card.Card>
+						<RadioGroup.Item value="aba" />
+						<Label.Label for="aba" class="flex items-center gap-2">
+							<span>🏦 ABA QR Pay</span>
+							<span class="text-xs text-muted-foreground">- Scan QR code with ABA Mobile</span>
 						</Label.Label>
 					</div>
-						
 					<div class="flex items-center space-x-2">
-						<RadioGroup.RadioGroupItem value="ipay88" id="ipay88" />
-						<Label.Label for="ipay88" class="flex-1 cursor-pointer">
-							<Card.Card class="p-4">
-								<div class="flex items-center gap-3">
-									<div class="text-2xl">💳</div>
-									<div>
-										<h4 class="font-medium">iPay88</h4>
-										<p class="text-sm text-muted-foreground">Credit card, mobile banking</p>
-									</div>
-								</div>
-							</Card.Card>
+						<RadioGroup.Item value="ipay88" />
+						<Label.Label for="ipay88" class="flex items-center gap-2">
+							<span>💳 Credit/Debit Card</span>
+							<span class="text-xs text-muted-foreground">- Visa, MasterCard, Local Banks</span>
 						</Label.Label>
 					</div>
-
 					<div class="flex items-center space-x-2">
-						<RadioGroup.RadioGroupItem value="telegram_stars" id="telegram_stars" />
-						<Label.Label for="telegram_stars" class="flex-1 cursor-pointer">
-							<Card.Card class="p-4">
-								<div class="flex items-center gap-3">
-									<div class="text-2xl">⭐</div>
-									<div>
-										<h4 class="font-medium">Telegram Stars</h4>
-										<p class="text-sm text-muted-foreground">Pay with Telegram Stars</p>
-									</div>
-								</div>
-							</Card.Card>
+						<RadioGroup.Item value="telegram_stars" />
+						<Label.Label for="telegram_stars" class="flex items-center gap-2">
+							<span>⭐ Telegram Stars</span>
+							<span class="text-xs text-muted-foreground">- Pay with Telegram Stars</span>
 						</Label.Label>
 					</div>
 				</RadioGroup.Root>
@@ -289,7 +296,7 @@
 					<h4 class="font-medium">Final Summary</h4>
 					<p class="text-sm">Event: {event.eventtitle}</p>
 					<p class="text-sm">Venue: {venue?.venuename}</p>
-					<p class="text-sm">Guests: {guestCount}</p>
+					<p class="text-sm">Guests: {guests}</p>
 					<p class="text-sm">Total Amount: ${estimatedTotal}</p>
 				</div>
 			</div>

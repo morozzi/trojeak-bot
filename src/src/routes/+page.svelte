@@ -84,7 +84,7 @@
 
 	function handleStartBooking(event: CustomEvent<{event: Event; venue: Venue | null}>) {
 		appActions.setSelectedEvent(event.detail.event, event.detail.venue);
-		appActions.startBooking(event.detail.event.eventid);
+		appActions.startBooking(event.detail.event.eventid.toString());
 		appActions.navigate('booking');
 		window.scrollTo(0, 0);
 	}
@@ -199,7 +199,7 @@
 						on:footerHeight={handleFooterHeight}
 					/>
 				{:else if $appStore.currentView === 'booking'}
-					{#if $appStore.selectedEvent}
+					{#if $appStore.selectedEvent && $appStore.selectedVenue}
 						<Booking 
 							event={$appStore.selectedEvent}
 							venue={$appStore.selectedVenue}
