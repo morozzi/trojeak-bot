@@ -24,7 +24,6 @@
 	let footerEl: HTMLElement | undefined = $state();
 	let footerVisible = $state(true);
 	let isProcessing = $state(false);
-	let phoneInputTouched = $state(false);
 
 	const dispatch = createEventDispatcher<{
 		goBack: void;
@@ -67,10 +66,6 @@
 	$effect(() => {
 		if (!$appStore.bookingState) {
 			appActions.startBooking(event.eventid.toString());
-		}
-		
-		if (currentStep !== 2) {
-			phoneInputTouched = false;
 		}
 	});
 
@@ -115,7 +110,6 @@
 	}
 
 	function updatePhone(value: string) {
-		phoneInputTouched = true;
 		appActions.updateBookingState({ phone: value });
 	}
 
@@ -238,12 +232,9 @@
 							oninput={(e) => updatePhone(e.target.value)}
 							placeholder="+855 12 345 678"
 							onfocus={() => toggleFooter(false)}
-							onblur={() => {
-								phoneInputTouched = true;
-								toggleFooter(true);
-							}}
+							onblur={() => toggleFooter(true)}
 						/>
-						{#if phoneInputTouched && !phoneValidation && phone.length > 0}
+						{#if !phoneValidation && phone.length > 0}
 							<p class="text-xs text-destructive">Please enter a valid international phone number</p>
 						{/if}
 					</div>
