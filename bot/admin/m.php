@@ -629,7 +629,7 @@ function createTables(Database $db): void {
         `payment_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
         `booking_id` mediumint(8) unsigned NOT NULL,
         `amount` decimal(8,2) NOT NULL,
-        `payment_method` enum('aba_qr', 'ipay88') NOT NULL,
+        `payment_method` enum('aba', 'ipay88', 'stars') NOT NULL,
         `gateway_ref` varchar(100) DEFAULT NULL,
         `status` enum('pending', 'completed', 'failed') DEFAULT 'pending',
         `gateway_response` json DEFAULT NULL,
