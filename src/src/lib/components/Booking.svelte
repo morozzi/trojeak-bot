@@ -56,6 +56,7 @@
 
 	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
 	const estimatedTotal = $derived(totalItems * (event.eventschemaprice || 0));
+	const formattedTotal = $derived(constants ? `${constants.CURRENCY_SYMBOL}${estimatedTotal.toFixed(constants.CURRENCY_PRECISION)}` : `${estimatedTotal}`);
 	
 	const phoneValidation = $derived(() => {
 		if (!validator) return phone.length === 0;
@@ -229,7 +230,7 @@
 						{#if totalItems > 0}
 							<div class="p-4 bg-muted rounded-lg">
 								<p class="font-medium">Items: {totalItems}</p>
-								<p class="text-sm text-muted-foreground">Estimated Total: ${estimatedTotal}</p>
+								<p class="text-sm text-muted-foreground">Estimated Total: {formattedTotal}</p>
 							</div>
 						{/if}
 					</div>
@@ -292,7 +293,7 @@
 						<div class="p-4 bg-muted rounded-lg space-y-2">
 							<h4 class="font-medium">Booking Summary</h4>
 							<p class="text-sm">Items: {totalItems}</p>
-							<p class="text-sm">Estimated Total: ${estimatedTotal}</p>
+							<p class="text-sm">Estimated Total: {formattedTotal}</p>
 						</div>
 					</div>
 				{:else if currentStep === 4}
@@ -327,7 +328,7 @@
 							<p class="text-sm">Event: {event.eventtitle}</p>
 							<p class="text-sm">Venue: {venue?.venuename}</p>
 							<p class="text-sm">Guests: {guests}</p>
-							<p class="text-sm">Total Amount: ${estimatedTotal}</p>
+							<p class="text-sm">Total Amount: {formattedTotal}</p>
 						</div>
 					</div>
 				{/if}
