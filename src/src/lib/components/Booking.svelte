@@ -58,13 +58,11 @@
 	const estimatedTotal = $derived(totalItems * (event.eventschemaprice || 0));
 	const formattedTotal = $derived(constants ? `${constants.CURRENCY_SYMBOL}${estimatedTotal.toFixed(constants.CURRENCY_PRECISION)}` : `${estimatedTotal}`);
 	
-	const phoneValidation = $derived(() => {
-		if (!validator) return phone.length === 0;
+	const phoneValidation = $derived.by(() => {
 		return validator.phoneSchema.safeParse(phone).success;
 	});
 
-	const commentValidation = $derived(() => {
-		if (!validator) return comment.length <= constants.MAX_COMMENT_LENGTH;
+	const commentValidation = $derived.by(() => {
 		return validator.commentSchema.safeParse(comment).success;
 	});
 	
