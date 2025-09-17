@@ -82,15 +82,13 @@ export const appActions = {
 		baseAppStore.update(state => {
 			let newHistory = [...state.navigationHistory];
 			
-			if (!view.startsWith('booking-step-')) {
-				newHistory.push({
-					view: state.currentView,
-					scrollPosition: window.scrollY || 0
-				});
+			newHistory.push({
+				view: state.currentView,
+				scrollPosition: window.scrollY || 0
+			});
 
-				if (newHistory.length > MAX_NAVIGATION_ENTRIES) {
-					newHistory.shift();
-				}
+			if (newHistory.length > MAX_NAVIGATION_ENTRIES) {
+				newHistory.shift();
 			}
 
 			return {

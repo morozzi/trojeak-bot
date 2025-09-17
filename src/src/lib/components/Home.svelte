@@ -118,13 +118,13 @@
 <nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
 	<div class="mx-auto w-full max-w-2xl px-4">
 		<div class="grid grid-cols-3 gap-4 pt-4 pb-8">
-			<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('events')}>
+			<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('events-list')}>
 				Events
 			</Button.Button>
-			<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('venues')}>
+			<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('venues-list')}>
 				Venues
 			</Button.Button>
-			<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('brands')}>
+			<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('brands-list')}>
 				Brands
 			</Button.Button>
 		</div>
