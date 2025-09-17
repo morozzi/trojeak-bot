@@ -3,11 +3,11 @@
 # Environment & Security
 .env*
 
-# Development Source (src/ folder)
-src/.svelte-kit/
-src/build/
-src/node_modules/
-src/vite.config.*.timestamp-*
+# Development Source (dev/ folder)
+dev/.svelte-kit/
+dev/build/
+dev/node_modules/
+dev/vite.config.*.timestamp-*
 
 # System Logs & Cache
 /logs/
