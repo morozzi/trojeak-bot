@@ -127,12 +127,14 @@
 
 	function nextStep() {
 		if (currentStep < 4) {
+			appActions.updateBookingState({ currentStep: currentStep + 1 });  // ADD store update
 			dispatch('navigate', { view: `booking-step-${currentStep + 1}` });
 		}
 	}
 
 	function prevStep() {
 		if (currentStep > 1) {
+			appActions.updateBookingState({ currentStep: currentStep - 1 });  // ADD store update
 			dispatch('navigate', { view: `booking-step-${currentStep - 1}` });
 		} else {
 			dispatch('navigate', { view: 'events-detail' });

@@ -16,10 +16,9 @@
 	let footerEl: HTMLElement | undefined = $state();
 
 	const dispatch = createEventDispatcher<{
-		goBack: void;
+		navigate: { view: string; venueId?: string };
 		goToEvent: { eventId: string };
 		footerHeight: { height: number };
-		navigate: { view: string; venueId?: string };
 	}>();
 
 	const viewMode = $derived($appStore.currentView === 'venues-detail' ? 'detail' : 'list');

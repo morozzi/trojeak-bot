@@ -27,6 +27,8 @@ interface AppState {
 	error: string;
 	currentView: ViewType;
 	selectedEventId: string | undefined;
+	selectedVenueId: string | undefined;
+	selectedBrandId: string | undefined;
 	selectedEvent: Event | null;
 	selectedVenue: Venue | null;
 	navigationHistory: NavigationEntry[];
@@ -43,6 +45,8 @@ const initialState: AppState = {
 	error: '',
 	currentView: 'home',
 	selectedEventId: undefined,
+	selectedVenueId: undefined,
+	selectedBrandId: undefined,
 	selectedEvent: null,
 	selectedVenue: null,
 	navigationHistory: [],
@@ -132,6 +136,20 @@ export const appActions = {
 		}));
 	},
 
+	setSelectedVenueId: (venueId: string) => {
+		baseAppStore.update(state => ({ 
+			...state, 
+			selectedVenueId: venueId 
+		}));
+	},
+
+	setSelectedBrandId: (brandId: string) => {
+		baseAppStore.update(state => ({ 
+			...state, 
+			selectedBrandId: brandId 
+		}));
+	},
+
 	setSelectedEvent: (event: Event | null, venue?: Venue | null) => {
 		baseAppStore.update(state => ({
 			...state,
@@ -190,8 +208,10 @@ export const appActions = {
 					updates.selectedEventId = id;
 					updates.currentView = 'events-detail';
 				} else if (type === 'venue' && id) {
+					updates.selectedVenueId = id;
 					updates.currentView = 'venues-detail';
 				} else if (type === 'brand' && id) {
+					updates.selectedBrandId = id;
 					updates.currentView = 'brands-detail';
 				}
 			}

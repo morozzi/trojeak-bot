@@ -128,8 +128,14 @@
 		const action = event.detail.action;
 	}
 
-	function handleNavigate(event: CustomEvent<{view: string}>) {
-		appActions.navigate(event.detail.view as ViewType);
+	function handleNavigate(event: CustomEvent<{view: string; eventId?: string; venueId?: string; brandId?: string}>) {
+		const { view, eventId, venueId, brandId } = event.detail;
+		
+		if (eventId) appActions.setSelectedEventId(eventId);
+		if (venueId) appActions.setSelectedVenueId(venueId);
+		if (brandId) appActions.setSelectedBrandId(brandId);
+		
+		appActions.navigate(view as ViewType);
 		window.scrollTo(0, 0);
 	}
 

@@ -16,7 +16,6 @@
 	let footerEl: HTMLElement | undefined = $state();
 
 	const dispatch = createEventDispatcher<{
-		goBack: void;
 		goToEvent: { eventId: string };
 		footerHeight: { height: number };
 		navigate: { view: string; brandId?: string };

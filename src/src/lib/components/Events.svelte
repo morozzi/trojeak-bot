@@ -22,7 +22,6 @@
 	let footerEl: HTMLElement | undefined = $state();
 
 	const dispatch = createEventDispatcher<{
-		goBack: void;
 		goToEvent: { eventId: string };
 		startBooking: { event: Event; venue: Venue | null };
 		footerHeight: { height: number };
