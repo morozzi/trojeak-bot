@@ -90,6 +90,14 @@ function handleGetRequest(array $user): void {
             'status' => $user['status'],
             'created_at' => $user['created_at'],
             'updated_at' => $user['updated_at']
+        ],
+        'constants' => [
+            'MAX_GUESTS' => Constants::MAX_GUESTS,
+            'MAX_COMMENT_LENGTH' => Constants::MAX_COMMENT_LENGTH,
+            'MAX_QTY_PER_BRAND' => Constants::MAX_QTY_PER_BRAND,
+            'DEFAULT_CURRENCY' => Constants::DEFAULT_CURRENCY,
+            'CURRENCY_SYMBOL' => Constants::CURRENCY_SYMBOL,
+            'CURRENCY_PRECISION' => Constants::CURRENCY_PRECISION
         ]
     ];
     

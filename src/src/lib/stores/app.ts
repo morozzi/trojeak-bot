@@ -17,7 +17,7 @@ interface BookingState {
 	guests: number;
 	phone: string;
 	comment: string;
-	paymentMethod: 'aba' | 'ipay88' | 'telegram_stars' | '';
+	paymentMethod: 'aba' | 'ipay88' | 'stars' | '';
 	currentStep: number;
 }
 
