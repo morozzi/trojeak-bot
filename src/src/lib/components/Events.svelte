@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
-	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import { AspectRatio } from "$lib/components/ui/aspect-ratio/index.js";
 	import { Badge } from "$lib/components/ui/badge/index.js";
 	import * as Button from '$lib/components/ui/button/index.js';
@@ -8,6 +7,7 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import { Star } from '@lucide/svelte';
 	import EventList from '$lib/components/EventList.svelte';
+	import Loading from '$lib/components/Loading.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Event, Venue } from '$lib/types/api.js';
 	import { userStore } from '$lib/stores/user.js';
@@ -101,25 +101,7 @@
 		
 		<div class="grid gap-8">
 			{#if $eventsQuery.isLoading}
-				<Card.Card class="py-4 pb-0 overflow-hidden">
-    			<Card.CardHeader class="pb-4">
-      			<div class="flex justify-between items-center">
-        			<Skeleton class="h-6 w-40" />
-        			<Skeleton class="h-6 w-16 rounded-full" />
-      			</div>
-    			</Card.CardHeader>
-    			<Skeleton class="h-48 w-full" />
-    			<Card.CardContent class="p-4 space-y-4">
-      			<Skeleton class="h-4 w-40" />
-      			<Skeleton class="h-4 w-40" />
-      			<Skeleton class="h-4 w-40" />
-      			<div class="flex gap-2">
-        			<Skeleton class="w-8 h-8 rounded-lg" />
-        			<Skeleton class="w-8 h-8 rounded-lg" />
-        			<Skeleton class="w-8 h-8 rounded-lg" />
-      			</div>
-    			</Card.CardContent>
-  			</Card.Card>
+				<Loading variant="list" />
 			{:else if $eventsQuery.error}
 				<Card.Card>
 					<Card.CardContent class="p-4">
@@ -143,7 +125,9 @@
 		</div>
 	{:else if viewMode === 'detail' && selectedEventId}
 		{@const selectedEvent = events.find(e => e.eventid.toString() === selectedEventId)}
-		{#if selectedEvent}
+		{#if $eventsQuery.isLoading}
+			<Loading variant="detail" />
+		{:else if selectedEvent}
 			{@const venue = $venuesQuery.data?.find(v => v.venueid === selectedEvent.venueid)}
 			{@const eventBrandIds = selectedEvent.brandid.split(',').map(id => id.replace(/\^/g, ''))}
 			{@const eventBrands = $brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []}

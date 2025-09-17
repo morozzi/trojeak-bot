@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
-	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import { AspectRatio } from "$lib/components/ui/aspect-ratio/index.js";
 	import { Badge } from "$lib/components/ui/badge/index.js";
 	import * as Button from '$lib/components/ui/button/index.js';
@@ -8,6 +7,7 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import { Star } from '@lucide/svelte';
 	import EventList from '$lib/components/EventList.svelte';
+	import Loading from '$lib/components/Loading.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Brand, Event } from '$lib/types/api.js';
 	import { userStore } from '$lib/stores/user.js';
@@ -114,21 +114,7 @@
 		
 		<div class="grid gap-8">
 			{#if $brandsQuery.isLoading}
-				<Card.Card class="py-4 pb-0 overflow-hidden">
-    			<Card.CardHeader class="pb-4">
-      			<div class="flex justify-between items-center">
-        			<div class="flex items-center gap-3">
-          			<Skeleton class="w-12 h-12 rounded-lg" />
-          			<Skeleton class="h-6 w-32" />
-        			</div>
-        			<Skeleton class="h-6 w-16 rounded-full" />
-      			</div>
-    			</Card.CardHeader>
-    			<Skeleton class="h-48 w-full" />
-    			<Card.CardContent class="p-4">
-      			<Skeleton class="h-4 w-32" />
-    			</Card.CardContent>
-  			</Card.Card>
+				<Loading variant="list" />
 			{:else if $brandsQuery.error}
 				<Card.Card>
 					<Card.CardContent class="p-4">
@@ -178,7 +164,9 @@
 		</div>
 	{:else if viewMode === 'detail' && selectedBrandId}
 		{@const selectedBrand = brands.find(b => b.brandid.toString() === selectedBrandId)}
-		{#if selectedBrand}
+		{#if $brandsQuery.isLoading}
+			<Loading variant="detail" />
+		{:else if selectedBrand}
 			{@const brandEvents = getBrandEvents(selectedBrand.brandid)}
 			<div class="space-y-8">
 				{#if selectedBrand.brandfeatured}
@@ -223,6 +211,12 @@
 					</div>
 				{/if}
 			</div>
+		{:else}
+			<Card.Card>
+				<Card.CardContent class="p-4">
+					<p class="text-muted-foreground">Brand not found.</p>
+				</Card.CardContent>
+			</Card.Card>
 		{/if}
 	{/if}
 </div>

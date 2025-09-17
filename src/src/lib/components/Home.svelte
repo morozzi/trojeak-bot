@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import EventList from '$lib/components/EventList.svelte';
+	import Loading from '$lib/components/Loading.svelte';
 	import type { Event } from '$lib/types/api.js';
 	import type { ViewType } from '$lib/types/components.js';
 	import { userStore } from '$lib/stores/user.js';
@@ -79,25 +79,13 @@
 	</div>
 
 	{#if $featuredEventsQuery.isLoading}
-		<Card.Card class="py-4 pb-0 overflow-hidden">
-    	<Card.CardHeader class="pb-4">
-      	<div class="flex justify-between items-center">
-        	<Skeleton class="h-6 w-40" />
-        	<Skeleton class="h-6 w-16 rounded-full" />
-      	</div>
-    	</Card.CardHeader>
-    	<Skeleton class="h-48 w-full" />
-    	<Card.CardContent class="p-4 space-y-4">
-      	<Skeleton class="h-4 w-40" />
-      	<Skeleton class="h-4 w-40" />
-      	<Skeleton class="h-4 w-40" />
-      	<div class="flex gap-2">
-        	<Skeleton class="w-8 h-8 rounded-lg" />
-        	<Skeleton class="w-8 h-8 rounded-lg" />
-        	<Skeleton class="w-8 h-8 rounded-lg" />
-      	</div>
-    	</Card.CardContent>
-  	</Card.Card>
+		<Loading variant="list" />
+	{:else if $featuredEventsQuery.error}
+		<Card.Card>
+			<Card.CardContent class="p-4">
+				<p class="text-destructive">Failed to load featured events. Please try again.</p>
+			</Card.CardContent>
+		</Card.Card>
 	{:else if ($featuredEventsQuery.data || []).length > 0}
 		<EventList 
 			events={$featuredEventsQuery.data || []} 

@@ -9,6 +9,7 @@
 	import * as Progress from '$lib/components/ui/progress/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import Loading from '$lib/components/Loading.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Event, Venue } from '$lib/types/api.js';
 	import { appStore, appActions } from '$lib/stores/app.js';
@@ -162,153 +163,163 @@
 		<p class="text-muted-foreground">{event.eventtitle} at {venue.venuename}</p>
 	</div>
 	
-	<div class="space-y-6">
-		<div class="space-y-3">
-			<div class="flex justify-between items-center">
-				{#each stepTitles as title, index}
-					<div class="flex flex-col items-center gap-2 flex-1">
-						<div class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm
-							{currentStep > index + 1 ? 'bg-primary text-primary-foreground' : 
-							 currentStep === index + 1 ? 'bg-primary text-primary-foreground' : 
-							 'bg-muted text-muted-foreground'}">
-							{index + 1}
-						</div>
-						<span class="text-xs text-center {currentStep === index + 1 ? 'text-primary font-medium' : 'text-muted-foreground'}">{title}</span>
-					</div>
-				{/each}
-			</div>
-			<Progress.Progress value={progressPercentage} class="w-full" />
-		</div>
-
-		{#if currentStep === 1}
-			<div class="space-y-4">
-				<h3 class="text-lg font-semibold">Select Your Drinks</h3>
-				<div class="grid gap-4">
-					{#each eventBrands as brand}
-						<Card.Card class="p-4">
-							<div class="flex justify-between items-center">
-								<div class="flex items-center gap-3">
-									<Avatar.Root class="w-8 h-8 rounded-lg">
-										<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
-										<Avatar.Fallback>{brand.brandname.charAt(0)}</Avatar.Fallback>
-									</Avatar.Root>
-									<h4 class="font-medium">{brand.brandname}</h4>
-								</div>
-								<div class="flex items-center gap-2">
-									<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.max(0, (selectedBrands[brand.brandid.toString()] || 0) - 1))}>-</Button.Button>
-									<span class="w-8 text-center">{selectedBrands[brand.brandid.toString()] || 0}</span>
-									<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), (selectedBrands[brand.brandid.toString()] || 0) + 1)}>+</Button.Button>
-								</div>
+	{#if $brandsQuery.isLoading}
+		<Loading variant="booking" />
+	{:else if $brandsQuery.error}
+		<Card.Card>
+			<Card.CardContent class="p-4">
+				<p class="text-destructive">Failed to load drink options. Please try again.</p>
+			</Card.CardContent>
+		</Card.Card>
+	{:else}
+		<div class="space-y-6">
+			<div class="space-y-3">
+				<div class="flex justify-between items-center">
+					{#each stepTitles as title, index}
+						<div class="flex flex-col items-center gap-2 flex-1">
+							<div class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm
+								{currentStep > index + 1 ? 'bg-primary text-primary-foreground' : 
+								 currentStep === index + 1 ? 'bg-primary text-primary-foreground' : 
+								 'bg-muted text-muted-foreground'}">
+								{index + 1}
 							</div>
-						</Card.Card>
+							<span class="text-xs text-center {currentStep === index + 1 ? 'text-primary font-medium' : 'text-muted-foreground'}">{title}</span>
+						</div>
 					{/each}
 				</div>
-				{#if totalItems > 0}
-					<div class="p-4 bg-muted rounded-lg">
-						<p class="font-medium">Items: {totalItems}</p>
-						<p class="text-sm text-muted-foreground">Estimated Total: ${estimatedTotal}</p>
-					</div>
-				{/if}
+				<Progress.Progress value={progressPercentage} class="w-full" />
 			</div>
-		{:else if currentStep === 2}
-			<div class="space-y-4">
-				<h3 class="text-lg font-semibold">Guest Information</h3>
-				<div class="space-y-4">
-					<div class="space-y-2">
-						<Label.Label for="guestCount">Number of Guests</Label.Label>
-						<Select.Root type="single" value={guests.toString()} onValueChange={updateGuests}>
-							<Select.Trigger>
-								{guests} Guest{guests > 1 ? 's' : ''}
-							</Select.Trigger>
-							<Select.Content>
-								{#each Array(10) as _, i}
-									<Select.Item value={(i + 1).toString()}>{i + 1} Guest{i > 0 ? 's' : ''}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
-					</div>
-					<div class="space-y-2">
-						<Label.Label for="phone">Phone Number</Label.Label>
-						<Input.Input 
-							id="phone" 
-							type="tel" 
-							value={phone}
-							oninput={(e) => updatePhone(e.target.value)}
-							placeholder="+855 12 345 678"
-							onfocus={() => toggleFooter(false)}
-							onblur={() => {
-								phoneInputTouched = true;
-								toggleFooter(true);
-							}}
-						/>
-						{#if phoneInputTouched && !phoneValidation && phone.length > 0}
-							<p class="text-xs text-destructive">Please enter a valid international phone number</p>
-						{/if}
-					</div>
-				</div>
-			</div>
-		{:else if currentStep === 3}
-			<div class="space-y-4">
-				<h3 class="text-lg font-semibold">Additional Details</h3>
-				<div class="space-y-4">
-					<div class="space-y-2">
-						<Label.Label for="comment">Special Requests (Optional)</Label.Label>
-						<Textarea.Textarea 
-							id="comment" 
-							value={comment}
-							oninput={(e) => updateComment(e.target.value)}
-							placeholder="Any special requests or notes..." 
-							maxlength="200"
-							onfocus={() => toggleFooter(false)}
-							onblur={() => toggleFooter(true)}
-						/>
-						<p class="text-xs {commentValidation ? 'text-muted-foreground' : 'text-destructive'}">{comment.length}/200 characters</p>
-					</div>
-				</div>
 
-				<div class="p-4 bg-muted rounded-lg space-y-2">
-					<h4 class="font-medium">Booking Summary</h4>
-					<p class="text-sm">Items: {totalItems}</p>
-					<p class="text-sm">Estimated Total: ${estimatedTotal}</p>
+			{#if currentStep === 1}
+				<div class="space-y-4">
+					<h3 class="text-lg font-semibold">Select Your Drinks</h3>
+					<div class="grid gap-4">
+						{#each eventBrands as brand}
+							<Card.Card class="p-4">
+								<div class="flex justify-between items-center">
+									<div class="flex items-center gap-3">
+										<Avatar.Root class="w-8 h-8 rounded-lg">
+											<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+											<Avatar.Fallback>{brand.brandname.charAt(0)}</Avatar.Fallback>
+										</Avatar.Root>
+										<h4 class="font-medium">{brand.brandname}</h4>
+									</div>
+									<div class="flex items-center gap-2">
+										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.max(0, (selectedBrands[brand.brandid.toString()] || 0) - 1))}>-</Button.Button>
+										<span class="w-8 text-center">{selectedBrands[brand.brandid.toString()] || 0}</span>
+										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), (selectedBrands[brand.brandid.toString()] || 0) + 1)}>+</Button.Button>
+									</div>
+								</div>
+							</Card.Card>
+						{/each}
+					</div>
+					{#if totalItems > 0}
+						<div class="p-4 bg-muted rounded-lg">
+							<p class="font-medium">Items: {totalItems}</p>
+							<p class="text-sm text-muted-foreground">Estimated Total: ${estimatedTotal}</p>
+						</div>
+					{/if}
 				</div>
-			</div>
-		{:else if currentStep === 4}
-			<div class="space-y-4">
-				<h3 class="text-lg font-semibold">Payment Method</h3>
-				<RadioGroup.Root value={paymentMethod} onValueChange={updatePaymentMethod} class="space-y-3">
-					<div class="flex items-center space-x-2">
-						<RadioGroup.Item value="aba" />
-						<Label.Label for="aba" class="flex items-center gap-2">
-							<span>🏦 ABA QR Pay</span>
-							<span class="text-xs text-muted-foreground">- Scan QR code with ABA Mobile</span>
-						</Label.Label>
+			{:else if currentStep === 2}
+				<div class="space-y-4">
+					<h3 class="text-lg font-semibold">Guest Information</h3>
+					<div class="space-y-4">
+						<div class="space-y-2">
+							<Label.Label for="guestCount">Number of Guests</Label.Label>
+							<Select.Root type="single" value={guests.toString()} onValueChange={updateGuests}>
+								<Select.Trigger>
+									{guests} Guest{guests > 1 ? 's' : ''}
+								</Select.Trigger>
+								<Select.Content>
+									{#each Array(10) as _, i}
+										<Select.Item value={(i + 1).toString()}>{i + 1} Guest{i > 0 ? 's' : ''}</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						</div>
+						<div class="space-y-2">
+							<Label.Label for="phone">Phone Number</Label.Label>
+							<Input.Input 
+								id="phone" 
+								type="tel" 
+								value={phone}
+								oninput={(e) => updatePhone(e.target.value)}
+								placeholder="+855 12 345 678"
+								onfocus={() => toggleFooter(false)}
+								onblur={() => {
+									phoneInputTouched = true;
+									toggleFooter(true);
+								}}
+							/>
+							{#if phoneInputTouched && !phoneValidation && phone.length > 0}
+								<p class="text-xs text-destructive">Please enter a valid international phone number</p>
+							{/if}
+						</div>
 					</div>
-					<div class="flex items-center space-x-2">
-						<RadioGroup.Item value="ipay88" />
-						<Label.Label for="ipay88" class="flex items-center gap-2">
-							<span>💳 Credit/Debit Card</span>
-							<span class="text-xs text-muted-foreground">- Visa, MasterCard, Local Banks</span>
-						</Label.Label>
+				</div>
+			{:else if currentStep === 3}
+				<div class="space-y-4">
+					<h3 class="text-lg font-semibold">Additional Details</h3>
+					<div class="space-y-4">
+						<div class="space-y-2">
+							<Label.Label for="comment">Special Requests (Optional)</Label.Label>
+							<Textarea.Textarea 
+								id="comment" 
+								value={comment}
+								oninput={(e) => updateComment(e.target.value)}
+								placeholder="Any special requests or notes..." 
+								maxlength="200"
+								onfocus={() => toggleFooter(false)}
+								onblur={() => toggleFooter(true)}
+							/>
+							<p class="text-xs {commentValidation ? 'text-muted-foreground' : 'text-destructive'}">{comment.length}/200 characters</p>
+						</div>
 					</div>
-					<div class="flex items-center space-x-2">
-						<RadioGroup.Item value="telegram_stars" />
-						<Label.Label for="telegram_stars" class="flex items-center gap-2">
-							<span>⭐ Telegram Stars</span>
-							<span class="text-xs text-muted-foreground">- Pay with Telegram Stars</span>
-						</Label.Label>
-					</div>
-				</RadioGroup.Root>
 
-				<div class="p-4 bg-muted rounded-lg space-y-2">
-					<h4 class="font-medium">Final Summary</h4>
-					<p class="text-sm">Event: {event.eventtitle}</p>
-					<p class="text-sm">Venue: {venue?.venuename}</p>
-					<p class="text-sm">Guests: {guests}</p>
-					<p class="text-sm">Total Amount: ${estimatedTotal}</p>
+					<div class="p-4 bg-muted rounded-lg space-y-2">
+						<h4 class="font-medium">Booking Summary</h4>
+						<p class="text-sm">Items: {totalItems}</p>
+						<p class="text-sm">Estimated Total: ${estimatedTotal}</p>
+					</div>
 				</div>
-			</div>
-		{/if}
-	</div>
+			{:else if currentStep === 4}
+				<div class="space-y-4">
+					<h3 class="text-lg font-semibold">Payment Method</h3>
+					<RadioGroup.Root value={paymentMethod} onValueChange={updatePaymentMethod} class="space-y-3">
+						<div class="flex items-center space-x-2">
+							<RadioGroup.Item value="aba" />
+							<Label.Label for="aba" class="flex items-center gap-2">
+								<span>🏦 ABA QR Pay</span>
+								<span class="text-xs text-muted-foreground">- Scan QR code with ABA Mobile</span>
+							</Label.Label>
+						</div>
+						<div class="flex items-center space-x-2">
+							<RadioGroup.Item value="ipay88" />
+							<Label.Label for="ipay88" class="flex items-center gap-2">
+								<span>💳 Credit/Debit Card</span>
+								<span class="text-xs text-muted-foreground">- Visa, MasterCard, Local Banks</span>
+							</Label.Label>
+						</div>
+						<div class="flex items-center space-x-2">
+							<RadioGroup.Item value="telegram_stars" />
+							<Label.Label for="telegram_stars" class="flex items-center gap-2">
+								<span>⭐ Telegram Stars</span>
+								<span class="text-xs text-muted-foreground">- Pay with Telegram Stars</span>
+							</Label.Label>
+						</div>
+					</RadioGroup.Root>
+
+					<div class="p-4 bg-muted rounded-lg space-y-2">
+						<h4 class="font-medium">Final Summary</h4>
+						<p class="text-sm">Event: {event.eventtitle}</p>
+						<p class="text-sm">Venue: {venue?.venuename}</p>
+						<p class="text-sm">Guests: {guests}</p>
+						<p class="text-sm">Total Amount: ${estimatedTotal}</p>
+					</div>
+				</div>
+			{/if}
+		</div>
+	{/if}
 </div>
 
 {#if footerVisible}
