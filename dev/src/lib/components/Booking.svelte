@@ -257,7 +257,7 @@
 						{#each eventBrands as brand}
 							<Card.Card class="p-4">
 								<div class="flex justify-between items-center">
-									<div class="flex items-center gap-3">
+									<div class="flex items-center gap-4">
 										<Avatar.Root class="w-12 h-12 rounded-lg">
 											<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
 											<Avatar.Fallback>{brand.brandname.charAt(0)}</Avatar.Fallback>
@@ -267,7 +267,7 @@
 											<p class="text-sm text-muted-foreground">{constants.CURRENCY_SYMBOL}{event.eventschemaprice}</p>
 										</div>
 									</div>
-									<div class="flex items-center gap-2">
+									<div class="flex items-center gap-1">
 										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.max(0, (selectedBrands[brand.brandid.toString()] || 0) - 1))}>-</Button.Button>
 										<span class="w-8 text-center">{selectedBrands[brand.brandid.toString()] || 0}</span>
 										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.min((selectedBrands[brand.brandid.toString()] || 0) + 1, constants.MAX_QTY_PER_BRAND))}>+</Button.Button>
