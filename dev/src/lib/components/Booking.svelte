@@ -401,15 +401,15 @@
 							<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
 						</Card.CardHeader>
 						<Card.CardContent class="space-y-3">
+							<p class="text-sm">Event: {event.eventtitle}</p>
+							<p class="text-sm">Venue: {venue?.venuename}</p>
+							<p class="text-sm">Guests: {guests}</p>
+							<Separator />
 							{#each bookingSummary.items as item}
 								<p class="text-sm">{item}</p>
 							{/each}
 							<Separator />
 							<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
-							<Separator />
-							<p class="text-sm">Event: {event.eventtitle}</p>
-							<p class="text-sm">Venue: {venue?.venuename}</p>
-							<p class="text-sm">Guests: {guests}</p>
 						</Card.CardContent>
 					</Card.Card>
 				</div>
