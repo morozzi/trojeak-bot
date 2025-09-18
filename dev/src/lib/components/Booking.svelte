@@ -12,17 +12,16 @@
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import Loading from '$lib/components/Loading.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import type { Event, Venue } from '$lib/types/api.js';
+	import type { Event } from '$lib/types/api.js';
 	import { appStore, appActions } from '$lib/stores/app.js';
 	import { userStore } from '$lib/stores/user.js';
 	import { BookingValidator, type BookingData } from '$lib/api/validation.js';
 
 	interface Props {
 		event: Event;
-		venue: Venue;
 	}
 	
-	const { event, venue }: Props = $props();
+	const { event }: Props = $props();
 	
 	let footerEl: HTMLElement | undefined = $state();
 	let footerVisible = $state(true);
@@ -216,7 +215,7 @@
 <div class="space-y-8">
 	<div class="text-center space-y-4 pt-6">
 		<h1 class="text-2xl font-bold">Book Your Event</h1>
-		<p class="text-muted-foreground">{event.eventtitle} at {venue.venuename}</p>
+		<p class="text-muted-foreground">{event.eventtitle} at {event.venuename}</p>
 	</div>
 	
 	{#if $brandsQuery.isLoading}
@@ -402,7 +401,7 @@
 						</Card.CardHeader>
 						<Card.CardContent class="space-y-3">
 							<p class="text-sm">Event: {event.eventtitle}</p>
-							<p class="text-sm">Venue: {venue?.venuename}</p>
+							<p class="text-sm">Venue: {event.venuename}</p>
 							<p class="text-sm">Guests: {guests}</p>
 							<Separator />
 							{#each bookingSummary.items as item}
