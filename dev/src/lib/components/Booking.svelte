@@ -55,6 +55,8 @@
 	const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
 	const eventBrands = $derived($brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []);
 
+	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
+
 	const selectedDrinksDetails = $derived(() => {
 		return Object.entries(selectedBrands).map(([brandId, quantity]) => {
 			const brand = eventBrands.find(b => b.brandid.toString() === brandId);
@@ -74,7 +76,7 @@
 	
 	const formattedTotal = $derived(constants ? `${constants.CURRENCY_SYMBOL}${totalAmount.toFixed(constants.CURRENCY_PRECISION)}` : `${totalAmount}`);
 	
-	const canProceedFromStep1 = $derived(selectedDrinksDetails.length > 0);
+	const canProceedFromStep1 = $derived(totalItems > 0);
 	
 	const phoneValidation = $derived.by(() => {
 		return validator?.phoneSchema.safeParse(phone).success;
@@ -266,7 +268,7 @@
 							</Card.Card>
 						{/each}
 					</div>
-					{#if selectedDrinksDetails.length > 0}
+					{#if totalItems > 0}
 						{@const summary = BookingSummary()}
 						<div class="p-4 bg-muted rounded-lg space-y-2">
 							<h4 class="font-medium">Booking Summary:</h4>
