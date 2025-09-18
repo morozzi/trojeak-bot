@@ -57,8 +57,8 @@
 
 	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
 
-	const selectedDrinksDetails = $derived(
-		Object.entries(selectedBrands).map(([brandId, quantity]) => {
+	const selectedDrinksDetails = $derived(() => {
+		return Object.entries(selectedBrands).map(([brandId, quantity]) => {
 			const brand = eventBrands.find(b => b.brandid.toString() === brandId);
 			const amount = quantity * (event.eventschemaprice || 0);
 			return {
@@ -67,16 +67,16 @@
 				quantity,
 				amount
 			};
-		})
-	);
+		});
+	});
 	
-	const totalAmount = $derived(
-		selectedDrinksDetails.reduce((sum, item) => sum + item.amount, 0)
-	);
+	const totalAmount = $derived(() => {
+		return selectedDrinksDetails.reduce((sum, item) => sum + item.amount, 0);
+	});
 	
-	const formattedTotal = $derived(
-		constants ? `${constants.CURRENCY_SYMBOL}${totalAmount.toFixed(constants.CURRENCY_PRECISION)}` : `${totalAmount}`
-	);
+	const formattedTotal = $derived(() => {
+		return constants ? `${constants.CURRENCY_SYMBOL}${totalAmount.toFixed(constants.CURRENCY_PRECISION)}` : `${totalAmount}`;
+	});
 	
 	const canProceedFromStep1 = $derived(totalItems > 0);
 	
@@ -197,9 +197,9 @@
 
 	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 
-	const bookingSummary = $derived.by(() => {
+	function BookingSummary(includeEventDetails = false) {
 		if (selectedDrinksDetails.length === 0) {
-			return { items: [], total: '$0.00' };
+			return { items: [], total: '$0.00', showEventDetails: includeEventDetails };
 		}
 		
 		const formattedItems = selectedDrinksDetails.map(item => {
@@ -207,27 +207,14 @@
 			return `• ${item.brandName} × ${item.quantity} = ${subtotal}`;
 		});
 		
-		return {
-			items: formattedItems,
-			total: formattedTotal
-		};
-	});
-
-	const bookingSummaryWithDetails = $derived.by(() => {
-		if (selectedDrinksDetails.length === 0) {
-			return { items: [], total: '$0.00' };
-		}
-		
-		const formattedItems = selectedDrinksDetails.map(item => {
-			const subtotal = constants ? `${constants.CURRENCY_SYMBOL}${item.amount.toFixed(constants.CURRENCY_PRECISION)}` : `${item.amount}`;
-			return `• ${item.brandName} × ${item.quantity} = ${subtotal}`;
-		});
+		const displayTotal = formattedTotal;
 		
 		return {
 			items: formattedItems,
-			total: formattedTotal
+			total: displayTotal,
+			showEventDetails: includeEventDetails
 		};
-	});
+	}
 </script>
 
 <div class="space-y-8">
@@ -290,16 +277,18 @@
 						{/each}
 					</div>
 					{#if totalItems > 0}
+						{@const summary = BookingSummary()}
 						<div class="p-4 bg-muted rounded-lg space-y-2">
 							<h4 class="font-medium">Booking Summary:</h4>
-							{#each bookingSummary.items as item}
+							{#each summary.items as item}
 								<p class="text-sm">{item}</p>
 							{/each}
-							<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
+							<p class="text-sm font-medium">Total Amount: {summary.total}</p>
 						</div>
 					{/if}
 				</div>
 			{:else if currentStep === 2}
+				{@const summary = BookingSummary()}
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Guest Information</h3>
 					<div class="space-y-4">
@@ -338,13 +327,14 @@
 					</div>
 					<div class="p-4 bg-muted rounded-lg space-y-2">
 						<h4 class="font-medium">Booking Summary:</h4>
-						{#each bookingSummary.items as item}
+						{#each summary.items as item}
 							<p class="text-sm">{item}</p>
 						{/each}
-						<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
+						<p class="text-sm font-medium">Total Amount: {summary.total}</p>
 					</div>
 				</div>
 			{:else if currentStep === 3}
+				{@const summary = BookingSummary()}
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Additional Details</h3>
 					<div class="space-y-4">
@@ -365,13 +355,14 @@
 
 					<div class="p-4 bg-muted rounded-lg space-y-2">
 						<h4 class="font-medium">Booking Summary:</h4>
-						{#each bookingSummary.items as item}
+						{#each summary.items as item}
 							<p class="text-sm">{item}</p>
 						{/each}
-						<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
+						<p class="text-sm font-medium">Total Amount: {summary.total}</p>
 					</div>
 				</div>
 			{:else if currentStep === 4}
+				{@const summary = BookingSummary(true)}
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Payment Method</h3>
 					<RadioGroup.Root value={paymentMethod} onValueChange={updatePaymentMethod} class="space-y-3">
@@ -400,10 +391,10 @@
 
 					<div class="p-4 bg-muted rounded-lg space-y-2">
 						<h4 class="font-medium">Booking Summary:</h4>
-						{#each bookingSummaryWithDetails.items as item}
+						{#each summary.items as item}
 							<p class="text-sm">{item}</p>
 						{/each}
-						<p class="text-sm font-medium">Total Amount: {bookingSummaryWithDetails.total}</p>
+						<p class="text-sm font-medium">Total Amount: {summary.total}</p>
 						<hr class="my-2">
 						<p class="text-sm">Event: {event.eventtitle}</p>
 						<p class="text-sm">Venue: {venue?.venuename}</p>
