@@ -274,14 +274,14 @@
 					</div>
 					{#if totalItems > 0}
 						<Card.Card>
-							<Card.CardHeader class="pb-0">
+							<Card.CardHeader>
 								<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
 							</Card.CardHeader>
-							<Card.CardContent class="space-y-3 pt-0">
+							<Card.CardContent class="space-y-3">
 								{#each bookingSummary.items as item}
 									<p class="text-sm">{item}</p>
 								{/each}
-								<Separator />
+								<Separator class="py-1" />
 								<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
 							</Card.CardContent>
 						</Card.Card>
