@@ -261,7 +261,7 @@
 						<div class="space-y-2">
 							<Label.Label for="phone">Phone Number</Label.Label>
 							<Input.Input 
-								class="w-72"
+								class="w-1/2"
 								id="phone" 
 								type="tel" 
 								value={phone}
