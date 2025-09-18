@@ -160,15 +160,16 @@
 							{/if}
 						</div>
 						
-						{#if selectedEvent.eventdesc}
-							<p>{selectedEvent.eventdesc}</p>
-						{/if}
-						
 						<Button.Button onclick={() => startBooking(selectedEvent)} class="w-full mt-4">
 							Book This Event
 						</Button.Button>
 					</Card.CardContent>
 				</Card.Card>
+				
+				{#if selectedEvent.eventdesc}
+					<p>{selectedEvent.eventdesc}</p>
+				{/if}
+				
 			</div>
 		{:else}
 			<Card.Card>
