@@ -22,7 +22,6 @@
 		venue: Venue;
 	}
 	
-	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 	const { event, venue }: Props = $props();
 	
 	let footerEl: HTMLElement | undefined = $state();
@@ -44,7 +43,8 @@
 			return response.json();
 		},
 	});
-
+	
+	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 	const currentStep = $derived($appStore.bookingState?.currentStep || 1);
 	const selectedBrands = $derived($appStore.bookingState?.selectedBrands || {});
 	const guests = $derived($appStore.bookingState?.guests || 1);
@@ -80,8 +80,6 @@
 		constants ? `${constants.CURRENCY_SYMBOL}${totalAmount.toFixed(constants.CURRENCY_PRECISION)}` : `${totalAmount}`
 	);
 	
-	const canProceedFromStep1 = $derived(totalItems > 0);
-	
 	const phoneValidation = $derived.by(() => {
 		return validator?.phoneSchema.safeParse(phone).success;
 	});
@@ -90,6 +88,7 @@
 		return validator?.commentSchema.safeParse(comment).success;
 	});
 	
+	const canProceedFromStep1 = $derived(totalItems > 0);
 	const canProceedFromStep2 = $derived(phoneValidation);
 	const canProceedFromStep3 = $derived(commentValidation);
 	const canCompleteBooking = $derived(paymentMethod !== '');
@@ -249,7 +248,7 @@
 
 			{#if currentStep === 1}
 				<div class="space-y-4">
-					<h3 class="text-lg font-semibold">Select Your Drinks</h3>
+					<h3 class="text-center text-lg font-semibold">Select Your Drinks</h3>
 					<div class="grid gap-4">
 						{#each eventBrands as brand}
 							<Card.Card class="p-4">
@@ -275,7 +274,7 @@
 					</div>
 					{#if totalItems > 0}
 						<Card.Card>
-							<Card.CardHeader>
+							<Card.CardHeader class="pb-0">
 								<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
 							</Card.CardHeader>
 							<Card.CardContent class="space-y-2">
@@ -290,7 +289,7 @@
 				</div>
 			{:else if currentStep === 2}
 				<div class="space-y-4">
-					<h3 class="text-lg font-semibold">Guest Information</h3>
+					<h3 class="text-center text-lg font-semibold">Guest Information</h3>
 					<div class="space-y-4">
 						<div class="space-y-2">
 							<Label.Label for="guestCount">Number of Guests</Label.Label>
@@ -340,7 +339,7 @@
 				</div>
 			{:else if currentStep === 3}
 				<div class="space-y-4">
-					<h3 class="text-lg font-semibold">Additional Details</h3>
+					<h3 class="text-center text-lg font-semibold">Additional Details</h3>
 					<div class="space-y-4">
 						<div class="space-y-2">
 							<Label.Label for="comment">Special Requests (Optional)</Label.Label>
@@ -372,7 +371,7 @@
 				</div>
 			{:else if currentStep === 4}
 				<div class="space-y-4">
-					<h3 class="text-lg font-semibold">Payment Method</h3>
+					<h3 class="text-center text-lg font-semibold">Payment Method</h3>
 					<RadioGroup.Root value={paymentMethod} onValueChange={updatePaymentMethod} class="space-y-3">
 						<div class="flex items-center space-x-2">
 							<RadioGroup.Item value="aba" />
