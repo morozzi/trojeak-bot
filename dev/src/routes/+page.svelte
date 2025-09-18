@@ -82,8 +82,8 @@
 		}
 	});
 
-	function handleStartBooking(event: CustomEvent<{event: Event}>) {
-		appActions.setSelectedEvent(event.detail.event);
+	function handleStartBooking(event: CustomEvent<{event: Event; venue: Venue | null}>) {
+		appActions.setSelectedEvent(event.detail.event, event.detail.venue);
 		appActions.startBooking(event.detail.event.eventid.toString());
 		appActions.navigate('booking-step-1');
 		window.scrollTo(0, 0);
