@@ -196,7 +196,7 @@
 	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 
 	function BookingSummary(includeEventDetails = false) {
-		if (!constants || selectedDrinksDetails.length === 0) {
+		if (selectedDrinksDetails.length === 0) {
 			return { items: [], total: '$0.00', showEventDetails: includeEventDetails };
 		}
 		
@@ -205,9 +205,11 @@
 			return `• ${item.brandName} × ${item.quantity} = ${subtotal}`;
 		});
 		
+		const displayTotal = constants ? formattedTotal : `${totalAmount}`;
+		
 		return {
 			items: formattedItems,
-			total: formattedTotal,
+			total: displayTotal,
 			showEventDetails: includeEventDetails
 		};
 	}
