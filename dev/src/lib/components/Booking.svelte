@@ -70,9 +70,7 @@
 		});
 	});
 	
-	const totalAmount = $derived(() => {
-		return selectedDrinksDetails.reduce((sum, item) => sum + item.amount, 0);
-	});
+	const totalAmount = $derived(selectedDrinksDetails.reduce((sum, item) => sum + item.amount, 0));
 	
 	const formattedTotal = $derived(constants ? `${constants.CURRENCY_SYMBOL}${totalAmount.toFixed(constants.CURRENCY_PRECISION)}` : `${totalAmount}`);
 	
@@ -268,7 +266,7 @@
 									<div class="flex items-center gap-2">
 										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.max(0, (selectedBrands[brand.brandid.toString()] || 0) - 1))}>-</Button.Button>
 										<span class="w-8 text-center">{selectedBrands[brand.brandid.toString()] || 0}</span>
-										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), (selectedBrands[brand.brandid.toString()] || 0) + 1)}>+</Button.Button>
+										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.min((selectedBrands[brand.brandid.toString()] || 0) + 1, constants.MAX_QTY_PER_BRAND))}>+</Button.Button>
 									</div>
 								</div>
 							</Card.Card>
