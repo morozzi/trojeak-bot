@@ -1,5 +1,3 @@
-const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
-
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
 	import * as Button from '$lib/components/ui/button/index.js';
@@ -23,7 +21,8 @@ const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 		event: Event;
 		venue: Venue;
 	}
-
+	
+	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 	const { event, venue }: Props = $props();
 	
 	let footerEl: HTMLElement | undefined = $state();
