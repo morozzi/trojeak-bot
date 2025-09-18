@@ -167,7 +167,7 @@
 				</Card.Card>
 				
 				{#if selectedEvent.eventdesc}
-					<h3 class="mb-2 text-center text-2xl font-semibold">Event Details</h3>
+					<h3 class="mb-3 text-center text-2xl font-semibold">Event Details</h3>
 					<p class="px-6 text-justify">{selectedEvent.eventdesc}</p>
 				{/if}
 				
