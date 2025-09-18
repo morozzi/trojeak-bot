@@ -70,9 +70,13 @@
 		});
 	});
 	
-	const totalAmount = $derived(selectedDrinksDetails.reduce((sum, item) => sum + item.amount, 0));
+	const totalAmount = $derived(() => {
+		return selectedDrinksDetails.reduce((sum, item) => sum + item.amount, 0);
+	});
 	
-	const formattedTotal = $derived(constants ? `${constants.CURRENCY_SYMBOL}${totalAmount.toFixed(constants.CURRENCY_PRECISION)}` : `${totalAmount}`);
+	const formattedTotal = $derived(() => {
+		return constants ? `${constants.CURRENCY_SYMBOL}${totalAmount.toFixed(constants.CURRENCY_PRECISION)}` : `${totalAmount}`;
+	});
 	
 	const canProceedFromStep1 = $derived(totalItems > 0);
 	
@@ -203,7 +207,7 @@
 			return `• ${item.brandName} × ${item.quantity} = ${subtotal}`;
 		});
 		
-		const displayTotal = constants ? formattedTotal : `${totalAmount}`;
+		const displayTotal = formattedTotal;
 		
 		return {
 			items: formattedItems,
