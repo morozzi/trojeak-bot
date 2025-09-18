@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import { Star } from '@lucide/svelte';
-	import type { Event, Venue, Brand } from '$lib/types/api.js';
+	import type { Event, Brand } from '$lib/types/api.js';
 
 	interface Props {
 		events: Event[] | null;
