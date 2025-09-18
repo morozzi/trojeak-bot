@@ -73,7 +73,8 @@
 	}
 
 	function startBooking(event: Event): void {
-		dispatch('startBooking', { event });
+		const venue = $venuesQuery.data?.find(v => v.venueid === event.venueid) || null;
+		dispatch('startBooking', { event, venue });
 	}
 
 	function updateFooterHeight() {
