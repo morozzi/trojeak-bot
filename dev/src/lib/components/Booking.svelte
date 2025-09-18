@@ -281,7 +281,7 @@
 								{#each bookingSummary.items as item}
 									<p class="text-sm">{item}</p>
 								{/each}
-								<Separator class="my-1" />
+								<Separator />
 								<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
 							</Card.CardContent>
 						</Card.Card>
