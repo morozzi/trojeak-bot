@@ -248,7 +248,7 @@
 
 			{#if currentStep === 1}
 				<div class="space-y-6">
-					<h3 class="text-center text-lg font-semibold">Select Your Drinks</h3>
+					<h3 class="text-center text-xl font-semibold">Select Your Drinks</h3>
 					<div class="grid gap-4">
 						{#each eventBrands as brand}
 							<Card.Card class="p-4">
@@ -277,7 +277,7 @@
 							<Card.CardHeader class="pb-0">
 								<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
 							</Card.CardHeader>
-							<Card.CardContent class="space-y-2 py-0">
+							<Card.CardContent class="space-y-3 pt-0">
 								{#each bookingSummary.items as item}
 									<p class="text-sm">{item}</p>
 								{/each}
@@ -289,7 +289,7 @@
 				</div>
 			{:else if currentStep === 2}
 				<div class="space-y-6">
-					<h3 class="text-center text-lg font-semibold">Guest Information</h3>
+					<h3 class="text-center text-xl font-semibold">Guest Information</h3>
 					<div class="space-y-4">
 						<div class="space-y-2">
 							<Label.Label for="guestCount">Number of Guests</Label.Label>
@@ -339,7 +339,7 @@
 				</div>
 			{:else if currentStep === 3}
 				<div class="space-y-6">
-					<h3 class="text-center text-lg font-semibold">Additional Details</h3>
+					<h3 class="text-center text-xl font-semibold">Additional Details</h3>
 					<div class="space-y-4">
 						<div class="space-y-2">
 							<Label.Label for="comment">Special Requests (Optional)</Label.Label>
@@ -371,7 +371,7 @@
 				</div>
 			{:else if currentStep === 4}
 				<div class="space-y-6">
-					<h3 class="text-center text-lg font-semibold">Payment Method</h3>
+					<h3 class="text-center text-xl font-semibold">Payment Method</h3>
 					<RadioGroup.Root value={paymentMethod} onValueChange={updatePaymentMethod} class="space-y-3">
 						<div class="flex items-center space-x-2">
 							<RadioGroup.Item value="aba" />
