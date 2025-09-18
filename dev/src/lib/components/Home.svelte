@@ -26,16 +26,6 @@
 		}
 	});
 
-	const venuesQuery = createQuery({
-		queryKey: ['venues', $userStore.selectedLanguage, $userStore.selectedCity],
-		queryFn: async () => {
-			const response = await fetch(`/api/venues.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}`);
-			if (!response.ok) throw new Error('Failed to fetch venues');
-			return response.json();
-		},
-		enabled: () => ($featuredEventsQuery.data || []).length > 0
-	});
-
 	const brandsQuery = createQuery({
 		queryKey: ['brands'],
 		queryFn: async () => {
@@ -89,7 +79,6 @@
 	{:else if ($featuredEventsQuery.data || []).length > 0}
 		<EventList 
 			events={$featuredEventsQuery.data || []} 
-			venueData={$venuesQuery.data || []}
 			brandData={$brandsQuery.data || []}
 			onEventClick={goToEvent} 
 		/>

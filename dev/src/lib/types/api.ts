@@ -8,10 +8,14 @@ export interface Event {
   eventschema: string;
   eventschemaprice: number;
   eventdate: string;
-  eventfeatured: 0 | 1;
+  eventfeatured: boolean;
   eventtitle: string;
   eventartist: string;
   eventdesc: string;
+  venuename: string;
+  venuelink: string;
+  cityname: string;
+  venuetype: 'bar' | 'club' | 'ktv';
 }
 
 export interface Venue {
@@ -22,7 +26,7 @@ export interface Venue {
   venuepic2: string;
   venuelink: string;
   venuename: string;
-  venuefeatured: 0 | 1;
+  venuefeatured: boolean;
 }
 
 export interface Brand {
@@ -30,7 +34,7 @@ export interface Brand {
   brandpic1: string;
   brandpic2: string;
   brandname: string;
-  brandfeatured: 0 | 1;
+  brandfeatured: boolean;
 }
 
 export interface City {

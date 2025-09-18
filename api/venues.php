@@ -19,7 +19,12 @@ try {
     $venueService = $container->get('venue_service');
     $venues = $venueService->getVenues($language, $cityId);
     
-    echo json_encode($venues);
+    $venuesWithBooleans = array_map(function($venue) {
+    		$venue['venuefeatured'] = (bool)$venue['venuefeatured'];
+    		return $venue;
+		}, $venues);
+
+		echo json_encode($venuesWithBooleans);
     
 } catch (Exception $e) {
     http_response_code(500);

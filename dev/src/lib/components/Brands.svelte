@@ -42,15 +42,6 @@
 		},
 	});
 
-	const venuesQuery = createQuery({
-		queryKey: ['venues', $userStore.selectedLanguage, $userStore.selectedCity],
-		queryFn: async () => {
-			const response = await fetch(`/api/venues.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}`);
-			if (!response.ok) throw new Error('Failed to fetch venues');
-			return response.json();
-		},
-	});
-
 	const brands = $derived($brandsQuery.data || []);
 
 	const getBrandEventCount = $derived((brandId: number): number => {
@@ -199,7 +190,6 @@
 				{#if brandEvents.length > 0}
 					<EventList 
 						events={brandEvents} 
-						venueData={$venuesQuery.data || []}
 						brandData={$brandsQuery.data || []}
 						onEventClick={goToEvent} 
 					/>

@@ -12,7 +12,12 @@ try {
     $brandService = $container->get('brand_service');
     $brands = $brandService->getBrands();
     
-    echo json_encode($brands);
+    $brandsWithBooleans = array_map(function($brand) {
+    		$brand['brandfeatured'] = (bool)$brand['brandfeatured'];
+    		return $brand;
+		}, $brands);
+
+		echo json_encode($brandsWithBooleans);
     
 } catch (Exception $e) {
     http_response_code(500);

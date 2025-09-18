@@ -33,7 +33,7 @@ class EventService {
         return $this->db->selectRows(
             'event e JOIN eventlang el ON e.eventid = el.eventid JOIN venue v ON e.venueid = v.venueid JOIN venuelang vl ON v.venueid = vl.venueid JOIN citylang cl ON v.cityid = cl.cityid',
             $conditions,
-            ['e.eventid', 'e.brandid', 'e.eventpic', 'e.eventschema', 'e.eventschemaprice', 'e.venueid', 'e.eventdate', 'e.eventfeatured', 'el.eventtitle', 'el.eventartist', 'vl.venuename', 'cl.cityname', 'v.venuetype'],
+            ['e.eventid', 'e.brandid', 'e.eventpic', 'e.eventschema', 'e.eventschemaprice', 'e.venueid', 'e.eventdate', 'e.eventfeatured', 'el.eventtitle', 'el.eventartist', 'el.eventdesc', 'vl.venuename', 'v.venuelink', 'cl.cityname', 'v.venuetype'],
             null,
             'e.eventfeatured DESC, e.eventdate',
             'ASC'

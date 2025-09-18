@@ -8,17 +8,15 @@
 
 	interface Props {
 		events: Event[] | null;
-		venueData?: Venue[];
 		brandData?: Brand[];
 		onEventClick: (eventId: string) => void;
 	}
 
-	let { events, venueData = [], brandData = [], onEventClick }: Props = $props();
+	let { events, brandData = [], onEventClick }: Props = $props();
 </script>
 
 {#if events}
 	{#each events as event}
-		{@const venue = venueData.find(v => v.venueid === event.venueid)}
 		{@const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''))}
 		{@const eventBrands = brandData.filter(b => eventBrandIds.includes(b.brandid.toString()))}
 		
@@ -49,11 +47,9 @@
 					📅 {new Date(event.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 				</div>
 				
-				{#if venue}
 					<div class="text-sm">
-						📍 {venue.venuename} <a href={venue.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
+						📍 {event.venuename} <a href={event.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
 					</div>
-				{/if}
 
 				{#if event.eventartist}
 					<div class="text-sm">

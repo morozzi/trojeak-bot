@@ -164,7 +164,7 @@
 		appActions.updateBookingState({ comment: value });
 	}
 
-	function updatePaymentMethod(value: 'aba' | 'ipay88' | 'telegram_stars') {
+	function updatePaymentMethod(value: 'aba' | 'ipay88' | 'stars') {
 		appActions.updateBookingState({ paymentMethod: value });
 	}
 
@@ -388,8 +388,8 @@
 							</Label.Label>
 						</div>
 						<div class="flex items-center space-x-2">
-							<RadioGroup.Item value="telegram_stars" />
-							<Label.Label for="telegram_stars" class="flex items-center gap-2">
+							<RadioGroup.Item value="stars" />
+							<Label.Label for="stars" class="flex items-center gap-2">
 								<span>⭐ Telegram Stars</span>
 								<span class="text-xs text-muted-foreground">- Pay with Telegram Stars</span>
 							</Label.Label>

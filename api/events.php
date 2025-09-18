@@ -24,7 +24,12 @@ try {
         $events = array_filter($events, fn($event) => $event['eventfeatured'] == 1);
     }
     
-    echo json_encode(array_values($events));
+    $eventsWithBooleans = array_map(function($event) {
+    		$event['eventfeatured'] = (bool)$event['eventfeatured'];
+    		return $event;
+		}, $events);
+
+		echo json_encode(array_values($eventsWithBooleans));
     
 } catch (Exception $e) {
     http_response_code(500);
