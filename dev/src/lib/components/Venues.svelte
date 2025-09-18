@@ -200,6 +200,7 @@
 				{#if venueEvents.length > 0}
 					<EventList 
 						events={venueEvents} 
+						venueData={$venuesQuery.data || []}
 						brandData={$brandsQuery.data || []}
 						onEventClick={goToEvent} 
 					/>
