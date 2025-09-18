@@ -1,3 +1,5 @@
+const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
+
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
 	import * as Button from '$lib/components/ui/button/index.js';
@@ -9,6 +11,7 @@
 	import * as Progress from '$lib/components/ui/progress/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import { Separator } from "$lib/components/ui/separator/index.js";
 	import Loading from '$lib/components/Loading.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Event, Venue } from '$lib/types/api.js';
@@ -91,7 +94,7 @@
 	const canProceedFromStep2 = $derived(phoneValidation);
 	const canProceedFromStep3 = $derived(commentValidation);
 	const canCompleteBooking = $derived(paymentMethod !== '');
-	const progressPercentage = $derived((currentStep / 4) * 100);
+	const progressPercentage = $derived((currentStep / stepTitles.length) * 100);
 
 	$effect(() => {
 		if (!$appStore.bookingState) {
@@ -168,7 +171,7 @@
 	}
 
 	function nextStep() {
-		if (currentStep < 4) {
+		if (currentStep < stepTitles.length) {
 			appActions.updateBookingState({ currentStep: currentStep + 1 });
 			dispatch('navigate', { view: `booking-step-${currentStep + 1}` });
 		}
@@ -195,25 +198,7 @@
 		dispatch('navigate', { view: 'events-detail' });
 	}
 
-	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
-
 	const bookingSummary = $derived.by(() => {
-		if (selectedDrinksDetails.length === 0) {
-			return { items: [], total: '$0.00' };
-		}
-		
-		const formattedItems = selectedDrinksDetails.map(item => {
-			const subtotal = constants ? `${constants.CURRENCY_SYMBOL}${item.amount.toFixed(constants.CURRENCY_PRECISION)}` : `${item.amount}`;
-			return `• ${item.brandName} × ${item.quantity} = ${subtotal}`;
-		});
-		
-		return {
-			items: formattedItems,
-			total: formattedTotal
-		};
-	});
-
-	const bookingSummaryWithDetails = $derived.by(() => {
 		if (selectedDrinksDetails.length === 0) {
 			return { items: [], total: '$0.00' };
 		}
@@ -290,13 +275,18 @@
 						{/each}
 					</div>
 					{#if totalItems > 0}
-						<div class="p-4 bg-muted rounded-lg space-y-2">
-							<h4 class="font-medium">Booking Summary:</h4>
-							{#each bookingSummary.items as item}
-								<p class="text-sm">{item}</p>
-							{/each}
-							<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
-						</div>
+						<Card.Card>
+							<Card.CardHeader>
+								<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
+							</Card.CardHeader>
+							<Card.CardContent class="space-y-2">
+								{#each bookingSummary.items as item}
+									<p class="text-sm">{item}</p>
+								{/each}
+								<Separator />
+								<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
+							</Card.CardContent>
+						</Card.Card>
 					{/if}
 				</div>
 			{:else if currentStep === 2}
@@ -336,13 +326,18 @@
 							{/if}
 						</div>
 					</div>
-					<div class="p-4 bg-muted rounded-lg space-y-2">
-						<h4 class="font-medium">Booking Summary:</h4>
-						{#each bookingSummary.items as item}
-							<p class="text-sm">{item}</p>
-						{/each}
-						<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
-					</div>
+					<Card.Card>
+						<Card.CardHeader>
+							<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
+						</Card.CardHeader>
+						<Card.CardContent class="space-y-2">
+							{#each bookingSummary.items as item}
+								<p class="text-sm">{item}</p>
+							{/each}
+							<Separator />
+							<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
+						</Card.CardContent>
+					</Card.Card>
 				</div>
 			{:else if currentStep === 3}
 				<div class="space-y-4">
@@ -363,13 +358,18 @@
 						</div>
 					</div>
 
-					<div class="p-4 bg-muted rounded-lg space-y-2">
-						<h4 class="font-medium">Booking Summary:</h4>
-						{#each bookingSummary.items as item}
-							<p class="text-sm">{item}</p>
-						{/each}
-						<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
-					</div>
+					<Card.Card>
+						<Card.CardHeader>
+							<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
+						</Card.CardHeader>
+						<Card.CardContent class="space-y-2">
+							{#each bookingSummary.items as item}
+								<p class="text-sm">{item}</p>
+							{/each}
+							<Separator />
+							<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
+						</Card.CardContent>
+					</Card.Card>
 				</div>
 			{:else if currentStep === 4}
 				<div class="space-y-4">
@@ -398,17 +398,22 @@
 						</div>
 					</RadioGroup.Root>
 
-					<div class="p-4 bg-muted rounded-lg space-y-2">
-						<h4 class="font-medium">Booking Summary:</h4>
-						{#each bookingSummaryWithDetails.items as item}
-							<p class="text-sm">{item}</p>
-						{/each}
-						<p class="text-sm font-medium">Total Amount: {bookingSummaryWithDetails.total}</p>
-						<hr class="my-2">
-						<p class="text-sm">Event: {event.eventtitle}</p>
-						<p class="text-sm">Venue: {venue?.venuename}</p>
-						<p class="text-sm">Guests: {guests}</p>
-					</div>
+					<Card.Card>
+						<Card.CardHeader>
+							<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
+						</Card.CardHeader>
+						<Card.CardContent class="space-y-2">
+							{#each bookingSummary.items as item}
+								<p class="text-sm">{item}</p>
+							{/each}
+							<Separator />
+							<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
+							<Separator />
+							<p class="text-sm">Event: {event.eventtitle}</p>
+							<p class="text-sm">Venue: {venue?.venuename}</p>
+							<p class="text-sm">Guests: {guests}</p>
+						</Card.CardContent>
+					</Card.Card>
 				</div>
 			{/if}
 		</div>
@@ -432,7 +437,7 @@
 				</Button.Button>
 			</div>
 			<div class="flex items-center justify-end">
-				{#if currentStep < 4}
+				{#if currentStep < stepTitles.length}
 					<Button.Button onclick={nextStep} disabled={
 						(currentStep === 1 && !canProceedFromStep1) ||
 						(currentStep === 2 && !canProceedFromStep2) ||
