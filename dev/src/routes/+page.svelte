@@ -81,12 +81,12 @@
 			appActions.setLoading(false);
 		}
 	});
-
-	function handleStartBooking(event: CustomEvent<{event: Event; venue: Venue | null}>) {
-		appActions.setSelectedEvent(event.detail.event, event.detail.venue);
-		appActions.startBooking(event.detail.event.eventid.toString());
-		appActions.navigate('booking-step-1');
-		window.scrollTo(0, 0);
+	
+	function handleStartBooking(event: CustomEvent<{event: Event}>) {
+    appActions.setSelectedEvent(event.detail.event);
+    appActions.startBooking(event.detail.event.eventid.toString());
+    appActions.navigate('booking-step-1');
+    window.scrollTo(0, 0);
 	}
 	
 	function handleGoToEvent(event: CustomEvent<{eventId: string}>) {
@@ -198,10 +198,9 @@
 						on:footerHeight={handleFooterHeight}
 					/>
 				{:else if $appStore.currentView.startsWith('booking-step-')}
-					{#if $appStore.selectedEvent && $appStore.selectedVenue}
+					{#if $appStore.selectedEvent}
 						<Booking 
 							event={$appStore.selectedEvent}
-							venue={$appStore.selectedVenue}
 							on:navigate={handleNavigate}
 							on:footerHeight={handleFooterHeight}
 						/>

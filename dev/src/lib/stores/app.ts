@@ -147,14 +147,13 @@ export const appActions = {
 			selectedBrandId: brandId 
 		}));
 	},
-
-	setSelectedEvent: (event: Event | null, venue?: Venue | null) => {
-		baseAppStore.update(state => ({
-			...state,
-			selectedEvent: event,
-			selectedEventId: event?.eventid.toString(),
-			selectedVenue: venue || null
-		}));
+	
+	setSelectedEvent: (event: Event) => {
+    baseAppStore.update(state => ({ 
+      ...state, 
+      selectedEvent: event,
+      selectedEventId: event?.eventid.toString()
+    }));
 	},
 
 	setThemeFromWebApp: () => {
