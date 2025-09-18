@@ -328,7 +328,7 @@
 						<Card.CardHeader>
 							<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
 						</Card.CardHeader>
-						<Card.CardContent class="space-y-2">
+						<Card.CardContent class="space-y-3">
 							{#each bookingSummary.items as item}
 								<p class="text-sm">{item}</p>
 							{/each}
@@ -360,7 +360,7 @@
 						<Card.CardHeader>
 							<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
 						</Card.CardHeader>
-						<Card.CardContent class="space-y-2">
+						<Card.CardContent class="space-y-3">
 							{#each bookingSummary.items as item}
 								<p class="text-sm">{item}</p>
 							{/each}
@@ -400,7 +400,7 @@
 						<Card.CardHeader>
 							<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
 						</Card.CardHeader>
-						<Card.CardContent class="space-y-2">
+						<Card.CardContent class="space-y-3">
 							{#each bookingSummary.items as item}
 								<p class="text-sm">{item}</p>
 							{/each}
