@@ -128,7 +128,6 @@
 		{#if $eventsQuery.isLoading}
 			<Loading variant="detail" />
 		{:else if selectedEvent}
-			{@const venue = $venuesQuery.data?.find(v => v.venueid === selectedEvent.venueid)}
 			{@const eventBrandIds = selectedEvent.brandid.split(',').map(id => id.replace(/\^/g, ''))}
 			{@const eventBrands = $brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []}
 			<div class="space-y-8">
@@ -153,7 +152,7 @@
 						</div>
 						
 							<div class="text-sm">
-								📍 {event.venuename} <a href={event.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
+								📍 {selectedEvent.venuename} <a href={selectedEvent.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
 							</div>
 
 						<div class="text-sm">
