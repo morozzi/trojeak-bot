@@ -55,19 +55,35 @@
 	const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
 	const eventBrands = $derived($brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []);
 
-	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
-	const estimatedTotal = $derived(totalItems * (event.eventschemaprice || 0));
-	const formattedTotal = $derived(constants ? `${constants.CURRENCY_SYMBOL}${estimatedTotal.toFixed(constants.CURRENCY_PRECISION)}` : `${estimatedTotal}`);
+	const selectedDrinksDetails = $derived(() => {
+		return Object.entries(selectedBrands).map(([brandId, quantity]) => {
+			const brand = eventBrands.find(b => b.brandid.toString() === brandId);
+			const amount = quantity * (event.eventschemaprice || 0);
+			return {
+				brandId,
+				brandName: brand?.brandname || 'Unknown',
+				quantity,
+				amount
+			};
+		});
+	});
+	
+	const totalAmount = $derived(() => {
+		return selectedDrinksDetails.reduce((sum, item) => sum + item.amount, 0);
+	});
+	
+	const formattedTotal = $derived(constants ? `${constants.CURRENCY_SYMBOL}${totalAmount.toFixed(constants.CURRENCY_PRECISION)}` : `${totalAmount}`);
+	
+	const canProceedFromStep1 = $derived(selectedDrinksDetails.length > 0);
 	
 	const phoneValidation = $derived.by(() => {
-		return validator.phoneSchema.safeParse(phone).success;
+		return validator?.phoneSchema.safeParse(phone).success;
 	});
 
 	const commentValidation = $derived.by(() => {
-		return validator.commentSchema.safeParse(comment).success;
+		return validator?.commentSchema.safeParse(comment).success;
 	});
 	
-	const canProceedFromStep1 = $derived(totalItems > 0);
 	const canProceedFromStep2 = $derived(phoneValidation);
 	const canProceedFromStep3 = $derived(commentValidation);
 	const canCompleteBooking = $derived(paymentMethod !== '');
@@ -149,14 +165,14 @@
 
 	function nextStep() {
 		if (currentStep < 4) {
-			appActions.updateBookingState({ currentStep: currentStep + 1 });  // ADD store update
+			appActions.updateBookingState({ currentStep: currentStep + 1 });
 			dispatch('navigate', { view: `booking-step-${currentStep + 1}` });
 		}
 	}
 
 	function prevStep() {
 		if (currentStep > 1) {
-			appActions.updateBookingState({ currentStep: currentStep - 1 });  // ADD store update
+			appActions.updateBookingState({ currentStep: currentStep - 1 });
 			dispatch('navigate', { view: `booking-step-${currentStep - 1}` });
 		} else {
 			dispatch('navigate', { view: 'events-detail' });
@@ -176,6 +192,19 @@
 	}
 
 	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
+
+	function BookingSummary(includeEventDetails = false) {
+		const formattedItems = selectedDrinksDetails.map(item => {
+			const subtotal = constants ? `${constants.CURRENCY_SYMBOL}${item.amount.toFixed(constants.CURRENCY_PRECISION)}` : `${item.amount}`;
+			return `• ${item.brandName} × ${item.quantity} = ${subtotal}`;
+		});
+		
+		return {
+			items: formattedItems,
+			total: formattedTotal,
+			showEventDetails: includeEventDetails
+		};
+	}
 </script>
 
 <div class="space-y-8">
@@ -223,7 +252,10 @@
 											<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
 											<Avatar.Fallback>{brand.brandname.charAt(0)}</Avatar.Fallback>
 										</Avatar.Root>
-										<h4 class="font-medium">{brand.brandname}</h4>
+										<div>
+											<h4 class="font-medium">{brand.brandname}</h4>
+											<p class="text-sm text-muted-foreground">{constants.CURRENCY_SYMBOL}{event.eventschemaprice}</p>
+										</div>
 									</div>
 									<div class="flex items-center gap-2">
 										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.max(0, (selectedBrands[brand.brandid.toString()] || 0) - 1))}>-</Button.Button>
@@ -234,14 +266,19 @@
 							</Card.Card>
 						{/each}
 					</div>
-					{#if totalItems > 0}
-						<div class="p-4 bg-muted rounded-lg">
-							<p class="font-medium">Items: {totalItems}</p>
-							<p class="text-sm text-muted-foreground">Estimated Total: {formattedTotal}</p>
+					{#if selectedDrinksDetails.length > 0}
+						{@const summary = BookingSummary()}
+						<div class="p-4 bg-muted rounded-lg space-y-2">
+							<h4 class="font-medium">Booking Summary:</h4>
+							{#each summary.items as item}
+								<p class="text-sm">{item}</p>
+							{/each}
+							<p class="text-sm font-medium">Total Amount: {summary.total}</p>
 						</div>
 					{/if}
 				</div>
 			{:else if currentStep === 2}
+				{@const summary = BookingSummary()}
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Guest Information</h3>
 					<div class="space-y-4">
@@ -261,7 +298,7 @@
 						<div class="space-y-2">
 							<Label.Label for="phone">Phone Number</Label.Label>
 							<Input.Input 
-								class="w-1/2"
+								class="w-72"
 								id="phone" 
 								type="tel" 
 								value={phone}
@@ -278,8 +315,16 @@
 							{/if}
 						</div>
 					</div>
+					<div class="p-4 bg-muted rounded-lg space-y-2">
+						<h4 class="font-medium">Booking Summary:</h4>
+						{#each summary.items as item}
+							<p class="text-sm">{item}</p>
+						{/each}
+						<p class="text-sm font-medium">Total Amount: {summary.total}</p>
+					</div>
 				</div>
 			{:else if currentStep === 3}
+				{@const summary = BookingSummary()}
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Additional Details</h3>
 					<div class="space-y-4">
@@ -299,12 +344,15 @@
 					</div>
 
 					<div class="p-4 bg-muted rounded-lg space-y-2">
-						<h4 class="font-medium">Booking Summary</h4>
-						<p class="text-sm">Items: {totalItems}</p>
-						<p class="text-sm">Estimated Total: {formattedTotal}</p>
+						<h4 class="font-medium">Booking Summary:</h4>
+						{#each summary.items as item}
+							<p class="text-sm">{item}</p>
+						{/each}
+						<p class="text-sm font-medium">Total Amount: {summary.total}</p>
 					</div>
 				</div>
 			{:else if currentStep === 4}
+				{@const summary = BookingSummary(true)}
 				<div class="space-y-4">
 					<h3 class="text-lg font-semibold">Payment Method</h3>
 					<RadioGroup.Root value={paymentMethod} onValueChange={updatePaymentMethod} class="space-y-3">
@@ -332,11 +380,15 @@
 					</RadioGroup.Root>
 
 					<div class="p-4 bg-muted rounded-lg space-y-2">
-						<h4 class="font-medium">Final Summary</h4>
+						<h4 class="font-medium">Booking Summary:</h4>
+						{#each summary.items as item}
+							<p class="text-sm">{item}</p>
+						{/each}
+						<p class="text-sm font-medium">Total Amount: {summary.total}</p>
+						<hr class="my-2">
 						<p class="text-sm">Event: {event.eventtitle}</p>
 						<p class="text-sm">Venue: {venue?.venuename}</p>
 						<p class="text-sm">Guests: {guests}</p>
-						<p class="text-sm">Total Amount: {formattedTotal}</p>
 					</div>
 				</div>
 			{/if}
