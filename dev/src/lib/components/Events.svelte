@@ -167,7 +167,7 @@
 				</Card.Card>
 				
 				{#if selectedEvent.eventdesc}
-					<p class="p-6">{selectedEvent.eventdesc}</p>
+					<p class="px-6">{selectedEvent.eventdesc}</p>
 				{/if}
 				
 			</div>
