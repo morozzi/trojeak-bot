@@ -196,6 +196,10 @@
 	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 
 	function BookingSummary(includeEventDetails = false) {
+		if (!constants || selectedDrinksDetails.length === 0) {
+			return { items: [], total: '$0.00', showEventDetails: includeEventDetails };
+		}
+		
 		const formattedItems = selectedDrinksDetails.map(item => {
 			const subtotal = constants ? `${constants.CURRENCY_SYMBOL}${item.amount.toFixed(constants.CURRENCY_PRECISION)}` : `${item.amount}`;
 			return `• ${item.brandName} × ${item.quantity} = ${subtotal}`;
