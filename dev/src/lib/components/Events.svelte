@@ -9,7 +9,7 @@
 	import EventList from '$lib/components/EventList.svelte';
 	import Loading from '$lib/components/Loading.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import type { Event } from '$lib/types/api.js';
+	import type { Event, Venue } from '$lib/types/api.js';
 	import { userStore } from '$lib/stores/user.js';
 	import { appStore } from '$lib/stores/app.js';
 
@@ -23,7 +23,7 @@
 
 	const dispatch = createEventDispatcher<{
 		goToEvent: { eventId: string };
-		startBooking: { event: Event};
+		startBooking: { event: Event; venue: Venue | null };
 		footerHeight: { height: number };
 		navigate: { view: string };
 	}>();
@@ -38,6 +38,15 @@
 			if (!response.ok) throw new Error('Failed to fetch events');
 			return response.json();
 		}
+	});
+
+	const venuesQuery = createQuery({
+		queryKey: ['venues', $userStore.selectedLanguage, $userStore.selectedCity],
+		queryFn: async () => {
+			const response = await fetch(`/api/venues.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}`);
+			if (!response.ok) throw new Error('Failed to fetch venues');
+			return response.json();
+		},
 	});
 
 	const brandsQuery = createQuery({
@@ -64,7 +73,8 @@
 	}
 
 	function startBooking(event: Event): void {
-		dispatch('startBooking', { event });
+		const venue = $venuesQuery.data?.find(v => v.venueid === event.venueid) || null;
+		dispatch('startBooking', { event, venue });
 	}
 
 	function updateFooterHeight() {
