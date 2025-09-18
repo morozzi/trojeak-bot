@@ -258,7 +258,7 @@
 							<Card.Card class="p-4">
 								<div class="flex justify-between items-center">
 									<div class="flex items-center gap-3">
-										<Avatar.Root class="w-8 h-8 rounded-lg">
+										<Avatar.Root class="w-12 h-12 rounded-lg">
 											<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
 											<Avatar.Fallback>{brand.brandname.charAt(0)}</Avatar.Fallback>
 										</Avatar.Root>
