@@ -9,7 +9,7 @@
 	import EventList from '$lib/components/EventList.svelte';
 	import Loading from '$lib/components/Loading.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import type { Event, Venue } from '$lib/types/api.js';
+	import type { Event } from '$lib/types/api.js';
 	import { userStore } from '$lib/stores/user.js';
 	import { appStore } from '$lib/stores/app.js';
 
@@ -23,7 +23,7 @@
 
 	const dispatch = createEventDispatcher<{
 		goToEvent: { eventId: string };
-		startBooking: { event: Event; venue: Venue | null };
+		startBooking: { event: Event};
 		footerHeight: { height: number };
 		navigate: { view: string };
 	}>();
@@ -38,15 +38,6 @@
 			if (!response.ok) throw new Error('Failed to fetch events');
 			return response.json();
 		}
-	});
-
-	const venuesQuery = createQuery({
-		queryKey: ['venues', $userStore.selectedLanguage, $userStore.selectedCity],
-		queryFn: async () => {
-			const response = await fetch(`/api/venues.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}`);
-			if (!response.ok) throw new Error('Failed to fetch venues');
-			return response.json();
-		},
 	});
 
 	const brandsQuery = createQuery({
@@ -73,8 +64,7 @@
 	}
 
 	function startBooking(event: Event): void {
-		const venue = $venuesQuery.data?.find(v => v.venueid === event.venueid) || null;
-		dispatch('startBooking', { event, venue });
+		dispatch('startBooking', { event });
 	}
 
 	function updateFooterHeight() {
@@ -117,7 +107,6 @@
 			{:else}
 				<EventList 
 					events={events} 
-					venueData={$venuesQuery.data || []}
 					brandData={$brandsQuery.data || []}
 					onEventClick={goToEvent} 
 				/>
@@ -128,7 +117,6 @@
 		{#if $eventsQuery.isLoading}
 			<Loading variant="detail" />
 		{:else if selectedEvent}
-			{@const venue = $venuesQuery.data?.find(v => v.venueid === selectedEvent.venueid)}
 			{@const eventBrandIds = selectedEvent.brandid.split(',').map(id => id.replace(/\^/g, ''))}
 			{@const eventBrands = $brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []}
 			<div class="space-y-8">
