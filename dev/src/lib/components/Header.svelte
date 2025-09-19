@@ -25,10 +25,12 @@
 		}
 	});
 	
-	const currentCitySid = $derived(() => {
-    const city = $commonQuery.data?.cities?.find(c => c.cityid.toString() === $userStore.selectedCity);
-    return city?.citysid?.toUpperCase() || "...";
-	});
+	const currentCity = $derived(() => 
+    $commonQuery.data?.cities?.find(c => c.cityid.toString() === $userStore.selectedCity)
+	);
+	
+	const currentCitySid = $derived(() => currentCity()?.citysid?.toUpperCase() || "...");
+	const currentCityIcon = $derived(() => currentCity()?.citypic || null);
 
 	const userInitials = $derived(() => 
     !$userStore.userInfo?.first_name ? '?' : 
@@ -92,6 +94,21 @@
 						{currentCitySid()}
 					{/if}
 				</Select.Trigger>
+				
+				<Select.Trigger class="w-24 flex items-center gap-1" disabled={$commonQuery.isLoading}>
+    			{#if $commonQuery.isLoading}
+        		...
+    			{:else}
+        		{#if currentCityIcon()}
+            	<Avatar.Root class="w-4 h-4">
+                <Avatar.Image src="/pic/city/{currentCityIcon()}" alt="City" />
+                <Avatar.Fallback class="rounded-lg bg-muted" />
+            	</Avatar.Root>
+        		{/if}
+        		{currentCitySid()}
+    			{/if}
+				</Select.Trigger>
+
 				<Select.Content>
 					{#each $commonQuery.data?.cities || [] as city}
 						<Select.Item value={city.cityid.toString()}>{city.cityname}</Select.Item>
