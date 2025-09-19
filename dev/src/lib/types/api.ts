@@ -44,11 +44,11 @@ export interface Brand {
 export interface City {
   cityid: number;
   citysid: string;
+  citypic: string;
   cityname: string;
 }
 
 export interface VenueType {
-  venuetypeid: number;
   venuetypesid: string;
   venuetypename: string;
   venuetypeicon: string;

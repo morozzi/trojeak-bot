@@ -18,7 +18,7 @@ class VenueTypeService {
         $rows = $this->db->selectRows(
             'venuetype',
             ['venuetypevisible' => 1],
-            ['venuetypesid', 'venuetypename', 'venuetypeicon', 'venuetypesort'],
+            ['venuetypesid', 'venuetypename', 'venuetypeicon'],
             null,
             'venuetypesort',
             'ASC'
@@ -60,7 +60,7 @@ class CityService {
         $rows = $this->db->selectRows(
             'city c JOIN citylang cl ON c.cityid = cl.cityid',
             ['c.cityvisible' => 1, 'cl.languagesid' => $language],
-            ['c.cityid', 'c.citysid', 'cl.cityname'],
+            ['c.cityid', 'c.citysid', 'c.citypic', 'cl.cityname'],
             null,
             'c.citysort',
             'ASC'
