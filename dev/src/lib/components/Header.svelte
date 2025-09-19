@@ -107,7 +107,7 @@
 					{#if $commonQuery.isLoading}
 						...
 					{:else}
-						{$commonQuery.data?.languages?.find(l => l.languagesid === $userStore.selectedLanguage)?.languageflag}
+						{$commonQuery.data?.languages?.find(l => l.languagesid === $userStore.selectedLanguage)?.languageflag || '🇺🇸'}
 					{/if}
 				</Select.Trigger>
 				<Select.Content>
