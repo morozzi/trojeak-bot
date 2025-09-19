@@ -134,7 +134,7 @@
 									<div class="space-y-1">
 										<Card.CardTitle class="text-xl font-semibold">{venue.venuename}</Card.CardTitle>
 										<div class="flex gap-2">
-											<Badge variant="secondary">{venue.venuetypeicon} {venue.venuetypename}</Badge>
+											<Badge variant="secondary">{venue.venuetypeicon} {venue.venuetypename.toUpperCase()}</Badge>
 											{#if venue.venuefeatured}
 												<Badge><Star /> Featured</Badge>
 											{/if}
@@ -180,7 +180,7 @@
 							<div class="space-y-1">
 								<Card.CardTitle class="text-3xl font-bold">{selectedVenue.venuename}</Card.CardTitle>
 								<div class="flex gap-2">
-									<Badge variant="secondary">{selectedVenue.venuetypeicon} {selectedVenue.venuetypename}</Badge>
+									<Badge variant="secondary">{selectedVenue.venuetypeicon} {selectedVenue.venuetypename.toUpperCase()}</Badge>
 									{#if selectedVenue.venuefeatured}
 										<Badge><Star /> Featured</Badge>
 									{/if}
@@ -189,9 +189,9 @@
 							</div>
 						</div>
 					</Card.CardHeader>
-					<Card.CardContent class="pt-3 px-6">
-						<div class="text-sm text-muted-foreground">
-							{selectedVenue.venuetypeicon} {selectedVenue.venuetypename} in <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer" class="hover:underline">{selectedVenue.cityname}</a>
+					<Card.CardContent class="pt-3 px-6 space-y-4">
+						<div class="text-sm">
+							📍 {selectedVenue.cityname} <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer">🔗 Open in Google Maps</a>
 						</div>
 					</Card.CardContent>
 				</Card.Card>
