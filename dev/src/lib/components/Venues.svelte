@@ -189,21 +189,16 @@
 							</div>
 						</div>
 					</Card.CardHeader>
-					<Card.CardContent class="pt-3 px-6 space-y-4">
-						<div class="text-sm">
-							📍 {selectedVenue.cityname}
-						</div>
-						
+					<Card.CardContent class="pt-3 px-6 space-y-4">						
 						<div class="flex gap-2 items-center">
-							<span class="text-sm mr-2">📍 {selectedVenue.cityname}</span>
 							{#if selectedVenue.citypic}
 								<Avatar.Root class="w-8 h-8 rounded-lg">
 									<Avatar.Image src="/pic/city/{selectedVenue.citypic}" alt={selectedVenue.cityname} class="rounded-lg" />
 									<Avatar.Fallback class="rounded-lg bg-muted" />
 								</Avatar.Root>
 							{/if}
+							<span class="text-sm">{selectedVenue.cityname}</span>
 						</div>
-				
 						<div class="text-sm">
 							<a href="{selectedVenue.venuelink}" target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>🔗 Google Maps</a>
 						</div>
