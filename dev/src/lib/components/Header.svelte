@@ -87,7 +87,7 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 			<Select.Root type="single" value={$userStore.selectedCity} onValueChange={handleCityChange}>
-				<Select.Trigger class="w-24 flex items-center gap-1" disabled={$commonQuery.isLoading}>
+				<Select.Trigger class="w-24 flex gap-1" disabled={$commonQuery.isLoading}>
     			{#if $commonQuery.isLoading}
         		...
     			{:else}
