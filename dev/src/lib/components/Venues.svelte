@@ -191,7 +191,10 @@
 					</Card.CardHeader>
 					<Card.CardContent class="pt-3 px-6 space-y-4">
 						<div class="text-sm">
-							📍 {selectedVenue.cityname} <a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer">🔗 Open in Google Maps</a>
+							📍 {selectedVenue.cityname}
+						</div>
+						<div class="text-sm">
+							<a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer">🔗 Open in Google Maps</a>
 						</div>
 					</Card.CardContent>
 				</Card.Card>
