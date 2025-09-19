@@ -26,6 +26,7 @@ interface Venue {
   venuelink: string;
   venuefeatured: boolean;
   cityname: string;
+  citypic: string;
   venuetypeicon: string;
   venuetypename: string;
   cityid: number;

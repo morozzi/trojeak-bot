@@ -102,13 +102,13 @@ class VenueService {
         }
         
         return $this->db->selectRows(
-            'venue v JOIN venuelang vl ON v.venueid = vl.venueid JOIN citylang cl ON v.cityid = cl.cityid JOIN venuetype vt ON v.venuetype = vt.venuetypesid',
-            $conditions,
-            ['v.venueid', 'vl.venuename', 'v.venuepic1', 'v.venuepic2', 'v.venuelink', 'v.venuefeatured', 'cl.cityname', 'vt.venuetypeicon', 'vt.venuetypename', 'v.cityid', 'v.venuetype'],
-            null,
-            'v.venuefeatured DESC, v.venuesort',
-            'ASC'
-        );
+        		'venue v JOIN city c ON v.cityid = c.cityid JOIN venuelang vl ON v.venueid = vl.venueid JOIN citylang cl ON v.cityid = cl.cityid JOIN venuetype vt ON v.venuetype = vt.venuetypesid',
+        		$conditions,
+        		['v.venueid', 'vl.venuename', 'v.venuepic1', 'v.venuepic2', 'v.venuelink', 'v.venuefeatured', 'cl.cityname', 'c.citypic', 'vt.venuetypeicon', 'vt.venuetypename', 'v.cityid', 'v.venuetype'],
+        		null,
+        		'v.venuefeatured DESC, v.venuesort',
+        		'ASC'
+    		);
     }
     
     public function formatVenues(array $venues): array {

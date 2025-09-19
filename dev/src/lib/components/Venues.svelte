@@ -144,7 +144,7 @@
 							</div>
 						</Card.CardHeader>
 						
-						{#if venue.venuefeatured}
+						{#if venue.venuepic2 && venue.venuefeatured}
 							<AspectRatio ratio={16/9}>
 								<img src="/pic/venue/{venue.venuepic2}" alt="{venue.venuename}" class="w-full h-full object-cover" />
 							</AspectRatio>
@@ -164,9 +164,9 @@
 		{:else if selectedVenue}
 			{@const venueEvents = getVenueEvents(selectedVenue.venueid)}
 			<div class="space-y-8">
-				{#if selectedVenue.venuefeatured}
+				{#if selectedVenue.venuepic2 && selectedVenue.venuefeatured}
 					<AspectRatio class="pb-2" ratio={16/9}>
-						<img src="/pic/venue/{selectedVenue.venuepic2}" alt="{selectedVenue.venuename} Banner" class="w-full h-full object-cover" />
+						<img src="/pic/venue/{selectedVenue.venuepic2}" alt="{selectedVenue.venuename}" class="w-full h-full object-cover" />
 					</AspectRatio>
 				{/if}
 				
@@ -193,8 +193,19 @@
 						<div class="text-sm">
 							📍 {selectedVenue.cityname}
 						</div>
+						
+						<div class="flex gap-2 items-center">
+							<span class="text-sm mr-2">📍 {selectedVenue.cityname}</span>
+							{#if selectedVenue.citypic}
+								<Avatar.Root class="w-8 h-8 rounded-lg">
+									<Avatar.Image src="/pic/city/{selectedVenue.citypic}" alt={selectedVenue.cityname} class="rounded-lg" />
+									<Avatar.Fallback class="rounded-lg bg-muted" />
+								</Avatar.Root>
+							{/if}
+						</div>
+				
 						<div class="text-sm">
-							<a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>🔗 Google Maps</a>
+							<a href="{selectedVenue.venuelink}" target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>🔗 Google Maps</a>
 						</div>
 					</Card.CardContent>
 				</Card.Card>

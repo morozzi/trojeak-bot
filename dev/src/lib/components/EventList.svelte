@@ -38,7 +38,7 @@
 			
 			{#if event.eventpic}
 				<AspectRatio class="pb-2" ratio={4/5}>
-					<img src="/pic/event/{event.eventpic}" alt={event.eventtitle} class="w-full h-full object-cover" />
+					<img src="/pic/event/{event.eventpic}" alt="{event.eventtitle}" class="w-full h-full object-cover" />
 				</AspectRatio>
 			{/if}
 
@@ -48,7 +48,7 @@
 				</div>
 				
 					<div class="text-sm">
-						📍 {event.venuename} <a href={event.venuelink} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>(🔗 Google Maps)</a>
+						📍 {event.venuename} <a href="{event.venuelink}" target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>(🔗 Google Maps)</a>
 					</div>
 
 				{#if event.eventartist}
@@ -65,7 +65,7 @@
 						</Avatar.Root>
 					{/each}
 					{#if event.eventschema}
-						<span class="text-sm text-muted-foreground mr-2">💰 {event.eventschema}</span>
+						<span class="text-sm text-muted-foreground">{event.eventschema} 💰</span>
 					{/if}
 				</div>
 			</Card.CardContent>

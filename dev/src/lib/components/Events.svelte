@@ -120,9 +120,11 @@
 			{@const eventBrandIds = selectedEvent.brandid.split(',').map(id => id.replace(/\^/g, ''))}
 			{@const eventBrands = $brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []}
 			<div class="space-y-8">
-				<AspectRatio class="pb-2" ratio={4/5}>
-					<img src="/pic/event/{selectedEvent.eventpic}" alt={selectedEvent.eventtitle} class="w-full h-full object-cover" />
-				</AspectRatio>
+				{#if selectedEvent.eventpic}
+					<AspectRatio class="pb-2" ratio={4/5}>
+						<img src="/pic/event/{selectedEvent.eventpic}" alt="{selectedEvent.eventtitle}" class="w-full h-full object-cover" />
+					</AspectRatio>
+				{/if}
 
 				<Card.Card>
 					<Card.CardHeader class="pb-2">
@@ -141,7 +143,7 @@
 						</div>
 							
 						<div class="text-sm">
-							📍 {selectedEvent.venuename} <a href={selectedEvent.venuelink} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>(🔗 Google Maps)</a>
+							📍 {selectedEvent.venuename} <a href="{selectedEvent.venuelink}" target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>(🔗 Google Maps)</a>
 						</div>
 
 						<div class="text-sm">
@@ -156,7 +158,7 @@
 								</Avatar.Root>
 							{/each}
 							{#if selectedEvent.eventschema}
-								<span class="text-sm text-muted-foreground mr-2">💰 {selectedEvent.eventschema}</span>
+								<span class="text-sm text-muted-foreground">{selectedEvent.eventschema} 💰</span>
 							{/if}
 						</div>
 						
