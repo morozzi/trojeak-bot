@@ -18,15 +18,18 @@ export interface Event {
   venuetype: 'bar' | 'club' | 'ktv';
 }
 
-export interface Venue {
+interface Venue {
   venueid: number;
-  cityid: number;
-  venuetype: 'bar' | 'club' | 'ktv';
+  venuename: string;
   venuepic1: string;
   venuepic2: string;
   venuelink: string;
-  venuename: string;
   venuefeatured: boolean;
+  cityname: string;
+  venuetypeicon: string;
+  venuetypename: string;
+  cityid: number;
+  venuetype: 'bar' | 'club' | 'ktv';
 }
 
 export interface Brand {
