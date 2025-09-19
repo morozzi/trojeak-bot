@@ -139,10 +139,10 @@
 						<div class="text-sm text-muted-foreground">
 							📅 {new Date(selectedEvent.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 						</div>
-						
-							<div class="text-sm">
-								📍 {selectedEvent.venuename} <a href={selectedEvent.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
-							</div>
+							
+						<div class="text-sm">
+							📍 {selectedEvent.venuename} <a href={selectedEvent.venuelink} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>(🔗 Google Maps)</a>
+						</div>
 
 						<div class="text-sm">
 							🎵 {selectedEvent.eventartist}

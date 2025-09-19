@@ -194,7 +194,7 @@
 							📍 {selectedVenue.cityname}
 						</div>
 						<div class="text-sm">
-							<a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer">🔗 Open in Google Maps</a>
+							<a href={selectedVenue.venuelink} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>🔗 Google Maps</a>
 						</div>
 					</Card.CardContent>
 				</Card.Card>

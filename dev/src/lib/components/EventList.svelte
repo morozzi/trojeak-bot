@@ -48,7 +48,7 @@
 				</div>
 				
 					<div class="text-sm">
-						📍 {event.venuename} <a href={event.venuelink} target="_blank" rel="noopener noreferrer">🔗</a>
+						📍 {event.venuename} <a href={event.venuelink} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>(🔗 Google Maps)</a>
 					</div>
 
 				{#if event.eventartist}
