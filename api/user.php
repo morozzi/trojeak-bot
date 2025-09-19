@@ -92,6 +92,7 @@ function handleGetRequest(array $user): void {
             'updated_at' => $user['updated_at']
         ],
         'constants' => [
+            'PHONE_REGEX' => Constants::PHONE_REGEX,
             'MAX_GUESTS' => Constants::MAX_GUESTS,
             'MAX_COMMENT_LENGTH' => Constants::MAX_COMMENT_LENGTH,
             'MAX_QTY_PER_BRAND' => Constants::MAX_QTY_PER_BRAND,
@@ -183,7 +184,7 @@ function handlePutRequest(array $user, Database $database): void {
 }
 
 function validatePhone(string $phone): bool {
-    return preg_match('/^\+[1-9]\d{7,14}$/', $phone);
+    return preg_match(Constants::PHONE_REGEX, $phone);
 }
 
 function validateLanguage(string $language, Database $database): bool {

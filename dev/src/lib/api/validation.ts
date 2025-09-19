@@ -17,8 +17,9 @@ export class BookingValidator {
     }
     
     get phoneSchema() {
-        return z.string().regex(/^\+[1-9]\d{7,14}$/, 'Invalid international phone format');
-    }
+    		const pattern = this.constants.PHONE_REGEX.slice(1, -1); // Remove PHP delimiters
+    		return z.string().regex(new RegExp(pattern), 'Invalid international phone format');
+		}
     
     get commentSchema() {
         return z.string().max(this.constants.MAX_COMMENT_LENGTH, `Comment must be ${this.constants.MAX_COMMENT_LENGTH} characters or less`);

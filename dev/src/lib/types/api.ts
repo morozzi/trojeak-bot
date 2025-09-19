@@ -61,7 +61,6 @@ export interface Language {
 }
 
 export interface User {
-  id: number;
   telegram_id: number;
   username?: string;
   first_name?: string;
@@ -69,13 +68,12 @@ export interface User {
   phone?: string;
   language: string;
   cityid: number;
-  venue_types: string;
-  channel_member: 0 | 1;
+  venue_types: string[];
+  channel_member: boolean;
   venue_staff?: number;
-  alerts: 0 | 1;
+  alerts: boolean;
   onboarding: number;
   status: 'active' | 'blocked';
-  is_bot: 0 | 1;
   created_at: string;
   updated_at: string;
 }

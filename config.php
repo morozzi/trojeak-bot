@@ -42,6 +42,7 @@ final class Constants {
     public const string USER_ACTIVE = 'active';
     public const string USER_BLOCKED = 'blocked';
     
+    public const string PHONE_REGEX = '/^\+[1-9]\d{7,14}$/';
     public const int MAX_GUESTS = 10;
     public const int MAX_COMMENT_LENGTH = 200;
     public const int MAX_QTY_PER_BRAND = 10;
