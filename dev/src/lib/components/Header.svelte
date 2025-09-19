@@ -87,14 +87,6 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 			<Select.Root type="single" value={$userStore.selectedCity} onValueChange={handleCityChange}>
-				<Select.Trigger class="w-20" disabled={$commonQuery.isLoading}>
-					{#if $commonQuery.isLoading}
-						...
-					{:else}
-						{currentCitySid()}
-					{/if}
-				</Select.Trigger>
-				
 				<Select.Trigger class="w-24 flex items-center gap-1" disabled={$commonQuery.isLoading}>
     			{#if $commonQuery.isLoading}
         		...
@@ -108,7 +100,6 @@
         		{currentCitySid()}
     			{/if}
 				</Select.Trigger>
-
 				<Select.Content>
 					{#each $commonQuery.data?.cities || [] as city}
 						<Select.Item value={city.cityid.toString()}>{city.cityname}</Select.Item>
