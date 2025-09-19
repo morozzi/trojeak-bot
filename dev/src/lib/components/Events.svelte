@@ -143,7 +143,7 @@
 						</div>
 							
 						<div class="text-sm">
-							📍 {selectedEvent.venuename} <a href="{selectedEvent.venuelink}" target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>(🔗 Google Maps)</a>
+							📍 {selectedEvent.venuename} <a href="{selectedEvent.venuelink}" target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>(Google Maps 🔗)</a>
 						</div>
 
 						<div class="text-sm">
