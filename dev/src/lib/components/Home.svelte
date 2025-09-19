@@ -96,7 +96,7 @@
 	<div class="mx-auto w-full max-w-2xl px-4">
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 			<div class="flex items-center justify-start"></div>
-			<div class="flex items-center justify-center gap-4">
+			<div class="flex items-center justify-center gap-6">
 				<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('events-list')}>
 					Events
 				</Button.Button>
