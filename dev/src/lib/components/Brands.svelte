@@ -149,7 +149,7 @@
 								{@const brandData = getBrandEvents(brand.brandid, true)}
 								
 								{#if brandData.count === 0}
-									<p class="text-md text-muted-foreground">No events{selectedCityName() ? ` in ${selectedCityName()}` : ''}</p>
+									<p class="text-md text-muted-foreground">No events{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}</p>
 								{:else}
 									<p class="text-md text-muted-foreground">
 										{brandData.count} {brandData.count === 1 ? 'event' : 'events'} → {brandData.count > 1 ? 'next ' : ''}{brandData.nextEventDate}
