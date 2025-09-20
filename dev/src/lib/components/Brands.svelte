@@ -210,9 +210,9 @@
 						onEventClick={goToEvent} 
 					/>
 				{:else}
-					<div class="text-center py-6">
+					<div class="text-center pt-4">
 						<Button.Button variant="default" size="lg" class="text-lg bg-primary text-primary-foreground hover:bg-primary/90">
-							Notify me about {selectedBrand.brandname} events
+							Notify me about events
 						</Button.Button>
 					</div>
 				{/if}
