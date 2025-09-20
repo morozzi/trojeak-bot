@@ -54,17 +54,25 @@
 
 	const venues = $derived($venuesQuery.data || []);
 
-	const getVenueEventCount = $derived((venueId: number): number => {
-		return ($eventsQuery.data || []).filter(event => event.venueid === venueId).length;
-	});
-
-	const getVenueEvents = $derived((venueId: number): Event[] => {
-		return ($eventsQuery.data || []).filter(event => event.venueid === venueId)
-			.sort((a, b) => {
-				if (a.eventfeatured !== b.eventfeatured) 
-					return Number(b.eventfeatured) - Number(a.eventfeatured);
-				return new Date(a.eventdate).getTime() - new Date(b.eventdate).getTime();
-			});
+	const getVenueEvents = $derived((venueId: number, returnCount: boolean = false) => {
+		const events = $eventsQuery.data || [];
+		
+		const venueEvents = events.filter(event => event.venueid === venueId);
+		
+		if (returnCount) {
+			const count = venueEvents.length;
+			let nextEventDate = null;
+			
+			if (count > 0) {
+				nextEventDate = new Date(venueEvents[0].eventdate).toLocaleDateString('en-US', { 
+					year: 'numeric', month: 'long', day: 'numeric' 
+				});
+			}
+			
+			return { count, nextEventDate };
+		}
+		
+		return venueEvents;
 	});
 
 	function selectVenue(venueId: string): void {
@@ -142,7 +150,17 @@
 						{/if}
 
 						<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
-							<p class="text-md text-muted-foreground">{getVenueEventCount(venue.venueid)} upcoming events</p>
+							{#if $eventsQuery.isSuccess}
+								{@const venueData = getVenueEvents(venue.venueid, true)}
+								
+								{#if venueData.count === 0}
+									<p class="text-md text-muted-foreground">No upcoming events</p>
+								{:else}
+									<p class="text-md text-muted-foreground">
+										{venueData.count} {venueData.count === 1 ? 'event' : 'events'} → {venueData.count > 1 ? 'next ' : ''}{venueData.nextEventDate}
+									</p>
+								{/if}
+							{/if}
 						</Card.CardContent>
 					</Card.Card>
 				{/each}
@@ -150,7 +168,7 @@
 		</div>
 	{:else if viewMode === 'detail' && selectedVenueId}
 		{@const selectedVenue = venues.find(v => v.venueid.toString() === selectedVenueId)}
-		{#if $venuesQuery.isLoading}
+		{#if $venuesQuery.isLoading || $eventsQuery.isLoading}
 			<Loading variant="detail" />
 		{:else if selectedVenue}
 			{@const venueEvents = getVenueEvents(selectedVenue.venueid)}
@@ -176,7 +194,7 @@
 										<Badge><Star /> Featured</Badge>
 									{/if}
 								</div>
-								<p class="pt-3 text-md text-muted-foreground">{venueEvents.length} upcoming events</p>
+								<p class="pt-3 text-md text-muted-foreground">{venueEvents.length} upcoming {venueEvents.length === 1 ? 'event' : 'events'}</p>
 							</div>
 						</div>
 					</Card.CardHeader>

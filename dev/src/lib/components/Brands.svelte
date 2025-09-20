@@ -59,9 +59,7 @@
 			if (count > 0) {
 				const nextEvent = brandEvents[0];
 				nextEventDate = new Date(nextEvent.eventdate).toLocaleDateString('en-US', { 
-					year: 'numeric', 
-					month: 'long', 
-					day: 'numeric' 
+					year: 'numeric', month: 'long', day: 'numeric' 
 				});
 			}
 			
