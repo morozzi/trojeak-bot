@@ -153,7 +153,7 @@
 							{/if}
 						</div>
 						
-						<div class="text-center pt-4">
+						<div class="text-center pt-4 pb-2">
 							<Button.Button onclick={() => startBooking(selectedEvent)} size="lg" class="w-2/3 text-lg">
 								Book This Event
 							</Button.Button>
