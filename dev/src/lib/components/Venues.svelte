@@ -232,7 +232,7 @@
 					/>
 				{:else}
 					<div class="text-center pt-4">
-						<Button.Button variant="default" size="lg" class="bg-primary text-primary-foreground hover:bg-primary/90">
+						<Button.Button variant="default" size="lg" class="text-md bg-primary text-primary-foreground hover:bg-primary/90">
 							Notify me about events
 						</Button.Button>
 					</div>
