@@ -154,7 +154,7 @@
 						</div>
 						
 						<div class="text-center pt-4">
-							<Button.Button onclick={() => startBooking(selectedEvent)} class="w-1/2">
+							<Button.Button onclick={() => startBooking(selectedEvent)} class="w-2/3">
 								Book This Event
 							</Button.Button>
 						</div>
