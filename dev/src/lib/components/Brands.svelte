@@ -188,7 +188,9 @@
 										<Badge><Star /> Featured</Badge>
 									{/if}
 								</div>
-								<p class="pt-3 text-md text-muted-foreground">{brandEvents.length} upcoming {brandEvents.length === 1 ? 'event' : 'events'}</p>
+								{#if brandEvents.length > 0}
+									<p class="pt-3 text-md text-muted-foreground">{brandEvents.length} {brandEvents.length === 1 ? 'event' : 'events'}</p>
+								{/if}
 							</div>
 						</div>
 					</Card.CardHeader>
