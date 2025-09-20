@@ -148,13 +148,13 @@
 							{#if $eventsQuery.isSuccess}
 								{@const brandData = getBrandEvents(brand.brandid, true)}
 								
-								{#if brandData.count === 0}
-									<p class="text-md text-muted-foreground">No events{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}</p>
-								{:else}
-									<p class="text-md text-muted-foreground">
+								<p class="text-md text-muted-foreground">
+									{#if brandData.count === 0}
+										No events{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
+									{:else}
 										{brandData.count} {brandData.count === 1 ? 'event' : 'events'} → {brandData.count > 1 ? 'next ' : ''}{brandData.nextEventDate}
-									</p>
-								{/if}
+									{/if}
+								</p>
 							{/if}
 						</Card.CardContent>
 					</Card.Card>
