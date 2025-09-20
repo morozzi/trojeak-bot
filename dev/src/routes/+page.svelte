@@ -187,7 +187,7 @@
 				/>
 			{/if}
 
-			<main class="mx-auto w-full max-w-2xl px-4 pt-0">
+			<main class="mx-auto w-full max-w-2xl px-4 pt-0 mb-8">
 				{#if $appStore.currentView === 'home'}
 					<Home 
 						on:goToEvent={handleGoToEvent}
