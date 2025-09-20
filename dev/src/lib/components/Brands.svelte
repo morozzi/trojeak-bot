@@ -191,18 +191,19 @@
 								
 								<p class="pt-3 text-md text-muted-foreground">
 									{#if brandEvents.length === 0}
-										No events{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
+										No events
 									{:else}
-										{brandEvents.length} {brandEvents.length === 1 ? 'event' : 'events'}<br>{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
+										{brandEvents.length} {brandEvents.length === 1 ? 'event' : 'events'}
 									{/if}
+									<br>{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
 								</p>
 							</div>
 						</div>
 					</Card.CardHeader>
 				</Card.Card>
 
-				<h3 class="text-3xl font-semibold mt-10 mb-4 text-center">Upcoming Events</h3>
 				{#if brandEvents.length > 0}
+					<h3 class="text-3xl font-semibold mt-10 mb-4 text-center">Upcoming Events</h3>
 					<EventList 
 						events={brandEvents} 
 						brandData={$brandsQuery.data || []}
@@ -211,7 +212,7 @@
 				{:else}
 					<div class="text-center py-6">
 						<Button.Button variant="default" size="lg" class="bg-primary text-primary-foreground hover:bg-primary/90">
-							Notify me
+							Notify me about events
 						</Button.Button>
 					</div>
 				{/if}
