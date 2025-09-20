@@ -153,9 +153,11 @@
 							{/if}
 						</div>
 						
-						<Button.Button onclick={() => startBooking(selectedEvent)} class="items-center w-1/2 mt-4">
-							Book This Event
-						</Button.Button>
+						<div class="text-center pt-4">
+							<Button.Button onclick={() => startBooking(selectedEvent)} class="w-1/2">
+								Book This Event
+							</Button.Button>
+						</div>
 					</Card.CardContent>
 				</Card.Card>
 				
