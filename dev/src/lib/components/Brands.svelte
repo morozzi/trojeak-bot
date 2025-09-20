@@ -193,7 +193,7 @@
 									{#if brandEvents.length === 0}
 										No events{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
 									{:else}
-										{brandEvents.length} {brandEvents.length === 1 ? 'event' : 'events'}{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
+										{brandEvents.length} {brandEvents.length === 1 ? 'event' : 'events'}<br>{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
 									{/if}
 								</p>
 							</div>
