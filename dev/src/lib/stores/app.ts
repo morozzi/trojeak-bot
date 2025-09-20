@@ -26,7 +26,6 @@ interface AppState {
 	isLoading: boolean;
 	error: string;
 	currentView: ViewType;
-	cityData: any[];
 	selectedEventId: string | undefined;
 	selectedVenueId: string | undefined;
 	selectedBrandId: string | undefined;
@@ -36,6 +35,7 @@ interface AppState {
 	backgroundColor: string;
 	textColor: string;
 	bookingState: BookingState | null;
+	cityData: any[];
 }
 
 const MAX_NAVIGATION_ENTRIES = 20;
@@ -45,7 +45,6 @@ const initialState: AppState = {
 	isLoading: true,
 	error: '',
 	currentView: 'home',
-	cityData: [],
 	selectedEventId: undefined,
 	selectedVenueId: undefined,
 	selectedBrandId: undefined,
@@ -54,7 +53,8 @@ const initialState: AppState = {
 	navigationHistory: [],
 	backgroundColor: '#f9fafb',
 	textColor: '#1f2937',
-	bookingState: null
+	bookingState: null,
+	cityData: []
 };
 
 const baseAppStore = writable(initialState);
@@ -128,10 +128,6 @@ export const appActions = {
 	clearHistory: () => {
 		baseAppStore.update(state => ({ ...state, navigationHistory: [] }));
 	},
-	
-	setCityData: (cities: any[]) => {
-		baseAppStore.update(state => ({ ...state, cityData: cities }));
-	},
 
 	setSelectedEventId: (eventId: string) => {
 		baseAppStore.update(state => ({ 
@@ -160,6 +156,10 @@ export const appActions = {
       selectedEvent: event,
       selectedEventId: event?.eventid.toString()
     }));
+	},
+
+	setCityData: (cities: any[]) => {
+		baseAppStore.update(state => ({ ...state, cityData: cities }));
 	},
 
 	setThemeFromWebApp: () => {
