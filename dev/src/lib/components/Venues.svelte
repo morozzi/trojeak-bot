@@ -156,13 +156,13 @@
 							{#if $eventsQuery.isSuccess}
 								{@const venueData = getVenueEvents(venue.venueid, true)}
 								
-								{#if venueData.count === 0}
-									<p class="text-md text-muted-foreground">No upcoming events</p>
-								{:else}
-									<p class="text-md text-muted-foreground">
+								<p class="text-md text-muted-foreground">
+									{#if venueData.count === 0}
+										No upcoming events
+									{:else}
 										{venueData.count} {venueData.count === 1 ? 'event' : 'events'} → {venueData.count > 1 ? 'next ' : ''}{venueData.nextEventDate}
-									</p>
-								{/if}
+									{/if}
+								</p>
 							{/if}
 						</Card.CardContent>
 					</Card.Card>
@@ -197,7 +197,14 @@
 										<Badge><Star /> Featured</Badge>
 									{/if}
 								</div>
-								<p class="pt-3 text-md text-muted-foreground">{venueEvents.length} upcoming {venueEvents.length === 1 ? 'event' : 'events'}</p>
+								<p class="pt-3 text-md text-muted-foreground">
+									{#if venueEvents.length === 0}
+										No events
+									{:else}
+										{venueEvents.length} {venueEvents.length === 1 ? 'event' : 'events'}
+									{/if}
+									<br>{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
+								</p>
 							</div>
 						</div>
 					</Card.CardHeader>
@@ -217,17 +224,17 @@
 					</Card.CardContent>
 				</Card.Card>
 
-				<h3 class="text-3xl font-semibold mt-10 mb-4 text-center">Upcoming Events</h3>
 				{#if venueEvents.length > 0}
+					<h3 class="text-3xl font-semibold mt-10 mb-4 text-center">Upcoming Events</h3>
 					<EventList 
 						events={venueEvents} 
 						brandData={$brandsQuery.data || []}
 						onEventClick={goToEvent} 
 					/>
 				{:else}
-					<div class="text-center py-6">
-						<Button.Button variant="default" size="lg" class="bg-primary text-primary-foreground hover:bg-primary/90">
-							Notify me
+					<div class="text-center pt-4">
+						<Button.Button variant="default" size="lg" class="text-lg bg-primary text-primary-foreground hover:bg-primary/90">
+							Notify me about events
 						</Button.Button>
 					</div>
 				{/if}

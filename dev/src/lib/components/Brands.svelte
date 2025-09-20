@@ -170,7 +170,7 @@
 			<div class="space-y-8">
 				{#if selectedBrand.brandpic2 && selectedBrand.brandfeatured}
 					<AspectRatio class="pb-2" ratio={16/9}>
-						<img src="/pic/brand/{selectedBrand.brandpic2}" alt="{selectedBrand.brandname} Banner" class="w-full h-full object-cover" />
+						<img src="/pic/brand/{selectedBrand.brandpic2}" alt="{selectedBrand.brandname}" class="w-full h-full object-cover" />
 					</AspectRatio>
 				{/if}
 				
@@ -188,7 +188,6 @@
 										<Badge><Star /> Featured</Badge>
 									{/if}
 								</div>
-								
 								<p class="pt-3 text-md text-muted-foreground">
 									{#if brandEvents.length === 0}
 										No events
