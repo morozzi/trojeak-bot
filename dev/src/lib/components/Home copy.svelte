@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher, getContext } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Button from '$lib/components/ui/button/index.js';
@@ -10,11 +10,11 @@
 	import { userStore } from '$lib/stores/user.js';
 
 	let footerEl: HTMLElement | undefined = $state();
-	const registerFooter = getContext<(element: HTMLElement) => void>('registerFooter');
 
 	const dispatch = createEventDispatcher<{
 		goToEvent: { eventId: string };
 		navigate: { view: string };
+		footerHeight: { height: number };
 	}>();
 
 	const featuredEventsQuery = createQuery({
@@ -44,9 +44,18 @@
 		dispatch('navigate', { view: `${page}-list` as ViewType });
 	}
 
+	function updateFooterHeight() {
+		if (!footerEl) return;
+		const height = footerEl.offsetHeight;
+		dispatch('footerHeight', { height });
+	}
+
 	$effect(() => {
-		if (footerEl && registerFooter) {
-			registerFooter(footerEl);
+		if (footerEl) {
+			updateFooterHeight();
+			const ro = new ResizeObserver(updateFooterHeight);
+			ro.observe(footerEl);
+			return () => ro.disconnect();
 		}
 	});
 </script>

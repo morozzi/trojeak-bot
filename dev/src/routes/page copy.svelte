@@ -1,6 +1,6 @@
 <!-- routes/+page.svelte - Main application page -->
 <script lang="ts">
-	import { onMount, setContext } from 'svelte';
+	import { onMount } from 'svelte';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import type { WebApp } from '@twa-dev/sdk';
 	import type { Event, Venue } from '$lib/types/api.js';
@@ -22,27 +22,6 @@
 				gcTime: 10 * 60 * 1000,
 			},
 		},
-	});
-
-	let currentFooterEl: HTMLElement | undefined = $state();
-
-	function updateFooterHeight() {
-		if (!currentFooterEl) return;
-		const height = currentFooterEl.offsetHeight;
-		document.documentElement.style.setProperty('--footer-h', `${height}px`);
-	}
-
-	$effect(() => {
-		if (currentFooterEl) {
-			updateFooterHeight();
-			const ro = new ResizeObserver(updateFooterHeight);
-			ro.observe(currentFooterEl);
-			return () => ro.disconnect();
-		}
-	});
-
-	setContext('registerFooter', (element: HTMLElement) => {
-		currentFooterEl = element;
 	});
 
 	$effect(() => {
@@ -159,6 +138,10 @@
 		appActions.navigate(view as ViewType);
 		window.scrollTo(0, 0);
 	}
+
+	function handleFooterHeight(event: CustomEvent<{height: number}>) {
+		document.documentElement.style.setProperty('--footer-h', `${event.detail.height}px`);
+	}
 </script>
 
 <QueryClientProvider client={queryClient}>
@@ -192,6 +175,7 @@
 					<Home 
 						on:goToEvent={handleGoToEvent}
 						on:navigate={handleNavigate}
+						on:footerHeight={handleFooterHeight}
 					/>
 				{:else if $appStore.currentView.startsWith('events-')}
 					<Events 
@@ -199,22 +183,26 @@
 						on:navigate={handleNavigate}
 						on:goToEvent={handleGoToEvent}
 						on:startBooking={handleStartBooking} 
+						on:footerHeight={handleFooterHeight}
 					/>
 				{:else if $appStore.currentView.startsWith('venues-')}
 					<Venues 
 						on:navigate={handleNavigate}
 						on:goToEvent={handleGoToEvent} 
+						on:footerHeight={handleFooterHeight}
 					/>
 				{:else if $appStore.currentView.startsWith('brands-')}
 					<Brands 
 						on:navigate={handleNavigate}
 						on:goToEvent={handleGoToEvent} 
+						on:footerHeight={handleFooterHeight}
 					/>
 				{:else if $appStore.currentView.startsWith('booking-step-')}
 					{#if $appStore.selectedEvent}
 						<Booking 
 							event={$appStore.selectedEvent}
 							on:navigate={handleNavigate}
+							on:footerHeight={handleFooterHeight}
 						/>
 					{/if}
 				{/if}

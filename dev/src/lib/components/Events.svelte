@@ -8,7 +8,7 @@
 	import { Star } from '@lucide/svelte';
 	import EventList from '$lib/components/EventList.svelte';
 	import Loading from '$lib/components/Loading.svelte';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, getContext } from 'svelte';
 	import type { Event } from '$lib/types/api.js';
 	import { userStore } from '$lib/stores/user.js';
 	import { appStore } from '$lib/stores/app.js';
@@ -20,11 +20,11 @@
 	const { initialEventId }: Props = $props();
 
 	let footerEl: HTMLElement | undefined = $state();
+	const registerFooter = getContext<(element: HTMLElement) => void>('registerFooter');
 
 	const dispatch = createEventDispatcher<{
 		goToEvent: { eventId: string };
 		startBooking: { event: Event};
-		footerHeight: { height: number };
 		navigate: { view: string };
 	}>();
 
@@ -67,18 +67,9 @@
     dispatch('startBooking', { event });
 	}
 
-	function updateFooterHeight() {
-		if (!footerEl) return;
-		const height = footerEl.offsetHeight;
-		dispatch('footerHeight', { height });
-	}
-
 	$effect(() => {
-		if (footerEl) {
-			updateFooterHeight();
-			const ro = new ResizeObserver(updateFooterHeight);
-			ro.observe(footerEl);
-			return () => ro.disconnect();
+		if (footerEl && registerFooter) {
+			registerFooter(footerEl);
 		}
 	});
 </script>

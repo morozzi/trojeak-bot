@@ -11,7 +11,7 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import Loading from '$lib/components/Loading.svelte';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, getContext } from 'svelte';
 	import type { Event } from '$lib/types/api.js';
 	import { appStore, appActions } from '$lib/stores/app.js';
 	import { userStore } from '$lib/stores/user.js';
@@ -24,6 +24,7 @@
 	const { event }: Props = $props();
 	
 	let footerEl: HTMLElement | undefined = $state();
+	const registerFooter = getContext<(element: HTMLElement) => void>('registerFooter');
 	let footerVisible = $state(true);
 	let isProcessing = $state(false);
 	let phoneInputTouched = $state(false);
@@ -31,7 +32,6 @@
 
 	const dispatch = createEventDispatcher<{
 		navigate: { view: string };
-		footerHeight: { height: number };
 	}>();
 
 	const brandsQuery = createQuery({
@@ -104,11 +104,8 @@
 	});
 
 	$effect(() => {
-		if (footerEl) {
-			updateFooterHeight();
-			const ro = new ResizeObserver(updateFooterHeight);
-			ro.observe(footerEl);
-			return () => ro.disconnect();
+		if (footerEl && registerFooter) {
+			registerFooter(footerEl);
 		}
 	});
 
@@ -120,12 +117,6 @@
 		mediaQuery.addEventListener('change', handler);
 		return () => mediaQuery.removeEventListener('change', handler);
 	});
-
-	function updateFooterHeight() {
-		if (!footerEl) return;
-		const height = footerEl.offsetHeight;
-		dispatch('footerHeight', { height });
-	}
 
 	function toggleFooter(show: boolean) {
 		if (!isMobile) return;

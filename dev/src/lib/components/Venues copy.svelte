@@ -14,11 +14,11 @@
 	import { appStore } from '$lib/stores/app.js';
 
 	let footerEl: HTMLElement | undefined = $state();
-	const registerFooter = getContext<(element: HTMLElement) => void>('registerFooter');
 
 	const dispatch = createEventDispatcher<{
 		navigate: { view: string; venueId?: string };
 		goToEvent: { eventId: string };
+		footerHeight: { height: number };
 	}>();
 
 	const viewMode = $derived($appStore.currentView === 'venues-detail' ? 'detail' : 'list');
@@ -84,9 +84,18 @@
 		dispatch('goToEvent', { eventId });
 	}
 
+	function updateFooterHeight() {
+		if (!footerEl) return;
+		const height = footerEl.offsetHeight;
+		dispatch('footerHeight', { height });
+	}
+
 	$effect(() => {
-		if (footerEl && registerFooter) {
-			registerFooter(footerEl);
+		if (footerEl) {
+			updateFooterHeight();
+			const ro = new ResizeObserver(updateFooterHeight);
+			ro.observe(footerEl);
+			return () => ro.disconnect();
 		}
 	});
 </script>
