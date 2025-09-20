@@ -131,5 +131,5 @@
 			</Button.Button>
 		</div>
 	</div>
-	<Separator class="mb-6" />
+	<Separator class="mb-4" />
 </header>
