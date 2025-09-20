@@ -162,8 +162,10 @@
 				</Card.Card>
 				
 				{#if selectedEvent.eventdesc}
-					<h3 class="mb-3 text-xl font-semibold">Event Details</h3>
-					<p class="px-6 text-sm text-justify whitespace-pre-line leading-snug">{selectedEvent.eventdesc}</p>
+					<div class="px-6 space-y-3">
+						<h3 class="text-xl font-semibold">Event Details</h3>
+						<p class="text-sm text-justify whitespace-pre-line leading-snug">{selectedEvent.eventdesc}</p>
+					</div>
 				{/if}
 				
 			</div>
