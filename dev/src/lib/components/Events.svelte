@@ -163,7 +163,7 @@
 				
 				{#if selectedEvent.eventdesc}
 					<div class="px-6 space-y-3">
-						<h3 class="text-xl font-semibold">Event Details</h3>
+						<h3 class="text-xl text-center font-semibold">Event Details</h3>
 						<p class="text-sm text-justify whitespace-pre-line leading-snug">{selectedEvent.eventdesc}</p>
 					</div>
 				{/if}
