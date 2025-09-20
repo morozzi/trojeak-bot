@@ -211,8 +211,8 @@
 					/>
 				{:else}
 					<div class="text-center py-6">
-						<Button.Button variant="default" size="lg" class="bg-primary text-primary-foreground hover:bg-primary/90">
-							Notify me about events
+						<Button.Button variant="default" size="lg" class="text-lg bg-primary text-primary-foreground hover:bg-primary/90">
+							Notify me about {selectedBrand.brandname} events
 						</Button.Button>
 					</div>
 				{/if}
