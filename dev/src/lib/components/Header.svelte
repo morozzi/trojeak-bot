@@ -93,17 +93,17 @@
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
+			{#if currentCityIcon()}
+      	<Avatar.Root class="w-8 h-8 rounded-lg">
+        	<Avatar.Image src="/pic/city/{currentCityIcon()}" alt="City" class="rounded-lg" />
+          <Avatar.Fallback class="rounded-lg bg-muted" />
+        </Avatar.Root>
+      {/if}
 			<Select.Root type="single" value={$userStore.selectedCity} onValueChange={handleCityChange}>
 				<Select.Trigger class="w-24 flex gap-1" disabled={$commonQuery.isLoading}>
     			{#if $commonQuery.isLoading}
         		...
     			{:else}
-        		{#if currentCityIcon()}
-            	<Avatar.Root class="w-4 h-4">
-                <Avatar.Image src="/pic/city/{currentCityIcon()}" alt="City" />
-                <Avatar.Fallback class="rounded-lg bg-muted" />
-            	</Avatar.Root>
-        		{/if}
         		{currentCitySid()}
     			{/if}
 				</Select.Trigger>
