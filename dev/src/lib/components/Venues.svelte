@@ -199,11 +199,10 @@
 								</div>
 								<p class="pt-3 text-md text-muted-foreground">
 									{#if venueEvents.length === 0}
-										No events
+										No upcoming events
 									{:else}
-										{venueEvents.length} {venueEvents.length === 1 ? 'event' : 'events'}
+										{venueEvents.length} upcoming {venueEvents.length === 1 ? 'event' : 'events'}
 									{/if}
-									<br>{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
 								</p>
 							</div>
 						</div>
