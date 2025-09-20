@@ -88,13 +88,13 @@
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 			<div class="flex items-center justify-start"></div>
 			<div class="flex items-center justify-center gap-6">
-				<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('events-list')}>
+				<Button.Button variant="outline" onclick={() => handleNavigate('events-list')}>
 					Events
 				</Button.Button>
-				<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('venues-list')}>
+				<Button.Button variant="outline" onclick={() => handleNavigate('venues-list')}>
 					Venues
 				</Button.Button>
-				<Button.Button variant="outline" size="sm" onclick={() => handleNavigate('brands-list')}>
+				<Button.Button variant="outline" onclick={() => handleNavigate('brands-list')}>
 					Brands
 				</Button.Button>
 			</div>

@@ -226,11 +226,11 @@
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 			<div class="flex items-center justify-start">
 				{#if viewMode === 'list'}
-					<Button.Button variant="outline" size="sm" onclick={goHome}>
+					<Button.Button variant="outline" onclick={goHome}>
 						Home
 					</Button.Button>
 				{:else}
-					<Button.Button variant="outline" size="sm" onclick={goToList}>
+					<Button.Button variant="outline" onclick={goToList}>
 						← Back
 					</Button.Button>
 				{/if}
