@@ -99,9 +99,9 @@
         		...
     			{:else}
         		{#if currentCityIcon()}
-            	<Avatar.Root class="w-4 h-4 rounded-lg">
-                <Avatar.Image src="/pic/city/{currentCityIcon()}" alt="City" class="rounded-lg" />
-                <Avatar.Fallback class="rounded-lg bg-muted" />
+            	<Avatar.Root class="w-4 h-4 rounded">
+                <Avatar.Image src="/pic/city/{currentCityIcon()}" alt="City" class="rounded" />
+                <Avatar.Fallback class="rounded bg-muted" />
             	</Avatar.Root>
         		{/if}
         		{currentCitySid()}
