@@ -128,8 +128,8 @@ button, [role="button"] {
    TELEGRAM WEB APP COMPATIBILITY
    ============================================================================= */
 
-html {
-  scroll-padding-bottom: var(--app-footer-h);
+main {
+  margin-bottom: var(--app-footer-h);
 }
 
 @media (max-width: 768px) {
