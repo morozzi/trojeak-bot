@@ -129,7 +129,9 @@
 						{/if}
 
 						<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
-							<p class="text-md text-muted-foreground">{getBrandEvents(brand.brandid, true)} upcoming events</p>
+							{#if $eventsQuery.isSuccess}
+								<p class="text-md text-muted-foreground">{getBrandEvents(brand.brandid, true)} upcoming events</p>
+							{/if}
 						</Card.CardContent>
 					</Card.Card>
 				{/each}
@@ -137,7 +139,7 @@
 		</div>
 	{:else if viewMode === 'detail' && selectedBrandId}
 		{@const selectedBrand = brands.find(b => b.brandid.toString() === selectedBrandId)}
-		{#if $brandsQuery.isLoading}
+		{#if $brandsQuery.isLoading || $eventsQuery.isLoading}
 			<Loading variant="detail" />
 		{:else if selectedBrand}
 			{@const brandEvents = getBrandEvents(selectedBrand.brandid)}
