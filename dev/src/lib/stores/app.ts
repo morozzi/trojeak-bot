@@ -26,6 +26,7 @@ interface AppState {
 	isLoading: boolean;
 	error: string;
 	currentView: ViewType;
+	cityData: any[];
 	selectedEventId: string | undefined;
 	selectedVenueId: string | undefined;
 	selectedBrandId: string | undefined;
@@ -44,6 +45,7 @@ const initialState: AppState = {
 	isLoading: true,
 	error: '',
 	currentView: 'home',
+	cityData: [],
 	selectedEventId: undefined,
 	selectedVenueId: undefined,
 	selectedBrandId: undefined,
@@ -125,6 +127,10 @@ export const appActions = {
 
 	clearHistory: () => {
 		baseAppStore.update(state => ({ ...state, navigationHistory: [] }));
+	},
+	
+	setCityData: (cities: any[]) => {
+		baseAppStore.update(state => ({ ...state, cityData: cities }));
 	},
 
 	setSelectedEventId: (eventId: string) => {

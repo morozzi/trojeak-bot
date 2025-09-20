@@ -36,6 +36,12 @@
     !$userStore.userInfo?.first_name ? '?' : 
     $userStore.userInfo.first_name.charAt(0).toUpperCase() + ($userStore.userInfo.last_name?.charAt(0)?.toUpperCase() || '')
 	);
+	
+	$effect(() => {
+		if ($commonQuery.isSuccess && $commonQuery.data?.cities) {
+			appActions.setCityData($commonQuery.data.cities);
+		}
+	});
 
 	function handleCityChange(city: string) {
 		dispatch('cityChange', { city });

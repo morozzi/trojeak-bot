@@ -42,12 +42,7 @@ export const userStore = derived(
 			($base.userData?.success && $base.userData.user ? 
 				($base.userData.user.cityid === 0 ? null : $base.userData.user.cityid.toString()) :
 				null);
-		
-		const selectedCityName = (() => {
-			const city = $app.cityData.find(c => c.cityid.toString() === selectedCity);
-			return city?.cityname || '';
-		})();
-		
+
 		const isUserDataLoaded = $base.userDataLoaded;
 
 		const userInfo: TelegramUser | null = $app.webApp?.initDataUnsafe?.user || null;
@@ -56,7 +51,6 @@ export const userStore = derived(
 			...$base,
 			selectedLanguage,
 			selectedCity,
-			selectedCityName,
 			isUserDataLoaded,
 			userInfo
 		};
