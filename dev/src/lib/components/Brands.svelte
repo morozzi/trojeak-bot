@@ -57,7 +57,9 @@
 			let nextEventDate = null;
 			
 			if (count > 0) {
-				const nextEvent = brandEvents[0];
+				const nextEvent = brandEvents.reduce((earliest, current) => 
+					new Date(current.eventdate) < new Date(earliest.eventdate) ? current : earliest
+				);
 				nextEventDate = new Date(nextEvent.eventdate).toLocaleDateString('en-US', { 
 					year: 'numeric', month: 'long', day: 'numeric' 
 				});
