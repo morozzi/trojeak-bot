@@ -128,10 +128,6 @@ button, [role="button"] {
    TELEGRAM WEB APP COMPATIBILITY
    ============================================================================= */
 
-main {
-  margin-bottom: var(--app-footer-h);
-}
-
 @media (max-width: 768px) {
   body {
     overflow-x: hidden;
