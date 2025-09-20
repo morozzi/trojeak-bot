@@ -8,7 +8,6 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import { Share2 } from '@lucide/svelte';
 	import { userStore } from '$lib/stores/user.js';
-	import { appActions } from '$lib/stores/app.js';
 
 	const dispatch = createEventDispatcher<{
 		cityChange: { city: string };
@@ -37,12 +36,6 @@
     !$userStore.userInfo?.first_name ? '?' : 
     $userStore.userInfo.first_name.charAt(0).toUpperCase() + ($userStore.userInfo.last_name?.charAt(0)?.toUpperCase() || '')
 	);
-
-	$effect(() => {
-		if ($commonQuery.isSuccess && $commonQuery.data?.cities) {
-			appActions.setCityData($commonQuery.data.cities);
-		}
-	});
 
 	function handleCityChange(city: string) {
 		dispatch('cityChange', { city });
