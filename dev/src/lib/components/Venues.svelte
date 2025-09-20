@@ -64,9 +64,12 @@
 			let nextEventDate = null;
 			
 			if (count > 0) {
-				nextEventDate = new Date(venueEvents[0].eventdate).toLocaleDateString('en-US', { 
-					year: 'numeric', month: 'long', day: 'numeric' 
-				});
+				const nextEvent = venueEvents.reduce((earliest, current) => 
+        	new Date(current.eventdate) < new Date(earliest.eventdate) ? current : earliest
+    		);
+    		nextEventDate = new Date(nextEvent.eventdate).toLocaleDateString('en-US', { 
+        	year: 'numeric', month: 'long', day: 'numeric' 
+    		});
 			}
 			
 			return { count, nextEventDate };
