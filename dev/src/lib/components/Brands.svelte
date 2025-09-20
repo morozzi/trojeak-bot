@@ -188,9 +188,14 @@
 										<Badge><Star /> Featured</Badge>
 									{/if}
 								</div>
-								{#if brandEvents.length > 0}
-									<p class="pt-3 text-md text-muted-foreground">{brandEvents.length} {brandEvents.length === 1 ? 'event' : 'events'}</p>
-								{/if}
+								
+								<p class="pt-3 text-md text-muted-foreground">
+									{#if brandEvents.length === 0}
+										No events{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
+									{:else}
+										{brandEvents.length} {brandEvents.length === 1 ? 'event' : 'events'}{$userStore.selectedCityName ? ` in ${$userStore.selectedCityName}` : ''}
+									{/if}
+								</p>
 							</div>
 						</div>
 					</Card.CardHeader>
