@@ -105,7 +105,7 @@
 		</div>
 	{:else if viewMode === 'detail' && selectedEventId}
 		{@const selectedEvent = events.find(e => e.eventid.toString() === selectedEventId)}
-		{#if $eventsQuery.isLoading}
+		{#if $eventsQuery.isLoading || $brandsQuery.isLoading}
 			<Loading variant="detail" />
 		{:else if selectedEvent}
 			{@const eventBrandIds = selectedEvent.brandid.split(',').map(id => id.replace(/\^/g, ''))}
