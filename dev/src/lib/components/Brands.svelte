@@ -52,7 +52,23 @@
 			return brandIds.includes(brandId.toString());
 		});
 		
-		return returnCount ? brandEvents.length : brandEvents;
+		if (returnCount) {
+			const count = brandEvents.length;
+			let nextEventDate = null;
+			
+			if (count > 0) {
+				const nextEvent = brandEvents[0];
+				nextEventDate = new Date(nextEvent.eventdate).toLocaleDateString('en-US', { 
+					year: 'numeric', 
+					month: 'long', 
+					day: 'numeric' 
+				});
+			}
+			
+			return { count, nextEventDate };
+		}
+		
+		return brandEvents;
 	});
 
 	function selectBrand(brandId: string): void {
@@ -130,7 +146,15 @@
 
 						<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
 							{#if $eventsQuery.isSuccess}
-								<p class="text-md text-muted-foreground">{getBrandEvents(brand.brandid, true)} upcoming events</p>
+								{@const brandData = getBrandEvents(brand.brandid, true)}
+								
+								{#if brandData.count === 0}
+									<p class="text-md text-muted-foreground">No events in {$userStore.selectedCity}</p>
+								{:else}
+									<p class="text-md text-muted-foreground">
+										{brandData.count} {brandData.count === 1 ? 'event' : 'events'} → {brandData.count > 1 ? 'next ' : ''}{brandData.nextEventDate}
+									</p>
+								{/if}
 							{/if}
 						</Card.CardContent>
 					</Card.Card>
@@ -164,7 +188,7 @@
 										<Badge><Star /> Featured</Badge>
 									{/if}
 								</div>
-								<p class="pt-3 text-md text-muted-foreground">{brandEvents.length} upcoming events</p>
+								<p class="pt-3 text-md text-muted-foreground">{brandEvents.length} upcoming {brandEvents.length === 1 ? 'event' : 'events'}</p>
 							</div>
 						</div>
 					</Card.CardHeader>
