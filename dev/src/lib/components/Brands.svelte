@@ -32,8 +32,6 @@
 			return response.json();
 		}
 	});
-	
-	const brands = $derived($brandsQuery.data || []);
 
 	const eventsQuery = createQuery({
 		queryKey: ['events', $userStore.selectedLanguage, $userStore.selectedCity],
@@ -44,15 +42,26 @@
 		},
 	});
 
-	const getBrandEvents = $derived((brandId: number, returnCount: boolean = false) => {
-		const events = $eventsQuery.data || [];
-		
-		const brandEvents = events.filter(event => {
+	const brands = $derived($brandsQuery.data || []);
+
+	const getBrandEventCount = $derived((brandId: number): number => {
+		return ($eventsQuery.data || []).filter(event => {
+			const brandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
+			return brandIds.includes(brandId.toString());
+		}).length;
+	});
+
+	const getBrandEvents = $derived((brandId: number): Event[] => {
+		const brandEvents = ($eventsQuery.data || []).filter(event => {
 			const brandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
 			return brandIds.includes(brandId.toString());
 		});
 		
-		return returnCount ? brandEvents.length : brandEvents;
+		return brandEvents.sort((a, b) => {
+			if (a.eventfeatured !== b.eventfeatured) 
+				return Number(b.eventfeatured) - Number(a.eventfeatured);
+			return new Date(a.eventdate).getTime() - new Date(b.eventdate).getTime();
+		});
 	});
 
 	function selectBrand(brandId: string): void {
@@ -129,7 +138,7 @@
 						{/if}
 
 						<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
-							<p class="text-md text-muted-foreground">{getBrandEvents(brand.brandid, true)} upcoming events</p>
+							<p class="text-md text-muted-foreground">{getBrandEventCount(brand.brandid)} upcoming events</p>
 						</Card.CardContent>
 					</Card.Card>
 				{/each}
