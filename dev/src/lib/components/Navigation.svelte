@@ -1,4 +1,3 @@
-// lib/components/Navigation.svelte
 <script lang="ts">
 	import { createEventDispatcher, getContext } from 'svelte';
 	import * as Button from '$lib/components/ui/button/index.js';
