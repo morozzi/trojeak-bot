@@ -52,20 +52,15 @@
 		return [];
 	});
 
-	let centerButtons = $state([]);
-
-$effect(() => {
-    if (isBookingView) {
-        centerButtons = [{ text: 'Cancel', action: () => handleBookingAction('cancel') }];
-    } else if (isHomeView) {
-        centerButtons = [
+const centerButtons = $derived.by(() => {
+    if (isHomeView) {
+        return [
             { text: 'Events', action: () => handleNavigate('events-list') },
             { text: 'Venues', action: () => handleNavigate('venues-list') },
             { text: 'Brands', action: () => handleNavigate('brands-list') }
         ];
-    } else {
-        centerButtons = [];
     }
+    return [];
 });
 
 	const rightButtons = $derived(() => {
