@@ -15,7 +15,6 @@
 	import { appStore } from '$lib/stores/app.js';
 
 	const dispatch = createEventDispatcher<{
-		goToEvent: { eventId: string };
 		startBooking: { event: Event };
 		navigate: { view: ViewType };
 	}>();
@@ -44,7 +43,8 @@
 	const events = $derived($eventsQuery.data || []);
 
 	function goToEvent(eventId: string): void {
-		dispatch('goToEvent', { eventId });
+    dispatch('navigate', { view: 'events-detail', eventId });
+    window.scrollTo(0, 0);
 	}
 
 	function startBooking(event: Event): void {

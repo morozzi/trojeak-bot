@@ -10,7 +10,6 @@
 	import { userStore } from '$lib/stores/user.js';
 
 	const dispatch = createEventDispatcher<{
-		goToEvent: { eventId: string };
 		navigate: { view: ViewType };
 	}>();
 
@@ -33,7 +32,7 @@
 	});
 
 	function goToEvent(eventId: string) {
-		dispatch('goToEvent', { eventId });
+    dispatch('navigate', { view: 'events-detail', eventId });
 	}
 
 	function handleNavigate(page: string): void {

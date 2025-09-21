@@ -15,7 +15,6 @@
 	import { appStore } from '$lib/stores/app.js';
 
 	const dispatch = createEventDispatcher<{
-		goToEvent: { eventId: string };
 		navigate: { view: ViewType };
 	}>();
 
@@ -68,14 +67,15 @@
 		
 		return brandEvents;
 	});
-
-	function selectBrand(brandId: string): void {
-		dispatch('navigate', { view: 'brands-detail' });
-		window.scrollTo(0, 0);
+	
+	function goToBrand(brandId: string): void {
+    dispatch('navigate', { view: 'brands-detail', brandId });
+    window.scrollTo(0, 0);
 	}
-
+	
 	function goToEvent(eventId: string): void {
-		dispatch('goToEvent', { eventId });
+    dispatch('navigate', { view: 'events-detail', eventId });
+    window.scrollTo(0, 0);
 	}
 </script>
 
@@ -102,7 +102,7 @@
 				</Card.Card>
 			{:else}
 				{#each brands as brand}
-					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectBrand(brand.brandid.toString())}>
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToBrand(brand.brandid.toString())}>
 						<Card.CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
 								<div class="flex items-center gap-4">

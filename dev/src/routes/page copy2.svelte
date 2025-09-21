@@ -143,23 +143,20 @@
 	function handleAccountAction(event: CustomEvent<{action: string}>) {
 		const action = event.detail.action;
 	}
-
-	function handleNavigate(event: CustomEvent<{view: ViewType, eventId?: string, venueId?: string, brandId?: string}>) {
-		const { view, eventId, venueId, brandId } = event.detail;
-		
-		if (view === 'events-detail' && eventId) {
-			const foundEvent = queryClient.getQueryData(['events', $userStore.selectedLanguage, $userStore.selectedCity])?.find(e => e.eventid.toString() === eventId);
-			if (foundEvent) appActions.setSelectedEvent(foundEvent);
-		} else if (view === 'venues-detail' && venueId) {
-			const foundVenue = queryClient.getQueryData(['venues', $userStore.selectedLanguage, $userStore.selectedCity])?.find(v => v.venueid.toString() === venueId);
-			if (foundVenue) appActions.setSelectedVenue(foundVenue);
-		} else if (view === 'brands-detail' && brandId) {
-			const foundBrand = queryClient.getQueryData(['brands'])?.find(b => b.brandid.toString() === brandId);
-			if (foundBrand) appActions.setSelectedBrand(foundBrand);
-		}
-		
-		appActions.navigate(view);
-		window.scrollTo(0, 0);
+	
+	function handleNavigate(event: CustomEvent<{view: ViewType, venueId?: string, brandId?: string}>) {
+    const { view, venueId, brandId } = event.detail;
+    
+    if (view === 'venues-detail' && venueId) {
+      const foundVenue = $venuesQuery.data?.find(v => v.venueid.toString() === venueId);
+      if (foundVenue) appActions.setSelectedVenue(foundVenue);
+    } else if (view === 'brands-detail' && brandId) {
+      const foundBrand = $brandsQuery.data?.find(b => b.brandid.toString() === brandId);
+      if (foundBrand) appActions.setSelectedBrand(foundBrand);
+    }
+    
+    appActions.navigate(view);
+    window.scrollTo(0, 0);
 	}
 
 	function handleGoBack() {
@@ -195,6 +192,15 @@
 		class="min-h-[100svh] bg-background"
 		style="--app-footer-h: calc(var(--footer-h, 72px) + env(safe-area-inset-bottom, 0px));"
 	>
+	
+	<!-- ADD THIS DEBUG CODE HERE -->
+    <div class="fixed top-0 right-0 bg-blue-500 text-white p-2 z-[999] text-xs">
+        View: {$appStore.currentView}<br>
+        Event: {$appStore.selectedEventId || 'none'}<br>
+        Venue: {$appStore.selectedVenueId || 'none'}<br>
+        Brand: {$appStore.selectedBrandId || 'none'}
+    </div>
+    
 		{#if $appStore.isLoading}
 			<Loading message="Loading Trojeak..." />
 		{:else if $appStore.error}

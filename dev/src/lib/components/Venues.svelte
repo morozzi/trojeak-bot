@@ -16,7 +16,6 @@
 
 	const dispatch = createEventDispatcher<{
 		navigate: { view: ViewType };
-		goToEvent: { eventId: string };
 	}>();
 
 	const viewMode = $derived($appStore.currentView === 'venues-detail' ? 'detail' : 'list');
@@ -75,14 +74,15 @@
 		
 		return venueEvents;
 	});
-
-	function selectVenue(venueId: string): void {
-		dispatch('navigate', { view: 'venues-detail' });
-		window.scrollTo(0, 0);
+	
+	function goToVenue(venueId: string): void {
+    dispatch('navigate', { view: 'venues-detail', venueId });
+    window.scrollTo(0, 0);
 	}
-
+	
 	function goToEvent(eventId: string): void {
-		dispatch('goToEvent', { eventId });
+    dispatch('navigate', { view: 'events-detail', eventId });
+    window.scrollTo(0, 0);
 	}
 </script>
 
@@ -109,7 +109,7 @@
 				</Card.Card>
 			{:else}
 				{#each venues as venue}
-					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => selectVenue(venue.venueid.toString())}>
+					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToVenue(venue.venueid.toString())}>
 						<Card.CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
 								<div class="flex items-center gap-4">
