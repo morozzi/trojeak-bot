@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, getContext } from 'svelte';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import type { ViewType, BookingAction } from '$lib/types/components.js';
 
@@ -23,39 +23,40 @@
 		footerVisible = true
 	}: Props = $props();
 
+	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
+	const totalBookingSteps = stepTitles.length;
+
 	let footerEl: HTMLElement | undefined = $state();
+	const registerFooter = getContext<(element: HTMLElement) => void>('registerFooter');
 
 	const dispatch = createEventDispatcher<{
 		navigate: { view: ViewType };
 		goBack: void;
 		bookingAction: { action: BookingAction };
-		footerReady: { element: HTMLElement };
 	}>();
 
-	const viewType = $derived({
-		isBooking: currentView.startsWith('booking-step-'),
-		isList: currentView.endsWith('-list'),
-		isHome: currentView === 'home'
-	});
+	const isBookingView = $derived(currentView.startsWith('booking-step-'));
+	const isListView = $derived(currentView.endsWith('-list'));
+	const isHomeView = $derived(currentView === 'home');
 
 	const leftButtons = $derived.by(() => {
-		if (viewType.isBooking && bookingStep && bookingStep > 1) {
+		if (isBookingView && bookingStep && bookingStep > 1) {
 			return [{ text: '← Back', action: () => handleBookingAction('prev') }];
 		}
-		if (canGoBack && !viewType.isBooking) {
+		if (canGoBack && !isBookingView) {
 			return [{ text: '← Back', action: handleGoBack }];
 		}
-		if (viewType.isList && !canGoBack) {
+		if (isListView && !canGoBack) {
 			return [{ text: 'Home', action: () => handleNavigate('home') }];
 		}
 		return [];
 	});
 
 	const centerButtons = $derived.by(() => {
-		if (viewType.isBooking) {
+		if (isBookingView) {
 			return [{ text: 'Cancel', action: () => handleBookingAction('cancel') }];
 		}
-		if (viewType.isHome) {
+		if (isHomeView) {
 			return [
 				{ text: 'Events', action: () => handleNavigate('events-list') },
 				{ text: 'Venues', action: () => handleNavigate('venues-list') },
@@ -66,8 +67,8 @@
 	});
 
 	const rightButtons = $derived.by(() => {
-		if (viewType.isBooking && bookingStep) {
-			if (bookingStep < 4) {
+		if (isBookingView && bookingStep) {
+			if (bookingStep < totalBookingSteps) {
 				return [{ 
 					text: 'Continue', 
 					action: () => handleBookingAction('next'), 
@@ -85,12 +86,6 @@
 		return [];
 	});
 
-	$effect(() => {
-		if (footerEl) {
-			dispatch('footerReady', { element: footerEl });
-		}
-	});
-
 	function handleGoBack(): void {
 		dispatch('goBack');
 	}
@@ -102,6 +97,12 @@
 	function handleBookingAction(action: BookingAction): void {
 		dispatch('bookingAction', { action });
 	}
+
+	$effect(() => {
+		if (footerEl && registerFooter) {
+			registerFooter(footerEl);
+		}
+	});
 </script>
 
 <nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50" style:display={footerVisible ? 'block' : 'none'}>

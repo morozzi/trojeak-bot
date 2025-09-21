@@ -32,7 +32,6 @@
 	const dispatch = createEventDispatcher<{
 		navigate: { view: ViewType };
 		footerVisibilityChange: { visible: boolean };
-		validationChange: { canProceed: boolean; canComplete: boolean; isProcessing: boolean };
 	}>();
 
 	const brandsQuery = createQuery({
@@ -94,15 +93,6 @@
 	const canCompleteBooking = $derived(paymentMethod !== '');
 	const progressPercentage = $derived((currentStep / stepTitles.length) * 100);
 
-	const canProceed = $derived(() => {
-		switch (currentStep) {
-			case 1: return canProceedFromStep1;
-			case 2: return canProceedFromStep2;
-			case 3: return canProceedFromStep3;
-			default: return true;
-		}
-	});
-
 	$effect(() => {
 		if (!$appStore.bookingState) {
 			appActions.startBooking(event.eventid.toString());
@@ -120,14 +110,6 @@
 		const handler = (e: MediaQueryListEvent) => isMobile = e.matches;
 		mediaQuery.addEventListener('change', handler);
 		return () => mediaQuery.removeEventListener('change', handler);
-	});
-
-	$effect(() => {
-		dispatch('validationChange', {
-			canProceed: canProceed(),
-			canComplete: canCompleteBooking,
-			isProcessing
-		});
 	});
 
 	function toggleFooter(show: boolean) {

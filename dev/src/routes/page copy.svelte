@@ -1,6 +1,6 @@
 <!-- routes/+page.svelte - Main application page -->
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import type { WebApp } from '@twa-dev/sdk';
 	import type { Event, Venue } from '$lib/types/api.js';
@@ -27,11 +27,9 @@
 
 	let currentFooterEl: HTMLElement | undefined = $state();
 	let footerVisible = $state(true);
-	let canProceedBooking = $state(false);
-	let canCompleteBooking = $state(false);
-	let isBookingProcessing = $state(false);
 
 	function updateFooterHeight() {
+		if (!currentFooterEl) return;
 		const height = currentFooterEl.offsetHeight;
 		document.documentElement.style.setProperty('--footer-h', `${height}px`);
 	}
@@ -43,6 +41,10 @@
 			ro.observe(currentFooterEl);
 			return () => ro.disconnect();
 		}
+	});
+
+	setContext('registerFooter', (element: HTMLElement) => {
+		currentFooterEl = element;
 	});
 
 	$effect(() => {
@@ -192,17 +194,6 @@
 	function handleFooterVisibilityChange(event: CustomEvent<{visible: boolean}>) {
 		footerVisible = event.detail.visible;
 	}
-	
-	function handleFooterReady(event: CustomEvent<{element: HTMLElement}>) {
-		currentFooterEl = event.detail.element;
-	}
-
-	function handleValidationChange(event: CustomEvent<{canProceed: boolean; canComplete: boolean; isProcessing: boolean}>) {
-		const { canProceed, canComplete, isProcessing } = event.detail;
-		canProceedBooking = canProceed;
-		canCompleteBooking = canComplete;
-		isBookingProcessing = isProcessing;
-	}
 </script>
 
 <QueryClientProvider client={queryClient}>
@@ -256,7 +247,6 @@
 							event={$appStore.selectedEvent}
 							on:navigate={handleNavigate}
 							on:footerVisibilityChange={handleFooterVisibilityChange}
-							on:validationChange={handleValidationChange}
 						/>
 					{/if}
 				{/if}
@@ -266,14 +256,13 @@
 				currentView={$appStore.currentView}
 				canGoBack={$appStore.canGoBack}
 				bookingStep={$appStore.bookingState?.currentStep}
-				isBookingProcessing={isBookingProcessing}
-				canProceedBooking={canProceedBooking}
-				canCompleteBooking={canCompleteBooking}
+				isBookingProcessing={false}
+				canProceedBooking={true}
+				canCompleteBooking={true}
 				footerVisible={footerVisible}
 				on:goBack={handleGoBack}
 				on:navigate={handleNavigate}
 				on:bookingAction={handleBookingAction}
-				on:footerReady={handleFooterReady}
 			/>
 		{:else}
 			<Loading message="Loading user preferences..." />
