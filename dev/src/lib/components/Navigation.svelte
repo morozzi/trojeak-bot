@@ -105,6 +105,11 @@
 	});
 </script>
 
+<!-- DEBUG: Add this BEFORE <nav> -->
+<div class="fixed top-0 left-0 bg-red-500 text-white p-2 z-[999]">
+    currentView: {currentView}
+</div>
+
 <nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50" style:display={footerVisible ? 'block' : 'none'}>
 	<div class="mx-auto w-full max-w-2xl px-4">
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
