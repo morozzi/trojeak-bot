@@ -53,21 +53,14 @@
 	});
 
 	const centerButtons = $derived(() => {
-    const result = [];
-    
-    if (isBookingView) {
-        result.push({ text: 'Cancel', action: () => handleBookingAction('cancel') });
-        return result;
-    }
-    
     if (isHomeView) {
-        result.push({ text: 'Events', action: () => handleNavigate('events-list') });
-        result.push({ text: 'Venues', action: () => handleNavigate('venues-list') });
-        result.push({ text: 'Brands', action: () => handleNavigate('brands-list') });
-        return result;
+        return [
+            { text: 'Events', action: null },
+            { text: 'Venues', action: null },
+            { text: 'Brands', action: null }
+        ];
     }
-    
-    return result;
+    return [];
 });
 
 	const rightButtons = $derived(() => {
