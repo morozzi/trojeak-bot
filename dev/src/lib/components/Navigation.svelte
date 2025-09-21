@@ -53,18 +53,18 @@
 	});
 
 	const centerButtons = $derived(() => {
-		if (isBookingView) {
-			return [{ text: 'Cancel', action: () => handleBookingAction('cancel') }];
-		}
-		if (isHomeView) {
-			return [
-				{ text: 'Events', action: () => handleNavigate('events-list') },
-				{ text: 'Venues', action: () => handleNavigate('venues-list') },
-				{ text: 'Brands', action: () => handleNavigate('brands-list') }
-			];
-		}
-		return [];
-	});
+    if (isBookingView) {
+        return [{ text: 'Cancel', action: () => handleBookingAction('cancel') }];
+    }
+    if (isHomeView) {
+        // Try creating the array step by step
+        const button1 = { text: 'Events', action: () => handleNavigate('events-list') };
+        const button2 = { text: 'Venues', action: () => handleNavigate('venues-list') };
+        const button3 = { text: 'Brands', action: () => handleNavigate('brands-list') };
+        return [button1, button2, button3];
+    }
+    return [];
+});
 
 	const rightButtons = $derived(() => {
 		if (isBookingView && bookingStep) {
@@ -110,8 +110,7 @@
     currentView: {currentView}<br>
     isHomeView: {isHomeView}<br>
     centerButtons: {centerButtons.length}<br>
-    handleNavigate exists: {typeof handleNavigate}<br>
-    dispatch exists: {typeof dispatch}
+    centerButtons exist: {centerButtons ? 'yes' : 'no'}
 </div>
 
 <nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50" style:display={footerVisible ? 'block' : 'none'}>
