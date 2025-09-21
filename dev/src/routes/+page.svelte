@@ -191,8 +191,8 @@
 				isBookingProcessing = false;
 				alert('Booking completed!');
 				appActions.clearBooking();
-				appActions.clearHistory();
 				appActions.navigate('home');
+				appActions.clearHistory();
 			}, 2000);
 		}
 	}
