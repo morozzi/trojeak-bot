@@ -110,7 +110,10 @@
     currentView: {currentView}<br>
     isHomeView: {isHomeView}<br>
     isListView: {isListView}<br>
-    isBookingView: {isBookingView}
+    isBookingView: {isBookingView}<br>
+    leftButtons: {leftButtons.length}<br>
+    centerButtons: {centerButtons.length}<br>
+    rightButtons: {rightButtons.length}
 </div>
 
 <nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50" style:display={footerVisible ? 'block' : 'none'}>
