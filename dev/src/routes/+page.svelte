@@ -121,15 +121,15 @@
 		queryClient.invalidateQueries({ queryKey: ['events'] });
 		queryClient.invalidateQueries({ queryKey: ['venues'] });
 	}
-
+	
 	function handleShareToStory() {
     if ($appStore.webApp?.shareToStory) {
       const domain = $userStore.userData.constants.WEBAPP_DOMAIN;
-      $appStore.webApp.shareToStory(`https://${domain}`, {
+      $appStore.webApp.shareToStory(`https://${domain}/pic/logo.png`, {
         text: '🇰🇭Cambodia #1 party app 💥Book exclusive deals & Party like VIP 💎 Let’s Trojeak🍻',
         widget_link: {
-            url: `https://${domain}`,
-            name: 'Trojeak Booking'
+          url: `https://${domain}`,
+          name: 'Trojeak Booking'
         }
       });
     }
