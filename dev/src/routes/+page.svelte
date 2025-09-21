@@ -185,7 +185,10 @@
 			appActions.clearBooking();
 			appActions.goBack();
 		} else if (action === 'complete') {
-			console.log('Complete booking:', $appStore.bookingState);
+			isBookingProcessing = true;
+			appActions.clearBooking();
+			appActions.goBack();
+			isBookingProcessing = false;
 		}
 	}
 
