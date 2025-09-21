@@ -52,15 +52,20 @@
 		return [];
 	});
 
-	const centerButtons = $derived(() => {
-    if (isHomeView) {
-        return [
-            { text: 'Events', action: null },
-            { text: 'Venues', action: null },
-            { text: 'Brands', action: null }
+	let centerButtons = $state([]);
+
+$effect(() => {
+    if (isBookingView) {
+        centerButtons = [{ text: 'Cancel', action: () => handleBookingAction('cancel') }];
+    } else if (isHomeView) {
+        centerButtons = [
+            { text: 'Events', action: () => handleNavigate('events-list') },
+            { text: 'Venues', action: () => handleNavigate('venues-list') },
+            { text: 'Brands', action: () => handleNavigate('brands-list') }
         ];
+    } else {
+        centerButtons = [];
     }
-    return [];
 });
 
 	const rightButtons = $derived(() => {
@@ -105,7 +110,6 @@
 <!-- DEBUG: Add this BEFORE <nav> -->
 <div class="fixed top-0 left-0 bg-red-500 text-white p-2 z-[999] text-xs">
     isHomeView: {isHomeView}<br>
-    isBookingView: {isBookingView}<br>
     centerButtons: {centerButtons.length}<br>
     first button: {centerButtons[0]?.text || 'none'}
 </div>
