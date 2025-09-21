@@ -44,7 +44,6 @@
 
 	function goToEvent(eventId: string): void {
     dispatch('navigate', { view: 'events-detail', eventId });
-    window.scrollTo(0, 0);
 	}
 
 	function startBooking(event: Event): void {

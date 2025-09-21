@@ -77,12 +77,10 @@
 	
 	function goToVenue(venueId: string): void {
     dispatch('navigate', { view: 'venues-detail', venueId });
-    window.scrollTo(0, 0);
 	}
 	
 	function goToEvent(eventId: string): void {
     dispatch('navigate', { view: 'events-detail', eventId });
-    window.scrollTo(0, 0);
 	}
 </script>
 

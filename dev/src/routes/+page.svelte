@@ -91,23 +91,6 @@
 				}
 			});
 			
-			WebApp.BackButton.onClick(() => {
-    		if ($appStore.canGoBack) {
-        	if ($appStore.currentView.startsWith('booking-step-') && $appStore.bookingState) {
-            if ($appStore.bookingState.currentStep > 1) {
-              appActions.updateBookingState({ 
-                currentStep: $appStore.bookingState.currentStep - 1 
-              });
-            } else { 
-              appActions.clearBooking();
-              appActions.goBack();
-            }
-        	} else {
-            appActions.goBack();
-        	}
-    		}
-			});
-			
 			const urlParams = new URLSearchParams(window.location.search);
 			const startParam = urlParams.get('start');
 			appActions.handleDeepLink(startParam || undefined);

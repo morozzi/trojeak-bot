@@ -70,12 +70,10 @@
 	
 	function goToBrand(brandId: string): void {
     dispatch('navigate', { view: 'brands-detail', brandId });
-    window.scrollTo(0, 0);
 	}
 	
 	function goToEvent(eventId: string): void {
     dispatch('navigate', { view: 'events-detail', eventId });
-    window.scrollTo(0, 0);
 	}
 </script>
 
