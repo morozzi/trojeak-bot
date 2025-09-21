@@ -4,7 +4,7 @@ import type { WebApp } from '@twa-dev/sdk';
 import type { ViewType } from '$lib/types/components.js';
 import type { Event, Venue } from '$lib/types/api.js';
 
-const SCROLL_RESTORE_VIEWS = ['home', 'events-list', 'brands-detail', 'venues-detail'];
+const SCROLL_RESTORE_VIEWS = ['home', 'events-list', 'venues-list', 'venues-detail', 'brands-list', 'brands-detail'];
 
 interface NavigationContext {
 	selectedEventId?: string;
