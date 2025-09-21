@@ -146,10 +146,16 @@
 
 	function handleNavigate(event: CustomEvent<{view: ViewType, eventId?: string, venueId?: string, brandId?: string}>) {
 		const { view, eventId, venueId, brandId } = event.detail;
-		
+			
 		if (view === 'events-detail' && eventId) {
-			const foundEvent = queryClient.getQueryData(['events', $userStore.selectedLanguage, $userStore.selectedCity])?.find(e => e.eventid.toString() === eventId);
-			if (foundEvent) appActions.setSelectedEvent(foundEvent);
+    	const isFromHome = $appStore.currentView === 'home';
+    	const cacheKey = isFromHome 
+        ? ['events', $userStore.selectedLanguage, $userStore.selectedCity, 'featured']
+        : ['events', $userStore.selectedLanguage, $userStore.selectedCity];
+    
+    	const foundEvent = queryClient.getQueryData(cacheKey)?.find(e => e.eventid.toString() === eventId);
+    	if (foundEvent) appActions.setSelectedEvent(foundEvent);
+
 		} else if (view === 'venues-detail' && venueId) {
 			const foundVenue = queryClient.getQueryData(['venues', $userStore.selectedLanguage, $userStore.selectedCity])?.find(v => v.venueid.toString() === venueId);
 			if (foundVenue) appActions.setSelectedVenue(foundVenue);
