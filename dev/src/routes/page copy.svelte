@@ -187,15 +187,6 @@
 		class="min-h-[100svh] bg-background"
 		style="--app-footer-h: calc(var(--footer-h, 72px) + env(safe-area-inset-bottom, 0px));"
 	>
-	
-	<!-- ADD THIS DEBUG CODE HERE -->
-    <div class="fixed top-0 right-0 bg-blue-500 text-white p-2 z-[999] text-xs">
-        View: {$appStore.currentView}<br>
-        Event: {$appStore.selectedEventId || 'none'}<br>
-        Venue: {$appStore.selectedVenueId || 'none'}<br>
-        Brand: {$appStore.selectedBrandId || 'none'}
-    </div>
-    
 		{#if $appStore.isLoading}
 			<Loading message="Loading Trojeak..." />
 		{:else if $appStore.error}
