@@ -109,11 +109,9 @@
 <div class="fixed top-0 left-0 bg-red-500 text-white p-2 z-[999] text-xs">
     currentView: {currentView}<br>
     isHomeView: {isHomeView}<br>
-    isListView: {isListView}<br>
-    isBookingView: {isBookingView}<br>
-    leftButtons: {leftButtons.length}<br>
     centerButtons: {centerButtons.length}<br>
-    rightButtons: {rightButtons.length}
+    handleNavigate exists: {typeof handleNavigate}<br>
+    dispatch exists: {typeof dispatch}
 </div>
 
 <nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50" style:display={footerVisible ? 'block' : 'none'}>
