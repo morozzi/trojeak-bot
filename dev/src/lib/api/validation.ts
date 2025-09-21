@@ -1,12 +1,14 @@
 import { z } from 'zod';
 
 interface Constants {
+    PHONE_REGEX: string;
     MAX_GUESTS: number;
     MAX_COMMENT_LENGTH: number;
     MAX_QTY_PER_BRAND: number;
     DEFAULT_CURRENCY: string;
     CURRENCY_SYMBOL: string;
     CURRENCY_PRECISION: number;
+    WEBAPP_DOMAIN: string;
 }
 
 export class BookingValidator {

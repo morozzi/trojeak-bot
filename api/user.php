@@ -98,7 +98,8 @@ function handleGetRequest(array $user): void {
             'MAX_QTY_PER_BRAND' => Constants::MAX_QTY_PER_BRAND,
             'DEFAULT_CURRENCY' => Constants::DEFAULT_CURRENCY,
             'CURRENCY_SYMBOL' => Constants::CURRENCY_SYMBOL,
-            'CURRENCY_PRECISION' => Constants::CURRENCY_PRECISION
+            'CURRENCY_PRECISION' => Constants::CURRENCY_PRECISION,
+            'WEBAPP_DOMAIN' => BotConfig::WEBAPP_DOMAIN
         ]
     ];
     

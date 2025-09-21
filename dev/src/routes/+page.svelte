@@ -123,19 +123,16 @@
 	}
 
 	function handleShareToStory() {
-		if ($appStore.webApp?.shareToStory) {
-			try {
-				$appStore.webApp.shareToStory('https://trojeak.morozzi.com', {
-					text: 'Check out these amazing events in Cambodia! 🇰🇭',
-					widget_link: {
-						url: 'https://trojeak.morozzi.com',
-						name: 'Trojeak Events'
-					}
-				});
-			} catch (err) {
-				console.error('Share to story failed:', err);
-			}
-		}
+    if ($appStore.webApp?.shareToStory) {
+      const domain = $userStore.userData.constants.WEBAPP_DOMAIN;
+      $appStore.webApp.shareToStory(`https://${domain}`, {
+        text: '🇰🇭Cambodia #1 party app 💥Book exclusive deals & Party like VIP 💎 Let’s Trojeak🍻',
+        widget_link: {
+            url: `https://${domain}`,
+            name: 'Trojeak Booking'
+        }
+      });
+    }
 	}
 
 	function handleAccountAction(event: CustomEvent<{action: string}>) {
