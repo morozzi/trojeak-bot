@@ -8,14 +8,16 @@
 	import { Star } from '@lucide/svelte';
 	import EventList from '$lib/components/EventList.svelte';
 	import Loading from '$lib/components/Loading.svelte';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, getContext } from 'svelte';
 	import type { Venue, Event } from '$lib/types/api.js';
-	import type { ViewType } from '$lib/types/components.js';
 	import { userStore } from '$lib/stores/user.js';
 	import { appStore } from '$lib/stores/app.js';
 
+	let footerEl: HTMLElement | undefined = $state();
+	const registerFooter = getContext<(element: HTMLElement) => void>('registerFooter');
+
 	const dispatch = createEventDispatcher<{
-		navigate: { view: ViewType };
+		navigate: { view: string; venueId?: string };
 		goToEvent: { eventId: string };
 	}>();
 
@@ -37,7 +39,7 @@
 			const response = await fetch(`/api/events.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}`);
 			if (!response.ok) throw new Error('Failed to fetch events');
 			return response.json();
-		}
+		},
 	});
 
 	const brandsQuery = createQuery({
@@ -77,13 +79,27 @@
 	});
 
 	function selectVenue(venueId: string): void {
-		dispatch('navigate', { view: 'venues-detail' });
+		dispatch('navigate', { view: 'venues-detail', venueId });
 		window.scrollTo(0, 0);
+	}
+
+	function goHome(): void {
+		dispatch('navigate', { view: 'home' });
+	}
+
+	function goToList(): void {
+		dispatch('navigate', { view: 'venues-list' });
 	}
 
 	function goToEvent(eventId: string): void {
 		dispatch('goToEvent', { eventId });
 	}
+
+	$effect(() => {
+		if (footerEl && registerFooter) {
+			registerFooter(footerEl);
+		}
+	});
 </script>
 
 <div class="space-y-8">
@@ -231,3 +247,23 @@
 		{/if}
 	{/if}
 </div>
+
+<nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
+	<div class="mx-auto w-full max-w-2xl px-4">
+		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
+			<div class="flex items-center justify-start">
+				{#if viewMode === 'list'}
+					<Button.Button variant="outline" onclick={goHome}>
+						Home
+					</Button.Button>
+				{:else}
+					<Button.Button variant="outline" onclick={goToList}>
+						← Back
+					</Button.Button>
+				{/if}
+			</div>
+			<div class="flex items-center justify-center"></div>
+			<div class="flex items-center justify-end"></div>
+		</div>
+	</div>
+</nav>

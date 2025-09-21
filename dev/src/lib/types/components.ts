@@ -15,6 +15,8 @@ export type ViewType =
   | 'brands-list' | 'brands-detail'
   | 'booking-step-1' | 'booking-step-2' | 'booking-step-3' | 'booking-step-4';
 
+export type BookingAction = 'prev' | 'next' | 'cancel' | 'complete';
+
 export interface FilterState {
   cityId?: number;
   venueType?: string;

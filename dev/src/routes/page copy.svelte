@@ -4,7 +4,7 @@
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import type { WebApp } from '@twa-dev/sdk';
 	import type { Event, Venue } from '$lib/types/api.js';
-	import type { ViewType, BookingAction } from '$lib/types/components.js';
+	import type { ViewType } from '$lib/types/components.js';
 	import { userStore, userActions } from '$lib/stores/user.js';
 	import { appStore, appActions } from '$lib/stores/app.js';
 	import Loading from '$lib/components/Loading.svelte';
@@ -14,7 +14,6 @@
 	import Venues from '$lib/components/Venues.svelte';
 	import Brands from '$lib/components/Brands.svelte';
 	import Booking from '$lib/components/Booking.svelte';
-	import Navigation from '$lib/components/Navigation.svelte';
 
 	const queryClient = new QueryClient({
 		defaultOptions: {
@@ -26,7 +25,6 @@
 	});
 
 	let currentFooterEl: HTMLElement | undefined = $state();
-	let footerVisible = $state(true);
 
 	function updateFooterHeight() {
 		if (!currentFooterEl) return;
@@ -89,8 +87,9 @@
 			
 			userActions.setInitData(WebApp.initData);
 			
+			appActions.setThemeFromWebApp();
 			if (WebApp.themeParams?.header_bg_color) {
-				WebApp.setHeaderColor(WebApp.themeParams.header_bg_color);
+				WebApp.setHeaderColor($appStore.backgroundColor);
 			}
 			
 			const urlParams = new URLSearchParams(window.location.search);
@@ -105,13 +104,14 @@
 	});
 	
 	function handleStartBooking(event: CustomEvent<{event: Event}>) {
-		appActions.setSelectedEvent(event.detail.event);
-		appActions.startBooking(event.detail.event.eventid.toString());
-		appActions.navigate('booking-step-1');
-		window.scrollTo(0, 0);
+    appActions.setSelectedEvent(event.detail.event);
+    appActions.startBooking(event.detail.event.eventid.toString());
+    appActions.navigate('booking-step-1');
+    window.scrollTo(0, 0);
 	}
 	
 	function handleGoToEvent(event: CustomEvent<{eventId: string}>) {
+		appActions.setSelectedEventId(event.detail.eventId);
 		appActions.navigate('events-detail');
 		window.scrollTo(0, 0);
 	}
@@ -149,36 +149,15 @@
 		const action = event.detail.action;
 	}
 
-	function handleNavigate(event: CustomEvent<{view: ViewType}>) {
-		appActions.navigate(event.detail.view);
-		window.scrollTo(0, 0);
-	}
-
-	function handleGoBack() {
-		appActions.goBack();
-	}
-
-	function handleBookingAction(event: CustomEvent<{action: BookingAction}>) {
-		const { action } = event.detail;
+	function handleNavigate(event: CustomEvent<{view: string; eventId?: string; venueId?: string; brandId?: string}>) {
+		const { view, eventId, venueId, brandId } = event.detail;
 		
-		if (action === 'prev') {
-			if ($appStore.bookingState && $appStore.bookingState.currentStep > 1) {
-				appActions.updateBookingState({ currentStep: $appStore.bookingState.currentStep - 1 });
-			}
-		} else if (action === 'next') {
-			if ($appStore.bookingState && $appStore.bookingState.currentStep < 4) {
-				appActions.updateBookingState({ currentStep: $appStore.bookingState.currentStep + 1 });
-			}
-		} else if (action === 'cancel') {
-			appActions.clearBooking();
-			appActions.goBack();
-		} else if (action === 'complete') {
-			console.log('Complete booking:', $appStore.bookingState);
-		}
-	}
-
-	function handleFooterVisibilityChange(event: CustomEvent<{visible: boolean}>) {
-		footerVisible = event.detail.visible;
+		if (eventId) appActions.setSelectedEventId(eventId);
+		if (venueId) appActions.setSelectedVenueId(venueId);
+		if (brandId) appActions.setSelectedBrandId(brandId);
+		
+		appActions.navigate(view as ViewType);
+		window.scrollTo(0, 0);
 	}
 </script>
 
@@ -236,24 +215,10 @@
 						<Booking 
 							event={$appStore.selectedEvent}
 							on:navigate={handleNavigate}
-							on:footerVisibilityChange={handleFooterVisibilityChange}
 						/>
 					{/if}
 				{/if}
 			</main>
-
-			<Navigation 
-				currentView={$appStore.currentView}
-				canGoBack={$appStore.canGoBack}
-				bookingStep={$appStore.bookingState?.currentStep}
-				isBookingProcessing={false}
-				canProceedBooking={true}
-				canCompleteBooking={true}
-				footerVisible={footerVisible}
-				on:goBack={handleGoBack}
-				on:navigate={handleNavigate}
-				on:bookingAction={handleBookingAction}
-			/>
 		{:else}
 			<Loading message="Loading user preferences..." />
 		{/if}

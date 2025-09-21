@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, getContext } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Button from '$lib/components/ui/button/index.js';
@@ -9,9 +9,12 @@
 	import type { ViewType } from '$lib/types/components.js';
 	import { userStore } from '$lib/stores/user.js';
 
+	let footerEl: HTMLElement | undefined = $state();
+	const registerFooter = getContext<(element: HTMLElement) => void>('registerFooter');
+
 	const dispatch = createEventDispatcher<{
 		goToEvent: { eventId: string };
-		navigate: { view: ViewType };
+		navigate: { view: string };
 	}>();
 
 	const featuredEventsQuery = createQuery({
@@ -39,6 +42,12 @@
 	function handleNavigate(page: string): void {
 		dispatch('navigate', { view: `${page}-list` as ViewType });
 	}
+
+	$effect(() => {
+		if (footerEl && registerFooter) {
+			registerFooter(footerEl);
+		}
+	});
 </script>
 
 <div class="space-y-8">
@@ -72,3 +81,23 @@
 		</div>
 	{/if}
 </div>
+
+<nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
+	<div class="mx-auto w-full max-w-2xl px-4">
+		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
+			<div class="flex items-center justify-start"></div>
+			<div class="flex items-center justify-center gap-6">
+				<Button.Button variant="outline" onclick={() => handleNavigate('events-list')}>
+					Events
+				</Button.Button>
+				<Button.Button variant="outline" onclick={() => handleNavigate('venues-list')}>
+					Venues
+				</Button.Button>
+				<Button.Button variant="outline" onclick={() => handleNavigate('brands-list')}>
+					Brands
+				</Button.Button>
+			</div>
+			<div class="flex items-center justify-end"></div>
+		</div>
+	</div>
+</nav>

@@ -11,9 +11,8 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import Loading from '$lib/components/Loading.svelte';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, getContext } from 'svelte';
 	import type { Event } from '$lib/types/api.js';
-	import type { ViewType } from '$lib/types/components.js';
 	import { appStore, appActions } from '$lib/stores/app.js';
 	import { userStore } from '$lib/stores/user.js';
 	import { BookingValidator, type BookingData } from '$lib/api/validation.js';
@@ -24,14 +23,15 @@
 	
 	const { event }: Props = $props();
 	
+	let footerEl: HTMLElement | undefined = $state();
+	const registerFooter = getContext<(element: HTMLElement) => void>('registerFooter');
+	let footerVisible = $state(true);
 	let isProcessing = $state(false);
 	let phoneInputTouched = $state(false);
-	let footerVisible = $state(true);
 	let isMobile = $state(false);
 
 	const dispatch = createEventDispatcher<{
-		navigate: { view: ViewType };
-		footerVisibilityChange: { visible: boolean };
+		navigate: { view: string };
 	}>();
 
 	const brandsQuery = createQuery({
@@ -40,7 +40,7 @@
 			const response = await fetch(`/api/brands.php`);
 			if (!response.ok) throw new Error('Failed to fetch brands');
 			return response.json();
-		}
+		},
 	});
 	
 	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
@@ -104,6 +104,12 @@
 	});
 
 	$effect(() => {
+		if (footerEl && registerFooter) {
+			registerFooter(footerEl);
+		}
+	});
+
+	$effect(() => {
 		const mediaQuery = window.matchMedia('(max-width: 768px)');
 		isMobile = mediaQuery.matches;
 		
@@ -116,13 +122,9 @@
 		if (!isMobile) return;
 		
 		if (!show) {
-			setTimeout(() => {
-				footerVisible = false;
-				dispatch('footerVisibilityChange', { visible: false });
-			}, 300);
+			setTimeout(() => footerVisible = false, 300);
 		} else {
 			footerVisible = true;
-			dispatch('footerVisibilityChange', { visible: true });
 		}
 	}
 
@@ -154,6 +156,34 @@
 
 	function updatePaymentMethod(value: 'aba' | 'ipay88' | 'stars') {
 		appActions.updateBookingState({ paymentMethod: value });
+	}
+
+	function nextStep() {
+		if (currentStep < stepTitles.length) {
+			appActions.updateBookingState({ currentStep: currentStep + 1 });
+			dispatch('navigate', { view: `booking-step-${currentStep + 1}` });
+		}
+	}
+
+	function prevStep() {
+		if (currentStep > 1) {
+			appActions.updateBookingState({ currentStep: currentStep - 1 });
+			dispatch('navigate', { view: `booking-step-${currentStep - 1}` });
+		} else {
+			dispatch('navigate', { view: 'events-detail' });
+		}
+	}
+
+	function handleCancel() {
+		appActions.clearBooking();
+		dispatch('navigate', { view: 'events-detail' });
+	}
+
+	async function handleCompleteBooking() {
+		isProcessing = true;
+		await new Promise(resolve => setTimeout(resolve, 2000));
+		isProcessing = false;
+		dispatch('navigate', { view: 'events-detail' });
 	}
 
 	const bookingSummary = $derived.by(() => {
@@ -377,3 +407,39 @@
 		</div>
 	{/if}
 </div>
+
+{#if footerVisible}
+<nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50">
+	<div class="mx-auto w-full max-w-2xl px-4">
+		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
+			<div class="flex items-center justify-start">
+				{#if currentStep > 1}
+					<Button.Button variant="outline" onclick={prevStep}>
+						← Back
+					</Button.Button>
+				{/if}
+			</div>
+			<div class="flex items-center justify-center">
+				<Button.Button variant="outline" onclick={handleCancel}>
+					Cancel
+				</Button.Button>
+			</div>
+			<div class="flex items-center justify-end">
+				{#if currentStep < stepTitles.length}
+					<Button.Button onclick={nextStep} disabled={
+						(currentStep === 1 && !canProceedFromStep1) ||
+						(currentStep === 2 && !canProceedFromStep2) ||
+						(currentStep === 3 && !canProceedFromStep3)
+					}>
+						Continue
+					</Button.Button>
+				{:else}
+					<Button.Button onclick={handleCompleteBooking} disabled={!canCompleteBooking || isProcessing}>
+						{isProcessing ? 'Processing...' : 'Book'}
+					</Button.Button>
+				{/if}
+			</div>
+		</div>
+	</div>
+</nav>
+{/if}

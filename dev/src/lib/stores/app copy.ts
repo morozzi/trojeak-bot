@@ -6,16 +6,9 @@ import type { Event, Venue } from '$lib/types/api.js';
 
 const SCROLL_RESTORE_VIEWS = ['home', 'events-list', 'brands-detail', 'venues-detail'];
 
-interface NavigationContext {
-	selectedEventId?: string;
-	selectedVenueId?: string;
-	selectedBrandId?: string;
-}
-
 interface NavigationEntry {
 	view: ViewType;
 	scrollPosition: number;
-	context: NavigationContext;
 }
 
 interface BookingState {
@@ -33,25 +26,33 @@ interface AppState {
 	isLoading: boolean;
 	error: string;
 	currentView: ViewType;
+	selectedEventId: string | undefined;
+	selectedVenueId: string | undefined;
+	selectedBrandId: string | undefined;
 	selectedEvent: Event | null;
 	selectedVenue: Venue | null;
-	selectedBrand: any | null;
 	navigationHistory: NavigationEntry[];
+	backgroundColor: string;
+	textColor: string;
 	bookingState: BookingState | null;
 	cityData: any[];
 }
 
-const MAX_NAVIGATION_ENTRIES = 10;
+const MAX_NAVIGATION_ENTRIES = 20;
 
 const initialState: AppState = {
 	webApp: null,
 	isLoading: true,
 	error: '',
 	currentView: 'home',
+	selectedEventId: undefined,
+	selectedVenueId: undefined,
+	selectedBrandId: undefined,
 	selectedEvent: null,
 	selectedVenue: null,
-	selectedBrand: null,
 	navigationHistory: [],
+	backgroundColor: '#f9fafb',
+	textColor: '#1f2937',
 	bookingState: null,
 	cityData: []
 };
@@ -62,10 +63,7 @@ export const appStore = derived(
 	baseAppStore,
 	($base) => ({
 		...$base,
-		canGoBack: $base.navigationHistory.length > 0,
-		selectedEventId: $base.selectedEvent?.eventid.toString(),
-		selectedVenueId: $base.selectedVenue?.venueid.toString(),
-		selectedBrandId: $base.selectedBrand?.brandid.toString()
+		canGoBack: $base.navigationHistory.length > 0
 	})
 );
 
@@ -84,16 +82,11 @@ export const appActions = {
 
 	navigate: (view: ViewType) => {
 		baseAppStore.update(state => {
-			const newHistory = [...state.navigationHistory];
+			let newHistory = [...state.navigationHistory];
 			
 			newHistory.push({
 				view: state.currentView,
-				scrollPosition: window.scrollY || 0,
-				context: {
-					selectedEventId: state.selectedEvent?.eventid.toString(),
-					selectedVenueId: state.selectedVenue?.venueid.toString(),
-					selectedBrandId: state.selectedBrand?.brandid.toString()
-				}
+				scrollPosition: window.scrollY || 0
 			});
 
 			if (newHistory.length > MAX_NAVIGATION_ENTRIES) {
@@ -115,28 +108,17 @@ export const appActions = {
 				const lastEntry = newHistory.pop();
 				
 				if (lastEntry) {
-					const updates: Partial<AppState> = {
-						navigationHistory: newHistory,
-						currentView: lastEntry.view
-					};
-
-					if (lastEntry.context.selectedEventId && !state.selectedEvent) {
-						updates.selectedEvent = null;
-					}
-					if (lastEntry.context.selectedVenueId && !state.selectedVenue) {
-						updates.selectedVenue = null;
-					}
-					if (lastEntry.context.selectedBrandId && !state.selectedBrand) {
-						updates.selectedBrand = null;
-					}
-
 					if (SCROLL_RESTORE_VIEWS.includes(lastEntry.view)) {
 						setTimeout(() => {
 							window.scrollTo(0, lastEntry.scrollPosition);
 						}, 0);
 					}
 					
-					return { ...state, ...updates };
+					return {
+						...state,
+						navigationHistory: newHistory,
+						currentView: lastEntry.view
+					};
 				}
 			}
 			return state;
@@ -147,20 +129,50 @@ export const appActions = {
 		baseAppStore.update(state => ({ ...state, navigationHistory: [] }));
 	},
 
-	setSelectedEvent: (event: Event | null) => {
-		baseAppStore.update(state => ({ ...state, selectedEvent: event }));
+	setSelectedEventId: (eventId: string) => {
+		baseAppStore.update(state => ({ 
+			...state, 
+			selectedEventId: eventId 
+		}));
 	},
 
-	setSelectedVenue: (venue: Venue | null) => {
-		baseAppStore.update(state => ({ ...state, selectedVenue: venue }));
+	setSelectedVenueId: (venueId: string) => {
+		baseAppStore.update(state => ({ 
+			...state, 
+			selectedVenueId: venueId 
+		}));
 	},
 
-	setSelectedBrand: (brand: any | null) => {
-		baseAppStore.update(state => ({ ...state, selectedBrand: brand }));
+	setSelectedBrandId: (brandId: string) => {
+		baseAppStore.update(state => ({ 
+			...state, 
+			selectedBrandId: brandId 
+		}));
+	},
+	
+	setSelectedEvent: (event: Event) => {
+    baseAppStore.update(state => ({ 
+      ...state, 
+      selectedEvent: event,
+      selectedEventId: event?.eventid.toString()
+    }));
 	},
 
 	setCityData: (cities: any[]) => {
 		baseAppStore.update(state => ({ ...state, cityData: cities }));
+	},
+
+	setThemeFromWebApp: () => {
+		baseAppStore.update(state => {
+			if (state.webApp?.themeParams) {
+				return {
+					...state,
+					backgroundColor: state.webApp.themeParams.header_bg_color || initialState.backgroundColor,
+					textColor: state.webApp.themeParams.text_color || initialState.textColor
+				};
+			}
+			return state;
+		});
 	},
 
 	startBooking: (eventId: string) => {
@@ -181,7 +193,7 @@ export const appActions = {
 	updateBookingState: (updates: Partial<BookingState>) => {
 		baseAppStore.update(state => ({
 			...state,
-			bookingState: state.bookingState ? { ...state.bookingState, ...updates } : null
+			bookingState: state.bookingState ? { ...state.bookingState, ...updates } : state.bookingState
 		}));
 	},
 
@@ -191,15 +203,18 @@ export const appActions = {
 
 	handleDeepLink: (startParam?: string) => {
 		baseAppStore.update(state => {
-			const updates: Partial<AppState> = { navigationHistory: [] };
+			let updates: Partial<AppState> = { navigationHistory: [] };
 			
 			if (startParam) {
 				const [type, id] = startParam.split('_');
 				if (type === 'event' && id) {
+					updates.selectedEventId = id;
 					updates.currentView = 'events-detail';
 				} else if (type === 'venue' && id) {
+					updates.selectedVenueId = id;
 					updates.currentView = 'venues-detail';
 				} else if (type === 'brand' && id) {
+					updates.selectedBrandId = id;
 					updates.currentView = 'brands-detail';
 				}
 			}
