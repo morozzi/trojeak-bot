@@ -32,8 +32,7 @@
 			const response = await fetch(`/api/brands.php`);
 			if (!response.ok) throw new Error('Failed to fetch brands');
 			return response.json();
-		},
-		enabled: () => ($featuredEventsQuery.data || []).length > 0
+		}
 	});
 
 	function goToEvent(eventId: string) {

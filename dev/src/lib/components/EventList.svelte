@@ -8,11 +8,11 @@
 
 	interface Props {
 		events: Event[] | null;
-		brandData?: Brand[];
+		brandData: Brand[];
 		onEventClick: (eventId: string) => void;
 	}
 
-	let { events, brandData = [], onEventClick }: Props = $props();
+	let { events, brandData, onEventClick }: Props = $props();
 </script>
 
 {#if events}
