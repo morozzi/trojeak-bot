@@ -99,7 +99,8 @@ function handleGetRequest(array $user): void {
             'DEFAULT_CURRENCY' => Constants::DEFAULT_CURRENCY,
             'CURRENCY_SYMBOL' => Constants::CURRENCY_SYMBOL,
             'CURRENCY_PRECISION' => Constants::CURRENCY_PRECISION,
-            'WEBAPP_DOMAIN' => BotConfig::WEBAPP_DOMAIN
+            'WEBAPP_DOMAIN' => BotConfig::WEBAPP_DOMAIN,
+            'BOT_USERNAME' => BotConfig::USERNAME
         ]
     ];
     

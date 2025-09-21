@@ -9,6 +9,7 @@ interface Constants {
     CURRENCY_SYMBOL: string;
     CURRENCY_PRECISION: number;
     WEBAPP_DOMAIN: string;
+    BOT_USERNAME: string;
 }
 
 export class BookingValidator {

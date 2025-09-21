@@ -125,12 +125,13 @@
 	function handleShareToStory() {
     if ($appStore.webApp?.shareToStory) {
       const domain = $userStore.userData.constants.WEBAPP_DOMAIN;
+      const botUsername = $userStore.userData.constants.BOT_USERNAME;
       $appStore.webApp.shareToStory(`https://${domain}/pic/logo.png`, {
-        text: '🇰🇭Cambodia #1 party app 💥Book exclusive deals & Party like VIP 💎 Let’s Trojeak🍻',
+        text: '🇰🇭Cambodia #1 party app 💥Book exclusive deals & Party like VIP 💎 Let\'s Trojeak🍻',
         widget_link: {
-          url: `https://${domain}`,
+          url: `https://t.me/${botUsername}/trojeak`,
           name: 'Trojeak Booking'
-        }
+      	}
       });
     }
 	}
