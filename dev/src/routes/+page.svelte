@@ -186,9 +186,13 @@
 			appActions.goBack();
 		} else if (action === 'complete') {
 			isBookingProcessing = true;
-			appActions.clearBooking();
-			appActions.goBack();
-			isBookingProcessing = false;
+			
+			setTimeout(() => {
+				isBookingProcessing = false;
+		
+				appActions.clearBooking();
+				appActions.goBack();
+			}, 2000);
 		}
 	}
 
