@@ -189,7 +189,7 @@
 			
 			setTimeout(() => {
 				isBookingProcessing = false;
-		
+				alert('Booking completed!');
 				appActions.clearBooking();
 				appActions.goBack();
 			}, 2000);
