@@ -39,7 +39,7 @@
 	const isListView = $derived(currentView.endsWith('-list'));
 	const isHomeView = $derived(currentView === 'home');
 
-	const leftButtons = $derived.by(() => {
+	const leftButtons = $derived(() => {
 		if (isBookingView && bookingStep && bookingStep > 1) {
 			return [{ text: '← Back', action: () => handleBookingAction('prev') }];
 		}
@@ -52,21 +52,18 @@
 		return [];
 	});
 
-	const centerButtons = $derived.by(() => {
-		if (isBookingView) {
-			return [{ text: 'Cancel', action: () => handleBookingAction('cancel') }];
-		}
-		if (isHomeView) {
-			return [
-				{ text: 'Events', action: () => handleNavigate('events-list') },
-				{ text: 'Venues', action: () => handleNavigate('venues-list') },
-				{ text: 'Brands', action: () => handleNavigate('brands-list') }
-			];
-		}
-		return [];
-	});
+const centerButtons = $derived.by(() => {
+    if (isHomeView) {
+        return [
+            { text: 'Events', action: () => handleNavigate('events-list') },
+            { text: 'Venues', action: () => handleNavigate('venues-list') },
+            { text: 'Brands', action: () => handleNavigate('brands-list') }
+        ];
+    }
+    return [];
+});
 
-	const rightButtons = $derived.by(() => {
+	const rightButtons = $derived(() => {
 		if (isBookingView && bookingStep) {
 			if (bookingStep < totalBookingSteps) {
 				return [{ 
@@ -104,6 +101,13 @@
 		}
 	});
 </script>
+
+<!-- DEBUG: Add this BEFORE <nav> -->
+<div class="fixed top-0 left-0 bg-red-500 text-white p-2 z-[999] text-xs">
+    isHomeView: {isHomeView}<br>
+    centerButtons: {centerButtons.length}<br>
+    first button: {centerButtons[0]?.text || 'none'}
+</div>
 
 <nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50" style:display={footerVisible ? 'block' : 'none'}>
 	<div class="mx-auto w-full max-w-2xl px-4">
