@@ -7,6 +7,7 @@
 dev/.svelte-kit/
 dev/build/
 dev/node_modules/
+dev/static/
 dev/vite.config.*.timestamp-*
 
 # System Logs & Cache

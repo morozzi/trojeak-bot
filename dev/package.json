@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build && npm run deploy",
-    "deploy": "rm -rf ../app && cp build/index.html ../ && cp -r build/app ../ && rm -rf build && echo 'Build deployed to root and cleaned up'",
+    "deploy": "rm -rf ../app && cp -r build/* ../ && rm -rf build && echo 'Build deployed to root and cleaned up'",
     "preview": "vite preview"
   },
   "devDependencies": {
