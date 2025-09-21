@@ -65,6 +65,12 @@
 
 	$effect(() => {
 		if ($appStore.webApp) {
+			$appStore.webApp.onEvent('backButtonClicked', () => {
+				if ($appStore.canGoBack) {
+					appActions.goBack();
+				}
+			});
+
 			if ($appStore.canGoBack) {
 				$appStore.webApp.BackButton.show();
 			} else {
@@ -86,12 +92,6 @@
 			if (WebApp.themeParams?.header_bg_color) {
 				WebApp.setHeaderColor(WebApp.themeParams.header_bg_color);
 			}
-			
-			WebApp.BackButton.onClick(() => {
-				if ($appStore.canGoBack) {
-					appActions.goBack();
-				}
-			});
 			
 			const urlParams = new URLSearchParams(window.location.search);
 			const startParam = urlParams.get('start');
