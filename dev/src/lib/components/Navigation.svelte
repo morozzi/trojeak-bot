@@ -53,17 +53,21 @@
 	});
 
 	const centerButtons = $derived(() => {
+    const result = [];
+    
     if (isBookingView) {
-        return [{ text: 'Cancel', action: () => handleBookingAction('cancel') }];
+        result.push({ text: 'Cancel', action: () => handleBookingAction('cancel') });
+        return result;
     }
+    
     if (isHomeView) {
-        // Try creating the array step by step
-        const button1 = { text: 'Events', action: () => handleNavigate('events-list') };
-        const button2 = { text: 'Venues', action: () => handleNavigate('venues-list') };
-        const button3 = { text: 'Brands', action: () => handleNavigate('brands-list') };
-        return [button1, button2, button3];
+        result.push({ text: 'Events', action: () => handleNavigate('events-list') });
+        result.push({ text: 'Venues', action: () => handleNavigate('venues-list') });
+        result.push({ text: 'Brands', action: () => handleNavigate('brands-list') });
+        return result;
     }
-    return [];
+    
+    return result;
 });
 
 	const rightButtons = $derived(() => {
@@ -107,10 +111,10 @@
 
 <!-- DEBUG: Add this BEFORE <nav> -->
 <div class="fixed top-0 left-0 bg-red-500 text-white p-2 z-[999] text-xs">
-    currentView: {currentView}<br>
     isHomeView: {isHomeView}<br>
+    isBookingView: {isBookingView}<br>
     centerButtons: {centerButtons.length}<br>
-    centerButtons exist: {centerButtons ? 'yes' : 'no'}
+    first button: {centerButtons[0]?.text || 'none'}
 </div>
 
 <nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50" style:display={footerVisible ? 'block' : 'none'}>
