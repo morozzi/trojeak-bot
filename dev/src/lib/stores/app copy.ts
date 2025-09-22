@@ -195,17 +195,12 @@ export const appActions = {
 			
 			if (startParam) {
 				const [type, id] = startParam.split('_');
-				const numericId = parseInt(id);
-				
-				if (type === 'event' && !isNaN(numericId)) {
+				if (type === 'event' && id) {
 					updates.currentView = 'events-detail';
-					updates.selectedEvent = { eventid: numericId } as Event;
-				} else if (type === 'venue' && !isNaN(numericId)) {
+				} else if (type === 'venue' && id) {
 					updates.currentView = 'venues-detail';
-					updates.selectedVenue = { venueid: numericId } as Venue;
-				} else if (type === 'brand' && !isNaN(numericId)) {
+				} else if (type === 'brand' && id) {
 					updates.currentView = 'brands-detail';
-					updates.selectedBrand = { brandid: numericId };
 				}
 			}
 			
