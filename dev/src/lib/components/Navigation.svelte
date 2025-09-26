@@ -185,12 +185,12 @@
 					{@const switchFilters = filters.filter(f => f.type === 'switch')}
 					
 					{#if selectFilters.length > 0}
-						<div class="grid grid-cols-2 gap-4">
+						<div class="space-y-4">
 							{#each selectFilters as filter}
-								<div class="space-y-2 text-center">
+								<div class="space-y-2">
 									<Label.Label for={filter.key}>{filter.placeholder}</Label.Label>
 									<Select.Root onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}>
-										<Select.Trigger id={filter.key} class="text-center">
+										<Select.Trigger id={filter.key}>
 											All
 										</Select.Trigger>
 										<Select.Content>
