@@ -74,6 +74,10 @@
 	}
 </script>
 
+<div class="fixed top-0 left-0 bg-red-500 text-white p-2 z-50">
+	Status: {homeScreenStatus || 'null'}
+</div>
+
 <header class="mx-auto w-full max-w-2xl px-4 pt-4 pb-4">
 	<div class="grid grid-cols-[1fr_auto_1fr] items-center pb-4">
 		<div class="flex items-center gap-5 justify-start">
