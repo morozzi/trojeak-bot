@@ -153,9 +153,9 @@
 								</Select.Content>
 							</Select.Root>
 						{:else if filter.type === 'switch'}
-							<Label.Label class="flex items-center gap-1 cursor-pointer text-sm">
-								<Switch size="sm" onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
+							<Label.Label class="flex flex-col items-center gap-1 cursor-pointer text-sm">
 								{filter.label}
+								<Switch size="sm" onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
 							</Label.Label>
 						{/if}
 					{/each}
