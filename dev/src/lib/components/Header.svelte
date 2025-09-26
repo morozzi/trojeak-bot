@@ -76,7 +76,7 @@
 
 <header class="mx-auto w-full max-w-2xl px-4 pt-4 pb-4">
 	<div class="grid grid-cols-[1fr_auto_1fr] items-center pb-4">
-		<div class="flex items-center gap-2 justify-start">
+		<div class="flex items-center gap-5 justify-start">
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
 					{#snippet child({ props })}
