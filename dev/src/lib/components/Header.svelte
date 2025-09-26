@@ -48,13 +48,8 @@
 	});
 	
 	$effect(() => {
-		if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-			const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param;
-			if (startParam === 'addToHomeScreen') {
-				homeScreenStatus = 'added';
-			} else if (window.Telegram.WebApp.checkHomeScreenStatus) {
-				window.Telegram.WebApp.checkHomeScreenStatus((status) => homeScreenStatus = status);
-			}
+		if (typeof window !== 'undefined' && window.Telegram?.WebApp?.checkHomeScreenStatus) {
+			window.Telegram.WebApp.checkHomeScreenStatus((status) => homeScreenStatus = status);
 		}
 	});
 
@@ -78,13 +73,6 @@
 		window.Telegram?.WebApp?.addToHomeScreen?.();
 	}
 </script>
-
-<div class="fixed top-0 left-0 bg-blue-500 text-white p-1 z-50 text-xs">
-	initData: {window.Telegram?.WebApp?.initData || 'undefined'}<br>
-	location: {window.location?.href || 'undefined'}<br>
-	search: {window.location?.search || 'undefined'}<br>
-	hash: {window.location?.hash || 'undefined'}
-</div>
 
 <header class="mx-auto w-full max-w-2xl px-4 pt-4 pb-4">
 	<div class="grid grid-cols-[1fr_auto_1fr] items-center pb-4">
