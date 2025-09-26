@@ -18,7 +18,7 @@
 	}>();
 	
 	let homeScreenStatus = $state(null);
-	const shouldShowAddToHome = $derived(homeScreenStatus === 'missed');
+	const shouldShowAddToHome = $derived(homeScreenStatus === 'unknown' || homeScreenStatus === 'missed');
 
 	const commonQuery = createQuery({
 		queryKey: ['common', $userStore.selectedLanguage],
@@ -48,8 +48,13 @@
 	});
 	
 	$effect(() => {
-		if (typeof window !== 'undefined' && window.Telegram?.WebApp?.checkHomeScreenStatus) {
-			window.Telegram.WebApp.checkHomeScreenStatus((status) => homeScreenStatus = status);
+		if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+			const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param;
+			if (startParam === 'addToHomeScreen') {
+				homeScreenStatus = 'added';
+			} else if (window.Telegram.WebApp.checkHomeScreenStatus) {
+				window.Telegram.WebApp.checkHomeScreenStatus((status) => homeScreenStatus = status);
+			}
 		}
 	});
 
