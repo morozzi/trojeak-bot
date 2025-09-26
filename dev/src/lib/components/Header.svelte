@@ -6,7 +6,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Button from '$lib/components/ui/button/index.js';
-	import { Share2 } from '@lucide/svelte';
+	import { Share2, HousePlus } from '@lucide/svelte';
 	import { userStore } from '$lib/stores/user.js';
 	import { appActions } from '$lib/stores/app.js';
 
@@ -16,6 +16,9 @@
 		shareToStory: void;
 		accountAction: { action: string };
 	}>();
+	
+	let homeScreenStatus = $state(null);
+	const shouldShowAddToHome = $derived(homeScreenStatus === 'unknown' || homeScreenStatus === 'missed');
 
 	const commonQuery = createQuery({
 		queryKey: ['common', $userStore.selectedLanguage],
@@ -43,6 +46,12 @@
 			appActions.setCityData($commonQuery.data.cities);
 		}
 	});
+	
+	$effect(() => {
+		if (typeof window !== 'undefined' && window.Telegram?.WebApp?.checkHomeScreenStatus) {
+			window.Telegram.WebApp.checkHomeScreenStatus((status) => homeScreenStatus = status);
+		}
+	});
 
 	function handleCityChange(city: string) {
 		dispatch('cityChange', { city });
@@ -58,6 +67,10 @@
 
 	function handleAccountAction(action: string) {
 		dispatch('accountAction', { action });
+	}
+	
+	function handleAddToHome() {
+		window.Telegram?.WebApp?.addToHomeScreen?.();
 	}
 </script>
 
@@ -136,6 +149,11 @@
 			<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
 				<Share2 size={16} />
 			</Button.Button>
+			{#if shouldShowAddToHome}
+				<Button.Button variant="ghost" size="sm" onclick={handleAddToHome}>
+					<HousePlus size={16} />
+				</Button.Button>
+			{/if}
 		</div>
 	</div>
 	<Separator class="mb-4" />
