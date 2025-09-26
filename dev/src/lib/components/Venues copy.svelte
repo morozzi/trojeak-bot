@@ -14,12 +14,8 @@
 	import { userStore } from '$lib/stores/user.js';
 	import { appStore } from '$lib/stores/app.js';
 
-	let venueTypeFilter = $state<string | null>(null);
-	let haveEventsFilter = $state<boolean>(false);
-
 	const dispatch = createEventDispatcher<{
 		navigate: { view: ViewType };
-		filterChange: { type: string; value: string | boolean | null };
 	}>();
 
 	const viewMode = $derived($appStore.currentView === 'venues-detail' ? 'detail' : 'list');
@@ -53,16 +49,7 @@
 		enabled: () => viewMode === 'detail'
 	});
 
-	const venues = $derived(
-		($venuesQuery.data || []).filter((venue: Venue) => {
-			if (venueTypeFilter && venue.venuetypeid.toString() !== venueTypeFilter) return false;
-			if (haveEventsFilter) {
-				const venueData = getVenueEvents(venue.venueid, true);
-				if (venueData.count === 0) return false;
-			}
-			return true;
-		})
-	);
+	const venues = $derived($venuesQuery.data || []);
 
 	const getVenueEvents = $derived((venueId: number, returnCount: boolean = false) => {
 		const events = $eventsQuery.data || [];
@@ -87,12 +74,6 @@
 		
 		return venueEvents;
 	});
-
-	function handleFilterChange(event: CustomEvent<{type: string; value: string | boolean | null}>) {
-		const { type, value } = event.detail;
-		if (type === 'venueType') venueTypeFilter = value as string | null;
-		if (type === 'haveEvents') haveEventsFilter = value as boolean;
-	}
 	
 	function goToVenue(venueId: string): void {
     dispatch('navigate', { view: 'venues-detail', venueId });

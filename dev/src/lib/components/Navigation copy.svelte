@@ -1,9 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import * as Button from '$lib/components/ui/button/index.js';
-	import * as Select from '$lib/components/ui/select/index.js';
-	import * as Label from '$lib/components/ui/label/index.js';
-	import { Switch } from '$lib/components/ui/switch/index.js';
 	import type { ViewType, BookingAction } from '$lib/types/components.js';
 
 	interface Props {
@@ -33,7 +30,6 @@
 		goBack: void;
 		bookingAction: { action: BookingAction };
 		footerReady: { element: HTMLElement };
-		filterChange: { type: string; value: string | boolean | null };
 	}>();
 
 	const viewType = $derived({
@@ -106,28 +102,6 @@
 	function handleBookingAction(action: BookingAction): void {
 		dispatch('bookingAction', { action });
 	}
-
-	function handleFilterChange(type: string, value: string | boolean | null): void {
-		dispatch('filterChange', { type, value });
-	}
-
-	function getFilters(view: ViewType) {
-		const filterConfigs = {
-			'events-list': [
-				{ key: 'venueType', type: 'select', placeholder: 'Type' },
-				{ key: 'brand', type: 'select', placeholder: 'Brand' },
-				{ key: 'promotion', type: 'switch', label: 'Promo' }
-			],
-			'venues-list': [
-				{ key: 'venueType', type: 'select', placeholder: 'Type' },
-				{ key: 'haveEvents', type: 'switch', label: 'Events' }
-			],
-			'brands-list': [
-				{ key: 'haveEvents', type: 'switch', label: 'Events' }
-			]
-		};
-		return filterConfigs[view] || [];
-	}
 </script>
 
 <nav bind:this={footerEl} class="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-t z-50" style:display={footerVisible ? 'block' : 'none'}>
@@ -140,33 +114,12 @@
 					</Button.Button>
 				{/each}
 			</div>
-			<div class="flex items-center justify-center {centerButtons.length > 1 ? 'gap-6' : ''} {getFilters(currentView).length > 1 ? 'gap-3' : ''}">
-				{#if getFilters(currentView).length > 0}
-					{#each getFilters(currentView) as filter}
-						{#if filter.type === 'select'}
-							<Select.Root onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}>
-								<Select.Trigger class="w-24 h-8 text-sm">
-									{filter.placeholder}
-								</Select.Trigger>
-								<Select.Content>
-									<Select.Item value={null}>All {filter.placeholder}</Select.Item>
-								</Select.Content>
-							</Select.Root>
-						{:else if filter.type === 'switch'}
-							<Label.Label class="flex items-center gap-1 cursor-pointer text-sm">
-								<Switch size="sm" onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
-								{filter.label}
-							</Label.Label>
-						{/if}
-					{/each}
-				{/if}
-				{#if centerButtons.length > 0}
-					{#each centerButtons as button}
-						<Button.Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
-							{button.text}
-						</Button.Button>
-					{/each}
-				{/if}
+			<div class="flex items-center justify-center {centerButtons.length > 1 ? 'gap-6' : ''}">
+				{#each centerButtons as button}
+					<Button.Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
+						{button.text}
+					</Button.Button>
+				{/each}
 			</div>
 			<div class="flex items-center justify-end">
 				{#each rightButtons as button}
