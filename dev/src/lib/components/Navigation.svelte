@@ -184,7 +184,7 @@
 					Changes apply automatically
 				</Drawer.Description>
 			</Drawer.Header>
-			<div class="p-4 pb-4 space-y-4">
+			<div class="p-4 pb-8 space-y-4">
 				{#each getFilters(currentView) as filter}
 					{#if filter.type === 'select'}
 						<div class="space-y-2">
