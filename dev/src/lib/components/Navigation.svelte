@@ -5,7 +5,7 @@
 	import * as Label from '$lib/components/ui/label/index.js';
 	import * as Drawer from '$lib/components/ui/drawer/index.js';
 	import { Switch } from '$lib/components/ui/switch/index.js';
-	import { Filter } from '@lucide/svelte';
+	import { SlidersHorizontal } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '$lib/types/components.js';
 
 	interface Props {
@@ -69,6 +69,9 @@
 				{ text: 'Brands', action: () => handleNavigate('brands-list') }
 			];
 		}
+		if (viewType.isList && getFilters(currentView).length > 0) {
+			return [{ text: 'Filters', action: () => filtersOpen = true, icon: SlidersHorizontal }];
+		}
 		return [];
 	});
 
@@ -95,6 +98,14 @@
 	$effect(() => {
 		if (footerEl) {
 			dispatch('footerReady', { element: footerEl });
+		}
+	});
+
+	$effect(() => {
+		if (filtersOpen && typeof window !== 'undefined' && window.Telegram?.WebApp) {
+			window.Telegram.WebApp.disableVerticalSwipes();
+		} else if (!filtersOpen && typeof window !== 'undefined' && window.Telegram?.WebApp) {
+			window.Telegram.WebApp.enableVerticalSwipes();
 		}
 	});
 
@@ -144,19 +155,14 @@
 				{/each}
 			</div>
 			<div class="flex items-center justify-center {centerButtons.length > 1 ? 'gap-6' : ''}">
-				{#if getFilters(currentView).length > 0}
-					<Button.Button variant="outline" size="sm" onclick={() => filtersOpen = true}>
-						<Filter size={16} />
-						Filters
+				{#each centerButtons as button}
+					<Button.Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
+						{#if button.icon}
+							<button.icon size={16} />
+						{/if}
+						{button.text}
 					</Button.Button>
-				{/if}
-				{#if centerButtons.length > 0}
-					{#each centerButtons as button}
-						<Button.Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
-							{button.text}
-						</Button.Button>
-					{/each}
-				{/if}
+				{/each}
 			</div>
 			<div class="flex items-center justify-end">
 				{#each rightButtons as button}
