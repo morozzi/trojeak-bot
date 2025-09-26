@@ -79,8 +79,8 @@
 	}
 </script>
 
-<div class="fixed top-0 left-0 bg-red-500 text-white p-2 z-50">
-	Status: {homeScreenStatus || 'null'}
+<div class="fixed top-0 left-0 bg-blue-500 text-white p-2 z-50">
+	StartParam: {window.Telegram?.WebApp?.initDataUnsafe?.start_param || 'undefined'}
 </div>
 
 <header class="mx-auto w-full max-w-2xl px-4 pt-4 pb-4">
