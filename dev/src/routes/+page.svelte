@@ -135,23 +135,23 @@
 				mediaUrl = selectedEvent.eventpic ? `https://${domain}/pic/event/${selectedEvent.eventpic}` : "";
 				text = `🇰🇭Cambodia #1 party app 💥${selectedEvent.eventtitle} at ${selectedEvent.venuename}`;
 				widgetUrl = `https://t.me/${botUsername}/trojeak?start=event_${selectedEvent.eventid}`;
-				widgetName = 'Let\'s Trojeak🍻';
+				widgetName = 'Let\'s Trojeak 🍻';
 			} else if (currentView === 'venues-detail' && $appStore.selectedVenue) {
 				const selectedVenue = $appStore.selectedVenue;
 				mediaUrl = selectedVenue.venuepic1 ? `https://${domain}/pic/venue/${selectedVenue.venuepic1}` : "";
 				text = `🇰🇭Cambodia #1 party app 💥Upcoming events at ${selectedVenue.venuename} in ${selectedVenue.cityname}`;
 				widgetUrl = `https://t.me/${botUsername}/trojeak?start=venue_${selectedVenue.venueid}`;
-				widgetName = 'Let\'s Trojeak🍻';
+				widgetName = 'Let\'s Trojeak 🍻';
 			} else if (currentView === 'brands-detail' && $appStore.selectedBrand) {
 				const selectedBrand = $appStore.selectedBrand;
 				mediaUrl = selectedBrand.brandpic1 ? `https://${domain}/pic/brand/${selectedBrand.brandpic1}` : "";
 				text = `🇰🇭Cambodia #1 party app 💥Upcoming events with ${selectedBrand.brandname}`;
 				widgetUrl = `https://t.me/${botUsername}/trojeak?start=brand_${selectedBrand.brandid}`;
-				widgetName = 'Let\'s Trojeak🍻';
+				widgetName = 'Let\'s Trojeak 🍻';
 			} else {
 				text = '🇰🇭Cambodia #1 party app 💥Book exclusive deals & Party like VIP 💎';
 				widgetUrl = `https://t.me/${botUsername}/trojeak`;
-				widgetName = 'Let\'s Trojeak🍻';
+				widgetName = 'Let\'s Trojeak 🍻';
 			}
 			
 			if (!mediaUrl) {
