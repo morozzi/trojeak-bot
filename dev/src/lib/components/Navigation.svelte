@@ -178,7 +178,7 @@
 <Drawer.Root bind:open={filtersOpen}>
 	<Drawer.Content>
 		<div class="mx-auto w-full max-w-sm">
-			<div class="p-4 pb-12 space-y-6">
+			<div class="p-4 pb-12 space-y-6 text-center">
 				{#if getFilters(currentView).length > 0}
 					{@const filters = getFilters(currentView)}
 					{@const selectFilters = filters.filter(f => f.type === 'select')}
@@ -205,7 +205,7 @@
 					{#if switchFilters.length > 0}
 						<div class="space-y-4">
 							{#each switchFilters as filter}
-								<div class="flex items-center justify-between">
+								<div class="flex items-center justify-center gap-3">
 									<Switch id={filter.key} onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
 									<Label.Label for={filter.key}>{filter.label}</Label.Label>
 								</div>
