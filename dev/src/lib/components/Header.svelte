@@ -130,6 +130,11 @@
 		<div class="flex items-center justify-center">
 		</div>
 		<div class="flex items-center gap-2 justify-end">
+			{#if shouldShowAddToHome}
+				<Button.Button variant="ghost" size="sm" onclick={handleAddToHome}>
+					<HousePlus size={16} />
+				</Button.Button>
+			{/if}
 			<Select.Root type="single" value={$userStore.selectedLanguage} onValueChange={handleLanguageChange}>
 				<Select.Trigger class="w-16" disabled={$commonQuery.isLoading}>
 					{#if $commonQuery.isLoading}
@@ -146,11 +151,6 @@
 					{/each}
 				</Select.Content>
 			</Select.Root>
-			{#if shouldShowAddToHome}
-				<Button.Button variant="ghost" size="sm" onclick={handleAddToHome}>
-					<HousePlus size={16} />
-				</Button.Button>
-			{/if}
 			<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
 				<Share2 size={16} />
 			</Button.Button>
