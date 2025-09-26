@@ -181,10 +181,10 @@
 			<Drawer.Header>
 				<Drawer.Title>Filters</Drawer.Title>
 				<Drawer.Description>
-					Filter your search results
+					Changes apply automatically
 				</Drawer.Description>
 			</Drawer.Header>
-			<div class="p-4 pb-0 space-y-4">
+			<div class="p-4 pb-4 space-y-4">
 				{#each getFilters(currentView) as filter}
 					{#if filter.type === 'select'}
 						<div class="space-y-2">
@@ -206,9 +206,6 @@
 					{/if}
 				{/each}
 			</div>
-			<Drawer.Footer>
-				<Button.Button onclick={() => filtersOpen = false}>Apply Filters</Button.Button>
-			</Drawer.Footer>
 		</div>
 	</Drawer.Content>
 </Drawer.Root>
