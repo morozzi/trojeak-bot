@@ -128,12 +128,12 @@
 	function getFilters(view: ViewType) {
 		const filterConfigs = {
 			'events-list': [
-				{ key: 'venueType', type: 'select', placeholder: 'Type' },
-				{ key: 'brand', type: 'select', placeholder: 'Brand' },
+				{ key: 'venueType', type: 'select', placeholder: 'Venue Types' },
+				{ key: 'brand', type: 'select', placeholder: 'Brands' },
 				{ key: 'promotion', type: 'switch', label: 'Promo' }
 			],
 			'venues-list': [
-				{ key: 'venueType', type: 'select', placeholder: 'Type' },
+				{ key: 'venueType', type: 'select', placeholder: 'Venue Types' },
 				{ key: 'haveEvents', type: 'switch', label: 'Events' }
 			],
 			'brands-list': [
@@ -178,33 +178,41 @@
 <Drawer.Root bind:open={filtersOpen}>
 	<Drawer.Content>
 		<div class="mx-auto w-full max-w-sm">
-			<Drawer.Header>
-				<Drawer.Title>Filters</Drawer.Title>
-				<Drawer.Description>
-					Changes apply automatically
-				</Drawer.Description>
-			</Drawer.Header>
-			<div class="p-4 pb-8 space-y-4">
-				{#each getFilters(currentView) as filter}
-					{#if filter.type === 'select'}
-						<div class="space-y-2">
-							<Label.Label for={filter.key}>{filter.placeholder}</Label.Label>
-							<Select.Root onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}>
-								<Select.Trigger id={filter.key}>
-									All {filter.placeholder}
-								</Select.Trigger>
-								<Select.Content>
-									<Select.Item value={null}>All {filter.placeholder}</Select.Item>
-								</Select.Content>
-							</Select.Root>
-						</div>
-					{:else if filter.type === 'switch'}
-						<div class="flex items-center justify-between">
-							<Label.Label for={filter.key}>{filter.label}</Label.Label>
-							<Switch id={filter.key} onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
+			<div class="p-4 pb-12 space-y-6">
+				{#if getFilters(currentView).length > 0}
+					{@const filters = getFilters(currentView)}
+					{@const selectFilters = filters.filter(f => f.type === 'select')}
+					{@const switchFilters = filters.filter(f => f.type === 'switch')}
+					
+					{#if selectFilters.length > 0}
+						<div class="grid grid-cols-2 gap-4">
+							{#each selectFilters as filter}
+								<div class="space-y-2">
+									<Label.Label for={filter.key}>{filter.placeholder}</Label.Label>
+									<Select.Root onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}>
+										<Select.Trigger id={filter.key}>
+											All
+										</Select.Trigger>
+										<Select.Content>
+											<Select.Item value={null}>All</Select.Item>
+										</Select.Content>
+									</Select.Root>
+								</div>
+							{/each}
 						</div>
 					{/if}
-				{/each}
+					
+					{#if switchFilters.length > 0}
+						<div class="space-y-4">
+							{#each switchFilters as filter}
+								<div class="flex items-center justify-between">
+									<Switch id={filter.key} onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
+									<Label.Label for={filter.key}>{filter.label}</Label.Label>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				{/if}
 			</div>
 		</div>
 	</Drawer.Content>
