@@ -185,7 +185,7 @@
 					{@const switchFilters = filters.filter(f => f.type === 'switch')}
 					
 					{#if selectFilters.length > 0}
-						<div class="space-y-4">
+						<div class="flex justify-center gap-4">
 							{#each selectFilters as filter}
 								<div class="space-y-2">
 									<Label.Label for={filter.key}>{filter.placeholder}</Label.Label>
@@ -203,7 +203,7 @@
 					{/if}
 					
 					{#if switchFilters.length > 0}
-						<div class="space-y-4">
+						<div class="flex justify-center gap-4">
 							{#each switchFilters as filter}
 								<div class="flex items-center justify-center gap-3">
 									<Switch id={filter.key} onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
