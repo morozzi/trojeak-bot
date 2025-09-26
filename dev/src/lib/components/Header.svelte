@@ -146,14 +146,14 @@
 					{/each}
 				</Select.Content>
 			</Select.Root>
-			<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
-				<Share2 size={16} />
-			</Button.Button>
 			{#if shouldShowAddToHome}
 				<Button.Button variant="ghost" size="sm" onclick={handleAddToHome}>
 					<HousePlus size={16} />
 				</Button.Button>
 			{/if}
+			<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
+				<Share2 size={16} />
+			</Button.Button>
 		</div>
 	</div>
 	<Separator class="mb-4" />
