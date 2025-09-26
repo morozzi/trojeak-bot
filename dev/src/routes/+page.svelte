@@ -296,7 +296,12 @@
 							on:footerVisibilityChange={handleFooterVisibilityChange}
 							on:validationChange={handleValidationChange}
 						/>
-					{/if}
+					{:else}
+        		<div class="p-4 text-center">
+            	<p class="text-muted-foreground">Event not found</p>
+            	<Button.Button onclick={() => appActions.navigate('home')}>Go Home</Button.Button>
+        		</div>
+    			{/if}
 				{/if}
 			</main>
 

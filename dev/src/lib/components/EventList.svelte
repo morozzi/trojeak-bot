@@ -18,7 +18,7 @@
 {#if events}
 	{#each events as event}
 		{@const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''))}
-		{@const eventBrands = brandData.filter(b => eventBrandIds.includes(b.brandid.toString()))}
+		{@const eventBrands = (brandData || []).filter(b => eventBrandIds.includes(b.brandid.toString()))}
 		
 		<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => onEventClick(event.eventid.toString())}>
 			<Card.CardHeader class="gap-0 pb-4">
@@ -48,7 +48,10 @@
 				</div>
 				
 					<div class="text-sm">
-						📍 {event.venuename} <a href="{event.venuelink}" target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>(Google Maps 🔗)</a>
+						📍 {event.venuename} 
+						{#if event.venuelink}
+							<a href="{event.venuelink}" target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>(Google Maps 🔗)</a>
+						{/if}
 					</div>
 
 				{#if event.eventartist}
@@ -58,12 +61,16 @@
 				{/if}
 
 				<div class="flex gap-2 items-center">
-					{#each eventBrands as brand}
-						<Avatar.Root class="w-8 h-8 rounded-lg">
-							<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
-							<Avatar.Fallback class="rounded-lg bg-muted" />
-						</Avatar.Root>
-					{/each}
+					{#if eventBrands.length > 0}
+						{#each eventBrands as brand}
+							<Avatar.Root class="w-8 h-8 rounded-lg">
+								{#if brand.brandpic1}
+									<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+								{/if}
+								<Avatar.Fallback class="rounded-lg bg-muted" />
+							</Avatar.Root>
+						{/each}
+					{/if}
 					{#if event.eventschema}
 						<span class="text-sm text-muted-foreground">{event.eventschema} 💰</span>
 					{/if}

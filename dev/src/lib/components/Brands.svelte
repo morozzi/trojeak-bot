@@ -105,7 +105,9 @@
 							<div class="flex justify-between items-center">
 								<div class="flex items-center gap-4">
 									<Avatar.Root class="w-16 h-16 rounded-lg">
-										<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+										{#if brand.brandpic1}
+											<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+										{/if}
 										<Avatar.Fallback class="rounded-lg bg-muted">{brand.brandname.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
 									<div class="space-y-1">
@@ -160,7 +162,9 @@
 					<Card.CardHeader class="gap-0">
 						<div class="flex items-center gap-6">
 							<Avatar.Root class="w-32 h-32 rounded-lg">
-								<Avatar.Image src="/pic/brand/{selectedBrand.brandpic1}" alt={selectedBrand.brandname} class="rounded-lg" />
+								{#if selectedBrand.brandpic1}
+									<Avatar.Image src="/pic/brand/{selectedBrand.brandpic1}" alt={selectedBrand.brandname} class="rounded-lg" />
+								{/if}
 								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedBrand.brandname.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
 							<div class="space-y-1">

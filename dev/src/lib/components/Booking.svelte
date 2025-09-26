@@ -228,17 +228,22 @@
 				<div class="space-y-6">
 					<h3 class="text-center text-xl font-semibold">Select Your Drinks</h3>
 					<div class="grid gap-4">
+						{#if eventBrands && eventBrands.length > 0}
 						{#each eventBrands as brand}
 							<Card.Card class="p-4">
 								<div class="flex justify-between items-center">
 									<div class="flex items-center gap-4">
 										<Avatar.Root class="w-12 h-12 rounded-lg">
-											<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+											{#if brand.brandpic1}
+												<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+											{/if}
 											<Avatar.Fallback>{brand.brandname.charAt(0)}</Avatar.Fallback>
 										</Avatar.Root>
 										<div>
 											<h4 class="font-medium">{brand.brandname}</h4>
-											<p class="text-sm text-muted-foreground">{constants.CURRENCY_SYMBOL}{event.eventschemaprice}</p>
+											{#if event.eventschemaprice}
+												<p class="text-sm text-muted-foreground">{constants.CURRENCY_SYMBOL}{event.eventschemaprice}</p>
+											{/if}
 										</div>
 									</div>
 									<div class="flex items-center gap-1">
@@ -249,6 +254,7 @@
 								</div>
 							</Card.Card>
 						{/each}
+						{/if}
 					</div>
 					{#if totalItems > 0}
 						<Card.Card>

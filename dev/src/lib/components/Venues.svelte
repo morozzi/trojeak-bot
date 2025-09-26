@@ -112,13 +112,17 @@
 							<div class="flex justify-between items-center">
 								<div class="flex items-center gap-4">
 									<Avatar.Root class="w-16 h-16 rounded-lg">
-										<Avatar.Image src="/pic/venue/{venue.venuepic1}" alt={venue.venuename} class="rounded-lg" />
+										{#if venue.venuepic1}
+											<Avatar.Image src="/pic/venue/{venue.venuepic1}" alt={venue.venuename} class="rounded-lg" />
+										{/if}
 										<Avatar.Fallback class="rounded-lg bg-muted">{venue.venuename.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
 									<div class="space-y-1">
 										<Card.CardTitle class="text-xl font-semibold">{venue.venuename}</Card.CardTitle>
 										<div class="flex gap-2">
-											<Badge variant="secondary">{venue.venuetypeicon} {venue.venuetypename.toUpperCase()}</Badge>
+											<Badge variant="secondary">
+												{#if venue.venuetypeicon}{venue.venuetypeicon} {/if}{venue.venuetypename.toUpperCase()}
+											</Badge>
 											{#if venue.venuefeatured}
 												<Badge><Star /> Featured</Badge>
 											{/if}
@@ -168,13 +172,17 @@
 					<Card.CardHeader class="gap-0">
 						<div class="flex items-center gap-6">
 							<Avatar.Root class="w-32 h-32 rounded-lg">
-								<Avatar.Image src="/pic/venue/{selectedVenue.venuepic1}" alt={selectedVenue.venuename} class="rounded-lg" />
+								{#if selectedVenue.venuepic1}
+									<Avatar.Image src="/pic/venue/{selectedVenue.venuepic1}" alt={selectedVenue.venuename} class="rounded-lg" />
+								{/if}
 								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedVenue.venuename.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
 							<div class="space-y-1">
 								<Card.CardTitle class="text-3xl font-bold">{selectedVenue.venuename}</Card.CardTitle>
 								<div class="flex gap-2">
-									<Badge variant="secondary">{selectedVenue.venuetypeicon} {selectedVenue.venuetypename.toUpperCase()}</Badge>
+									<Badge variant="secondary">
+										{#if selectedVenue.venuetypeicon}{selectedVenue.venuetypeicon} {/if}{selectedVenue.venuetypename.toUpperCase()}
+									</Badge>
 									{#if selectedVenue.venuefeatured}
 										<Badge><Star /> Featured</Badge>
 									{/if}
@@ -199,9 +207,11 @@
 							{/if}
 							<span class="text-sm">{selectedVenue.cityname}</span>
 						</div>
-						<div class="text-sm">
-							<a href="{selectedVenue.venuelink}" target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>🔗 Google Maps</a>
-						</div>
+						{#if selectedVenue.venuelink}
+							<div class="text-sm">
+								<a href="{selectedVenue.venuelink}" target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()}>🔗 Google Maps</a>
+							</div>
+						{/if}
 					</Card.CardContent>
 				</Card.Card>
 
