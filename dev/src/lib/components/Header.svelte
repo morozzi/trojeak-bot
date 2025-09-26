@@ -18,7 +18,7 @@
 	}>();
 	
 	let homeScreenStatus = $state(null);
-	const shouldShowAddToHome = $derived(homeScreenStatus === 'unknown' || homeScreenStatus === 'missed');
+	const shouldShowAddToHome = $derived(homeScreenStatus === 'missed');
 
 	const commonQuery = createQuery({
 		queryKey: ['common', $userStore.selectedLanguage],
