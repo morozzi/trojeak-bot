@@ -3,7 +3,9 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Label from '$lib/components/ui/label/index.js';
+	import * as Drawer from '$lib/components/ui/drawer/index.js';
 	import { Switch } from '$lib/components/ui/switch/index.js';
+	import { Filter } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '$lib/types/components.js';
 
 	interface Props {
@@ -27,6 +29,7 @@
 	}: Props = $props();
 
 	let footerEl: HTMLElement | undefined = $state();
+	let filtersOpen = $state(false);
 
 	const dispatch = createEventDispatcher<{
 		navigate: { view: ViewType };
@@ -140,25 +143,12 @@
 					</Button.Button>
 				{/each}
 			</div>
-			<div class="flex items-center justify-center {centerButtons.length > 1 ? 'gap-6' : ''} {getFilters(currentView).length > 1 ? 'gap-3' : ''}">
+			<div class="flex items-center justify-center {centerButtons.length > 1 ? 'gap-6' : ''}">
 				{#if getFilters(currentView).length > 0}
-					{#each getFilters(currentView) as filter}
-						{#if filter.type === 'select'}
-							<Select.Root onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}>
-								<Select.Trigger class="w-24 h-8 text-sm">
-									{filter.placeholder}
-								</Select.Trigger>
-								<Select.Content>
-									<Select.Item value={null}>All {filter.placeholder}</Select.Item>
-								</Select.Content>
-							</Select.Root>
-						{:else if filter.type === 'switch'}
-							<Label.Label class="flex flex-col items-center gap-1 cursor-pointer text-sm">
-								{filter.label}
-								<Switch size="sm" onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
-							</Label.Label>
-						{/if}
-					{/each}
+					<Button.Button variant="outline" size="sm" onclick={() => filtersOpen = true}>
+						<Filter size={16} />
+						Filters
+					</Button.Button>
 				{/if}
 				{#if centerButtons.length > 0}
 					{#each centerButtons as button}
@@ -178,3 +168,41 @@
 		</div>
 	</div>
 </nav>
+
+<Drawer.Root bind:open={filtersOpen}>
+	<Drawer.Content>
+		<div class="mx-auto w-full max-w-sm">
+			<Drawer.Header>
+				<Drawer.Title>Filters</Drawer.Title>
+				<Drawer.Description>
+					Filter your search results
+				</Drawer.Description>
+			</Drawer.Header>
+			<div class="p-4 pb-0 space-y-4">
+				{#each getFilters(currentView) as filter}
+					{#if filter.type === 'select'}
+						<div class="space-y-2">
+							<Label.Label for={filter.key}>{filter.placeholder}</Label.Label>
+							<Select.Root onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}>
+								<Select.Trigger id={filter.key}>
+									All {filter.placeholder}
+								</Select.Trigger>
+								<Select.Content>
+									<Select.Item value={null}>All {filter.placeholder}</Select.Item>
+								</Select.Content>
+							</Select.Root>
+						</div>
+					{:else if filter.type === 'switch'}
+						<div class="flex items-center justify-between">
+							<Label.Label for={filter.key}>{filter.label}</Label.Label>
+							<Switch id={filter.key} onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
+						</div>
+					{/if}
+				{/each}
+			</div>
+			<Drawer.Footer>
+				<Button.Button onclick={() => filtersOpen = false}>Apply Filters</Button.Button>
+			</Drawer.Footer>
+		</div>
+	</Drawer.Content>
+</Drawer.Root>
