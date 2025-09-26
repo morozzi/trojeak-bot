@@ -79,8 +79,11 @@
 	}
 </script>
 
-<div class="fixed top-0 left-0 bg-blue-500 text-white p-2 z-50">
-	StartParam: {window.Telegram?.WebApp?.initDataUnsafe?.start_param || 'undefined'}
+<div class="fixed top-0 left-0 bg-blue-500 text-white p-1 z-50 text-xs">
+	initData: {window.Telegram?.WebApp?.initData || 'undefined'}<br>
+	location: {window.location?.href || 'undefined'}<br>
+	search: {window.location?.search || 'undefined'}<br>
+	hash: {window.location?.hash || 'undefined'}
 </div>
 
 <header class="mx-auto w-full max-w-2xl px-4 pt-4 pb-4">
