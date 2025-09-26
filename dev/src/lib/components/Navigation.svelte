@@ -178,7 +178,7 @@
 <Drawer.Root bind:open={filtersOpen}>
 	<Drawer.Content>
 		<div class="mx-auto w-full max-w-sm">
-			<div class="p-4 pb-12 space-y-6 text-center">
+			<div class="p-4 pt-10 pb-12 space-y-6 text-center">
 				{#if getFilters(currentView).length > 0}
 					{@const filters = getFilters(currentView)}
 					{@const selectFilters = filters.filter(f => f.type === 'select')}
@@ -187,10 +187,10 @@
 					{#if selectFilters.length > 0}
 						<div class="grid grid-cols-2 gap-4">
 							{#each selectFilters as filter}
-								<div class="space-y-2">
+								<div class="space-y-2 text-center">
 									<Label.Label for={filter.key}>{filter.placeholder}</Label.Label>
 									<Select.Root onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}>
-										<Select.Trigger id={filter.key}>
+										<Select.Trigger id={filter.key} class="text-center">
 											All
 										</Select.Trigger>
 										<Select.Content>
