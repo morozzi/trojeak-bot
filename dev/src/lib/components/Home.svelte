@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
-	import * as Card from '@/components/ui/card/index.js';
-	import * as Button from '@/components/ui/button/index.js';
-	import EventList from '$lib/components/EventList.svelte';
-	import Loading from '$lib/components/Loading.svelte';
-	import type { Event } from '$lib/types/api.js';
-	import type { ViewType } from '$lib/types/components.js';
-	import { userStore } from '$lib/stores/user.js';
+	import { Card, CardContent } from "@/components/ui/card";
+	import { Button } from "@/components/ui/button";
+	import EventList from '@/lib/components/EventList.svelte';
+	import Loading from '@/lib/components/Loading.svelte';
+	import type { Event } from '@/lib/types/api.js';
+	import type { ViewType } from '@/lib/types/components.js';
+	import { userStore } from '@/lib/stores/user.js';
 
 	const dispatch = createEventDispatcher<{
 		navigate: { view: ViewType };
@@ -51,11 +51,11 @@
 	{#if $featuredEventsQuery.isLoading}
 		<Loading variant="list" />
 	{:else if $featuredEventsQuery.error}
-		<Card.Card>
-			<Card.CardContent class="p-4">
+		<Card>
+			<CardContent class="p-4">
 				<p class="text-destructive">Failed to load featured events. Please try again.</p>
-			</Card.CardContent>
-		</Card.Card>
+			</CardContent>
+		</Card>
 	{:else if ($featuredEventsQuery.data || []).length > 0}
 		<EventList 
 			events={$featuredEventsQuery.data || []} 
@@ -65,9 +65,9 @@
 	{:else}
 		<div class="text-center py-8 space-y-4">
 			<p class="text-muted-foreground">No featured events available right now</p>
-			<Button.Button variant="outline" onclick={() => handleNavigate('events')}>
+			<Button variant="outline" onclick={() => handleNavigate('events')}>
 				Browse All Events
-			</Button.Button>
+			</Button>
 		</div>
 	{/if}
 </div>
