@@ -10,13 +10,13 @@
 	import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 	import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 	import { Separator } from "@/components/ui/separator/index.js";
-	import Loading from '$lib/components/Loading.svelte';
+	import Loading from '@/lib/components/Loading.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import type { Event } from '$lib/types/api.js';
-	import type { ViewType } from '$lib/types/components.js';
-	import { appStore, appActions } from '$lib/stores/app.js';
-	import { userStore } from '$lib/stores/user.js';
-	import { BookingValidator, type BookingData } from '$lib/api/validation.js';
+	import type { Event } from '@/lib/types/api.js';
+	import type { ViewType } from '@/lib/types/components.js';
+	import { appStore, appActions } from '@/lib/stores/app.js';
+	import { userStore } from '@/lib/stores/user.js';
+	import { BookingValidator, type BookingData } from '@/lib/api/validation.js';
 
 	interface Props {
 		event: Event;
