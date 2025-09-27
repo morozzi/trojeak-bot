@@ -4,7 +4,7 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Label from '$lib/components/ui/label/index.js';
-	import * as Drawer from '$lib/components/ui/drawer/index.js';
+	import { Drawer, DrawerContent } from '$lib/components/ui/drawer/index.js';
 	import { Switch } from '$lib/components/ui/switch/index.js';
 	import { SlidersHorizontal } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '$lib/types/components.js';
@@ -189,8 +189,8 @@
 	</div>
 </nav>
 
-<Drawer.Root bind:open={filtersOpen}>
-	<Drawer.Content>
+<Drawer bind:open={filtersOpen}>
+	<DrawerContent>
 		<div class="mx-auto w-full max-w-sm">
 			<div class="p-4 pt-10 pb-12 space-y-6 text-center">
 				{#if getFilters(currentView).length > 0}
@@ -236,5 +236,5 @@
 				{/if}
 			</div>
 		</div>
-	</Drawer.Content>
-</Drawer.Root>
+	</DrawerContent>
+</Drawer>
