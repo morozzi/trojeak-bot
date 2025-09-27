@@ -1,18 +1,18 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { AspectRatio } from "@/components/ui/aspect-ratio/index.js";
 	import { Badge } from "@/components/ui/badge/index.js";
-	import * as Button from '@/components/ui/button/index.js';
-	import * as Card from '@/components/ui/card/index.js';
-	import * as Avatar from '@/components/ui/avatar/index.js';
+	import { Button } from "@/components/ui/button";
+	import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+	import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 	import { Star } from '@lucide/svelte';
-	import EventList from '$lib/components/EventList.svelte';
-	import Loading from '$lib/components/Loading.svelte';
-	import { createEventDispatcher } from 'svelte';
-	import type { Event } from '$lib/types/api.js';
-	import type { ViewType } from '$lib/types/components.js';
-	import { userStore } from '$lib/stores/user.js';
-	import { appStore } from '$lib/stores/app.js';
+	import EventList from '@/lib/components/EventList.svelte';
+	import Loading from '@/lib/components/Loading.svelte';
+	import type { Event } from '@/lib/types/api.js';
+	import type { ViewType } from '@/lib/types/components.js';
+	import { userStore } from '@/lib/stores/user.js';
+	import { appStore } from '@/lib/stores/app.js';
 
 	let venueTypeFilter = $state<string | null>(null);
 	let brandFilter = $state<string | null>(null);
@@ -80,17 +80,17 @@
 			{#if $eventsQuery.isLoading}
 				<Loading variant="list" />
 			{:else if $eventsQuery.error}
-				<Card.Card>
-					<Card.CardContent class="p-4">
+				<Card>
+					<CardContent class="p-4">
 						<p class="text-destructive">Failed to load events. Please try again.</p>
-					</Card.CardContent>
-				</Card.Card>
+					</CardContent>
+				</Card>
 			{:else if events.length === 0}
-				<Card.Card>
-					<Card.CardContent class="p-4">
+				<Card>
+					<CardContent class="p-4">
 						<p class="text-muted-foreground">No events available for this location.</p>
-					</Card.CardContent>
-				</Card.Card>
+					</CardContent>
+				</Card>
 			{:else}
 				<EventList 
 					events={events} 
@@ -113,18 +113,18 @@
 					</AspectRatio>
 				{/if}
 
-				<Card.Card>
-					<Card.CardHeader class="pb-2">
+				<Card>
+					<CardHeader class="pb-2">
 						<div class="space-y-2">
-							<Card.CardTitle class="text-3xl font-bold">{selectedEvent.eventtitle}</Card.CardTitle>
+							<CardTitle class="text-3xl font-bold">{selectedEvent.eventtitle}</CardTitle>
 							<div class="flex gap-2">
 								{#if selectedEvent.eventfeatured}
 									<Badge><Star /> Featured</Badge>
 								{/if}
 							</div>
 						</div>
-					</Card.CardHeader>
-					<Card.CardContent class="p-6 py-0 space-y-4">
+					</CardHeader>
+					<CardContent class="p-6 py-0 space-y-4">
 						<div class="text-sm text-muted-foreground">
 							📅 {new Date(selectedEvent.eventdate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 						</div>
@@ -144,10 +144,10 @@
 
 						<div class="flex gap-2 items-center">
 							{#each eventBrands as brand}
-								<Avatar.Root class="w-8 h-8 rounded-lg">
-									<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
-									<Avatar.Fallback class="rounded-lg bg-muted" />
-								</Avatar.Root>
+								<Avatar class="w-8 h-8 rounded-lg">
+									<AvatarImage src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+									<AvatarFallback class="rounded-lg bg-muted" />
+								</Avatar>
 							{/each}
 							{#if selectedEvent.eventschema}
 								<span class="text-sm text-muted-foreground">{selectedEvent.eventschema} 💰</span>
@@ -155,12 +155,12 @@
 						</div>
 						
 						<div class="text-center pt-4 pb-1">
-							<Button.Button size="lg" class="w-2/3 text-lg" onclick={() => startBooking(selectedEvent)}>
+							<Button size="lg" class="w-2/3 text-lg" onclick={() => startBooking(selectedEvent)}>
 								Book This Event
-							</Button.Button>
+							</Button>
 						</div>
-					</Card.CardContent>
-				</Card.Card>
+					</CardContent>
+				</Card>
 				
 				{#if selectedEvent.eventdesc}
 					<div class="px-6 space-y-3">
@@ -171,11 +171,11 @@
 				
 			</div>
 		{:else}
-			<Card.Card>
-				<Card.CardContent class="p-4">
+			<Card>
+				<CardContent class="p-4">
 					<p class="text-muted-foreground">Event not found.</p>
-				</Card.CardContent>
-			</Card.Card>
+				</CardContent>
+			</Card>
 		{/if}
 	{/if}
 </div>
