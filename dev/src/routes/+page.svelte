@@ -14,7 +14,7 @@
 	import Venues from '$lib/components/Venues.svelte';
 	import Brands from '$lib/components/Brands.svelte';
 	import Booking from '$lib/components/Booking.svelte';
-	import Navigation from '$lib/components/Navigation.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 
 	const queryClient = new QueryClient({
 		defaultOptions: {
@@ -319,7 +319,7 @@
 				{/if}
 			</main>
 
-			<Navigation 
+			<Footer 
 				currentView={$appStore.currentView}
 				canGoBack={$appStore.canGoBack}
 				bookingStep={$appStore.bookingState?.currentStep}
