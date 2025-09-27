@@ -5,5 +5,10 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	build: {
 		target: 'es2020'
+	},
+	resolve: {
+		alias: {
+			'@': './src'
+		}
 	}
 });

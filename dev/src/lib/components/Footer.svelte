@@ -4,7 +4,7 @@
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Label from '$lib/components/ui/label/index.js';
-	import { Drawer, DrawerContent } from '$lib/components/ui/drawer/index.js';
+	import { Drawer, DrawerContent } from '@/lib/components/ui/drawer';
 	import { Switch } from '$lib/components/ui/switch/index.js';
 	import { SlidersHorizontal } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '$lib/types/components.js';

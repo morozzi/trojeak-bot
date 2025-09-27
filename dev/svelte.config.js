@@ -12,6 +12,10 @@ export default {
 		appDir: 'app',
 		prerender: {
 			entries: ['/']
+		},
+		alias: {
+			'@': 'src',
+			'@/*': 'src/*'
 		}
 	}
 };
