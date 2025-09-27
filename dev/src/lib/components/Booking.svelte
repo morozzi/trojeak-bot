@@ -266,7 +266,7 @@
 									<p class="text-sm">{item}</p>
 								{/each}
 								<Separator />
-								<CardFooter>
+								<CardFooter class="p-0">
 									<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
 								</CardFooter>
 							</CardContent>
@@ -319,7 +319,7 @@
 								<p class="text-sm">{item}</p>
 							{/each}
 							<Separator />
-							<CardFooter>
+							<CardFooter class="p-0">
 								<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
 							</CardFooter>
 						</CardContent>
@@ -353,7 +353,7 @@
 								<p class="text-sm">{item}</p>
 							{/each}
 							<Separator />
-							<CardFooter>
+							<CardFooter class="p-0">
 								<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
 							</CardFooter>
 						</CardContent>
@@ -399,7 +399,7 @@
 								<p class="text-sm">{item}</p>
 							{/each}
 							<Separator />
-							<CardFooter>
+							<CardFooter class="p-0">
 								<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
 							</CardFooter>
 						</CardContent>
