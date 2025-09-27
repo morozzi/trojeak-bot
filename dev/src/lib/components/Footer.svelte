@@ -2,10 +2,10 @@
 	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import * as Button from '$lib/components/ui/button/index.js';
-	import * as Select from '$lib/components/ui/select/index.js';
-	import * as Label from '$lib/components/ui/label/index.js';
+	import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/lib/components/ui/select"
+	import { Label } from "@/lib/components/ui/label"
 	import { Drawer, DrawerContent } from '@/lib/components/ui/drawer';
-	import { Switch } from '$lib/components/ui/switch/index.js';
+	import { Switch } from "@/lib/components/ui/switch";
 	import { SlidersHorizontal } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '$lib/types/components.js';
 
@@ -202,22 +202,22 @@
 						<div class="flex justify-center gap-4">
 							{#each selectFilters as filter}
 								<div class="space-y-2">
-									<Label.Label for={filter.key}>{filter.placeholder}</Label.Label>
-									<Select.Root onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}>
-										<Select.Trigger id={filter.key}>
-											All
-										</Select.Trigger>
-										<Select.Content>
-											<Select.Item value={null}>All</Select.Item>
+									<Label for={filter.key}>{filter.placeholder}</Label>
+									<Select onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}>
+										<SelectTrigger id={filter.key}>
+											<SelectValue placeholder="All" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value={null}>All</SelectItem>
 											{#if filter.options}
 												{#each filter.options as option}
-													<Select.Item value={filter.key === 'venueType' ? option.venuetypesid?.toString() : option.brandid?.toString()}>
+													<SelectItem value={filter.key === 'venueType' ? option.venuetypesid?.toString() : option.brandid?.toString()}>
 														{filter.key === 'venueType' ? option.venuetypename : option.brandname}
-													</Select.Item>
+													</SelectItem>
 												{/each}
 											{/if}
-										</Select.Content>
-									</Select.Root>
+										</SelectContent>
+									</Select>
 								</div>
 							{/each}
 						</div>
@@ -228,7 +228,7 @@
 							{#each switchFilters as filter}
 								<div class="flex items-center justify-center gap-3">
 									<Switch id={filter.key} onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
-									<Label.Label for={filter.key}>{filter.label}</Label.Label>
+									<Label for={filter.key}>{filter.label}</Label>
 								</div>
 							{/each}
 						</div>
