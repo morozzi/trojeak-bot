@@ -1,7 +1,7 @@
 <!-- routes/+page.svelte - Main application page -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+	import { QueryClient, QueryClientProvider, createQuery } from '@tanstack/svelte-query';
 	import type { WebApp } from '@twa-dev/sdk';
 	import type { Event, Venue } from '$lib/types/api.js';
 	import type { ViewType, BookingAction } from '$lib/types/components.js';
