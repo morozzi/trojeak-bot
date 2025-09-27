@@ -20,7 +20,6 @@ export type BookingAction = 'prev' | 'next' | 'cancel' | 'complete';
 export interface FilterState {
   cityId?: number;
   venueType?: string;
-  searchTerm?: string;
   featuredOnly?: boolean;
 }
 

@@ -53,9 +53,15 @@
 		enabled: () => viewMode === 'detail'
 	});
 
+	$effect(() => {
+		if ($userStore.selectedVenueTypes && $userStore.selectedVenueTypes.length > 0 && !venueTypeFilter) {
+			venueTypeFilter = $userStore.selectedVenueTypes[0];
+		}
+	});
+
 	const venues = $derived(
 		($venuesQuery.data || []).filter((venue: Venue) => {
-			if (venueTypeFilter && venue.venuetypeid.toString() !== venueTypeFilter) return false;
+			if (venueTypeFilter && venue.venuetype !== venueTypeFilter) return false;
 			if (haveEventsFilter) {
 				const venueData = getVenueEvents(venue.venueid, true);
 				if (venueData.count === 0) return false;

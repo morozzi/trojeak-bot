@@ -45,9 +45,15 @@
 		}
 	});
 
+	$effect(() => {
+		if ($userStore.selectedVenueTypes && $userStore.selectedVenueTypes.length > 0 && !venueTypeFilter) {
+			venueTypeFilter = $userStore.selectedVenueTypes[0];
+		}
+	});
+
 	const events = $derived(
 		($eventsQuery.data || []).filter((event: Event) => {
-			if (venueTypeFilter && event.venuetypeid.toString() !== venueTypeFilter) return false;
+			if (venueTypeFilter && event.venuetype !== venueTypeFilter) return false;
 			if (brandFilter && !event.brandid.includes(brandFilter)) return false;
 			if (promotionFilter && !event.eventschema) return false;
 			return true;

@@ -9,6 +9,7 @@ interface UserState {
 	userDataLoaded: boolean;
 	userSelectedCity: string | null;
 	userSelectedLanguage: string | null;
+	userSelectedVenueTypes: string[] | null;
 	initData: string;
 	selectedLanguage: string;
 	selectedCity: string | null;
@@ -22,6 +23,7 @@ const initialState: UserState = {
 	userDataLoaded: false,
 	userSelectedCity: null,
 	userSelectedLanguage: null,
+	userSelectedVenueTypes: null,
 	initData: '',
 	selectedLanguage: 'en',
 	selectedCity: null,
@@ -42,6 +44,11 @@ export const userStore = derived(
 			($base.userData?.success && $base.userData.user ? 
 				($base.userData.user.cityid === 0 ? null : $base.userData.user.cityid.toString()) :
 				null);
+
+		const selectedVenueTypes = $base.userSelectedVenueTypes ||
+			($base.userData?.success && $base.userData.user ? 
+				$base.userData.user.venue_types || [] :
+				[]);
 		
 		const selectedCityName = (() => {
 			const city = $app.cityData.find(c => c.cityid.toString() === selectedCity);
@@ -56,6 +63,7 @@ export const userStore = derived(
 			...$base,
 			selectedLanguage,
 			selectedCity,
+			selectedVenueTypes,
 			selectedCityName,
 			isUserDataLoaded,
 			userInfo
