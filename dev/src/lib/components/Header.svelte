@@ -2,13 +2,13 @@
 	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { Separator } from "@/components/ui/separator/index.js";
-	import * as Avatar from '@/components/ui/avatar/index.js';
-	import * as DropdownMenu from '@/components/ui/dropdown-menu/index.js';
-	import * as Select from '@/components/ui/select/index.js';
-	import * as Button from '@/components/ui/button/index.js';
+	import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+	import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+	import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+	import { Button } from "@/components/ui/button";
 	import { Share2, HousePlus } from '@lucide/svelte';
-	import { userStore } from '$lib/stores/user.js';
-	import { appActions } from '$lib/stores/app.js';
+	import { userStore } from '@/lib/stores/user.js';
+	import { appActions } from '@/lib/stores/app.js';
 
 	const dispatch = createEventDispatcher<{
 		cityChange: { city: string };
@@ -77,83 +77,83 @@
 <header class="mx-auto w-full max-w-2xl px-4 pt-4 pb-4">
 	<div class="grid grid-cols-[1fr_auto_1fr] items-center pb-4">
 		<div class="flex items-center gap-5 justify-start">
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
+			<DropdownMenu>
+				<DropdownMenuTrigger>
 					{#snippet child({ props })}
-						<Avatar.Root {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
+						<Avatar {...props} class="cursor-pointer hover:opacity-80 transition-opacity">
 							{#if $userStore.userInfo?.photo_url}
-								<Avatar.Image src={$userStore.userInfo.photo_url} alt="User" />
+								<AvatarImage src={$userStore.userInfo.photo_url} alt="User" />
 							{/if}
-							<Avatar.Fallback>{userInitials()}</Avatar.Fallback>
-						</Avatar.Root>
+							<AvatarFallback>{userInitials()}</AvatarFallback>
+						</Avatar>
 					{/snippet}
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content class="w-56 z-[60]" align="start">
-					<DropdownMenu.Label>My Account</DropdownMenu.Label>
-					<DropdownMenu.Separator />
-					<DropdownMenu.Item onclick={() => handleAccountAction('settings')}>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent class="w-56 z-[60]" align="start">
+					<DropdownMenuLabel>My Account</DropdownMenuLabel>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem onclick={() => handleAccountAction('settings')}>
 						⚙️ Account Settings
-					</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => handleAccountAction('channel')}>
+					</DropdownMenuItem>
+					<DropdownMenuItem onclick={() => handleAccountAction('channel')}>
 						📢 Channel Subscription
-					</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => handleAccountAction('bookings')}>
+					</DropdownMenuItem>
+					<DropdownMenuItem onclick={() => handleAccountAction('bookings')}>
 						📋 My Bookings
-					</DropdownMenu.Item>
-					<DropdownMenu.Separator />
-					<DropdownMenu.Item onclick={() => handleAccountAction('support')}>
+					</DropdownMenuItem>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem onclick={() => handleAccountAction('support')}>
 						💬 Support
-					</DropdownMenu.Item>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
-			<Select.Root type="single" value={$userStore.selectedCity} onValueChange={handleCityChange}>
-				<Select.Trigger class="w-24 flex gap-1" disabled={$commonQuery.isLoading}>
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
+			<Select type="single" value={$userStore.selectedCity} onValueChange={handleCityChange}>
+				<SelectTrigger class="w-24 flex gap-1" disabled={$commonQuery.isLoading}>
     			{#if $commonQuery.isLoading}
         		...
     			{:else}
         		{#if currentCityIcon()}
-            	<Avatar.Root class="w-4 h-4 rounded">
-                <Avatar.Image src="/pic/city/{currentCityIcon()}" alt="City" class="rounded" />
-                <Avatar.Fallback class="rounded bg-muted" />
-            	</Avatar.Root>
+            	<Avatar class="w-4 h-4 rounded">
+                <AvatarImage src="/pic/city/{currentCityIcon()}" alt="City" class="rounded" />
+                <AvatarFallback class="rounded bg-muted" />
+            	</Avatar>
         		{/if}
         		{currentCitySid()}
     			{/if}
-				</Select.Trigger>
-				<Select.Content>
+				</SelectTrigger>
+				<SelectContent>
 					{#each $commonQuery.data?.cities || [] as city}
-						<Select.Item value={city.cityid.toString()}>{city.cityname}</Select.Item>
+						<SelectItem value={city.cityid.toString()}>{city.cityname}</SelectItem>
 					{/each}
-				</Select.Content>
-			</Select.Root>
+				</SelectContent>
+			</Select>
 			{#if shouldShowAddToHome}
-				<Button.Button variant="ghost" size="sm" onclick={handleAddToHome}>
+				<Button variant="ghost" size="sm" onclick={handleAddToHome}>
 					<HousePlus size={16} />
-				</Button.Button>
+				</Button>
 			{/if}
 		</div>
 		<div class="flex items-center justify-center">
 		</div>
 		<div class="flex items-center gap-2 justify-end">
-			<Select.Root type="single" value={$userStore.selectedLanguage} onValueChange={handleLanguageChange}>
-				<Select.Trigger class="w-16" disabled={$commonQuery.isLoading}>
+			<Select type="single" value={$userStore.selectedLanguage} onValueChange={handleLanguageChange}>
+				<SelectTrigger class="w-16" disabled={$commonQuery.isLoading}>
 					{#if $commonQuery.isLoading}
 						...
 					{:else}
 						{$commonQuery.data?.languages?.find(l => l.languagesid === $userStore.selectedLanguage)?.languageflag || '🇺🇸'}
 					{/if}
-				</Select.Trigger>
-				<Select.Content>
+				</SelectTrigger>
+				<SelectContent>
 					{#each $commonQuery.data?.languages || [] as lang}
-						<Select.Item value={lang.languagesid}>
+						<SelectItem value={lang.languagesid}>
 							{lang.languageflag} {lang.languagename}
-						</Select.Item>
+						</SelectItem>
 					{/each}
-				</Select.Content>
-			</Select.Root>
-			<Button.Button variant="ghost" size="sm" onclick={handleShareToStory}>
+				</SelectContent>
+			</Select>
+			<Button variant="ghost" size="sm" onclick={handleShareToStory}>
 				<Share2 size={16} />
-			</Button.Button>
+			</Button>
 		</div>
 	</div>
 	<Separator class="mb-4" />
