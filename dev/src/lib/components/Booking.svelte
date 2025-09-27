@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
 	import { Button } from "@/components/ui/button"
-	import * as Card from '@/components/ui/card/index.js';
+	import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 	import { Input } from "@/components/ui/input"
 	import { Label } from "@/components/ui/label"
 	import { Textarea } from "@/components/ui/textarea"
@@ -200,11 +200,11 @@
 	{#if $brandsQuery.isLoading}
 		<Loading variant="booking" />
 	{:else if $brandsQuery.error}
-		<Card.Card>
-			<Card.CardContent class="p-4">
+		<Card>
+			<CardContent class="p-4">
 				<p class="text-destructive">Failed to load drink options. Please try again.</p>
-			</Card.CardContent>
-		</Card.Card>
+			</CardContent>
+		</Card>
 	{:else}
 		<div class="space-y-6">
 			<div class="space-y-3">
@@ -230,7 +230,7 @@
 					<div class="grid gap-4">
 						{#if eventBrands && eventBrands.length > 0}
 						{#each eventBrands as brand}
-							<Card.Card class="p-4">
+							<Card class="p-4">
 								<div class="flex justify-between items-center">
 									<div class="flex items-center gap-4">
 										<Avatar.Root class="w-12 h-12 rounded-lg">
@@ -252,23 +252,23 @@
 										<Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.min((selectedBrands[brand.brandid.toString()] || 0) + 1, constants.MAX_QTY_PER_BRAND))}>+</Button>
 									</div>
 								</div>
-							</Card.Card>
+							</Card>
 						{/each}
 						{/if}
 					</div>
 					{#if totalItems > 0}
-						<Card.Card>
-							<Card.CardHeader>
-								<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
-							</Card.CardHeader>
-							<Card.CardContent class="space-y-3">
+						<Card>
+							<CardHeader>
+								<CardTitle class="text-base">Booking Summary</CardTitle>
+							</CardHeader>
+							<CardContent class="space-y-3">
 								{#each bookingSummary.items as item}
 									<p class="text-sm">{item}</p>
 								{/each}
 								<Separator />
 								<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
-							</Card.CardContent>
-						</Card.Card>
+							</CardContent>
+						</Card>
 					{/if}
 				</div>
 			{:else if currentStep === 2}
@@ -308,18 +308,18 @@
 							{/if}
 						</div>
 					</div>
-					<Card.Card>
-						<Card.CardHeader>
-							<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
-						</Card.CardHeader>
-						<Card.CardContent class="space-y-3">
+					<Card>
+						<CardHeader>
+							<CardTitle class="text-base">Booking Summary</CardTitle>
+						</CardHeader>
+						<CardContent class="space-y-3">
 							{#each bookingSummary.items as item}
 								<p class="text-sm">{item}</p>
 							{/each}
 							<Separator />
 							<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
-						</Card.CardContent>
-					</Card.Card>
+						</CardContent>
+					</Card>
 				</div>
 			{:else if currentStep === 3}
 				<div class="space-y-6">
@@ -340,18 +340,18 @@
 						</div>
 					</div>
 
-					<Card.Card>
-						<Card.CardHeader>
-							<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
-						</Card.CardHeader>
-						<Card.CardContent class="space-y-3">
+					<Card>
+						<CardHeader>
+							<CardTitle class="text-base">Booking Summary</CardTitle>
+						</CardHeader>
+						<CardContent class="space-y-3">
 							{#each bookingSummary.items as item}
 								<p class="text-sm">{item}</p>
 							{/each}
 							<Separator />
 							<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
-						</Card.CardContent>
-					</Card.Card>
+						</CardContent>
+					</Card>
 				</div>
 			{:else if currentStep === 4}
 				<div class="space-y-6">
@@ -380,11 +380,11 @@
 						</div>
 					</RadioGroup.Root>
 
-					<Card.Card>
-						<Card.CardHeader>
-							<Card.CardTitle class="text-base">Booking Summary</Card.CardTitle>
-						</Card.CardHeader>
-						<Card.CardContent class="space-y-3">
+					<Card>
+						<CardHeader>
+							<CardTitle class="text-base">Booking Summary</CardTitle>
+						</CardHeader>
+						<CardContent class="space-y-3">
 							<p class="text-sm">Event: {event.eventtitle}</p>
 							<p class="text-sm">Venue: {event.venuename}</p>
 							<p class="text-sm">Guests: {guests}</p>
@@ -394,8 +394,8 @@
 							{/each}
 							<Separator />
 							<p class="text-sm font-medium">Total Amount: {bookingSummary.total}</p>
-						</Card.CardContent>
-					</Card.Card>
+						</CardContent>
+					</Card>
 				</div>
 			{/if}
 		</div>
