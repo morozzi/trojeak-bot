@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
-	import * as Button from '@/components/ui/button/index.js';
+	import { Button } from "@/components/ui/button"
 	import * as Card from '@/components/ui/card/index.js';
-	import * as Input from '@/components/ui/input/index.js';
-	import * as Label from '@/components/ui/label/index.js';
-	import * as Textarea from '@/components/ui/textarea/index.js';
+	import { Input } from "@/components/ui/input"
+	import { Label } from "@/components/ui/label"
+	import { Textarea } from "@/components/ui/textarea"
 	import * as RadioGroup from '@/components/ui/radio-group/index.js';
-	import * as Progress from '@/components/ui/progress/index.js';
+	import { Progress } from "@/components/ui/progress"
 	import * as Select from '@/components/ui/select/index.js';
 	import * as Avatar from '@/components/ui/avatar/index.js';
 	import { Separator } from "@/components/ui/separator/index.js";
@@ -221,7 +221,7 @@
 						</div>
 					{/each}
 				</div>
-				<Progress.Progress value={progressPercentage} class="w-full" />
+				<Progress value={progressPercentage} class="w-full" />
 			</div>
 
 			{#if currentStep === 1}
@@ -247,9 +247,9 @@
 										</div>
 									</div>
 									<div class="flex items-center gap-1">
-										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.max(0, (selectedBrands[brand.brandid.toString()] || 0) - 1))}>-</Button.Button>
+										<Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.max(0, (selectedBrands[brand.brandid.toString()] || 0) - 1))}>-</Button>
 										<span class="w-8 text-center">{selectedBrands[brand.brandid.toString()] || 0}</span>
-										<Button.Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.min((selectedBrands[brand.brandid.toString()] || 0) + 1, constants.MAX_QTY_PER_BRAND))}>+</Button.Button>
+										<Button variant="outline" size="sm" onclick={() => updateBrandQuantity(brand.brandid.toString(), Math.min((selectedBrands[brand.brandid.toString()] || 0) + 1, constants.MAX_QTY_PER_BRAND))}>+</Button>
 									</div>
 								</div>
 							</Card.Card>
@@ -276,7 +276,7 @@
 					<h3 class="text-center text-xl font-semibold">Guest Information</h3>
 					<div class="space-y-4">
 						<div class="space-y-2">
-							<Label.Label for="guestCount">Number of Guests</Label.Label>
+							<Label for="guestCount">Number of Guests</Label>
 							<Select.Root type="single" value={guests.toString()} onValueChange={updateGuests}>
 								<Select.Trigger>
 									{guests} Guest{guests > 1 ? 's' : ''}
@@ -289,8 +289,8 @@
 							</Select.Root>
 						</div>
 						<div class="space-y-2">
-							<Label.Label for="phone">Phone Number</Label.Label>
-							<Input.Input 
+							<Label for="phone">Phone Number</Label>
+							<Input 
 								class="w-72"
 								id="phone" 
 								type="tel" 
@@ -326,8 +326,8 @@
 					<h3 class="text-center text-xl font-semibold">Additional Details</h3>
 					<div class="space-y-4">
 						<div class="space-y-2">
-							<Label.Label for="comment">Special Requests (Optional)</Label.Label>
-							<Textarea.Textarea 
+							<Label for="comment">Special Requests (Optional)</Label>
+							<Textarea 
 								id="comment" 
 								value={comment}
 								oninput={(e) => updateComment(e.target.value)}
@@ -359,24 +359,24 @@
 					<RadioGroup.Root value={paymentMethod} onValueChange={updatePaymentMethod} class="space-y-3">
 						<div class="flex items-center space-x-2">
 							<RadioGroup.Item value="aba" />
-							<Label.Label for="aba" class="flex items-center gap-2">
+							<Label for="aba" class="flex items-center gap-2">
 								<span>🏦 ABA QR Pay</span>
 								<span class="text-xs text-muted-foreground">- Scan QR code with ABA Mobile</span>
-							</Label.Label>
+							</Label>
 						</div>
 						<div class="flex items-center space-x-2">
 							<RadioGroup.Item value="ipay88" />
-							<Label.Label for="ipay88" class="flex items-center gap-2">
+							<Label for="ipay88" class="flex items-center gap-2">
 								<span>💳 Credit/Debit Card</span>
 								<span class="text-xs text-muted-foreground">- Visa, MasterCard, Local Banks</span>
-							</Label.Label>
+							</Label>
 						</div>
 						<div class="flex items-center space-x-2">
 							<RadioGroup.Item value="stars" />
-							<Label.Label for="stars" class="flex items-center gap-2">
+							<Label for="stars" class="flex items-center gap-2">
 								<span>⭐ Telegram Stars</span>
 								<span class="text-xs text-muted-foreground">- Pay with Telegram Stars</span>
-							</Label.Label>
+							</Label>
 						</div>
 					</RadioGroup.Root>
 
