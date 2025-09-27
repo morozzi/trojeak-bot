@@ -1,7 +1,7 @@
 <!-- routes/+page.svelte - Main application page -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { QueryClient, QueryClientProvider, createQuery } from '@tanstack/svelte-query';
+	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import type { WebApp } from '@twa-dev/sdk';
 	import type { Event, Venue } from '$lib/types/api.js';
 	import type { ViewType, BookingAction } from '$lib/types/components.js';
@@ -23,15 +23,6 @@
 				gcTime: 10 * 60 * 1000,
 			},
 		},
-	});
-	
-	const brandsQuery = createQuery({
-		queryKey: ['brands'],
-		queryFn: async () => {
-			const response = await fetch('/api/brands.php');
-			if (!response.ok) throw new Error('Failed to fetch brands');
-			return response.json();
-		}
 	});
 
 	let currentFooterEl: HTMLElement | undefined = $state();
@@ -317,7 +308,6 @@
 			<Navigation 
 				currentView={$appStore.currentView}
 				canGoBack={$appStore.canGoBack}
-				brands={$brandsQuery.data || []}
 				bookingStep={$appStore.bookingState?.currentStep}
 				isBookingProcessing={isBookingProcessing}
 				canProceedBooking={canProceedBooking}
