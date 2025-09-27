@@ -16,7 +16,6 @@ export default {
 		alias: {
 			'@': 'src',
 			'@/components': 'src/components',
-			'@/ui': 'src/components/ui',
 			'@/lib': 'src/lib'
 		}
 	}
