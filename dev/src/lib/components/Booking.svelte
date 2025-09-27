@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
-	import { Button } from "@/components/ui/button"
-	import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-	import { Input } from "@/components/ui/input"
-	import { Label } from "@/components/ui/label"
-	import { Textarea } from "@/components/ui/textarea"
-	import * as RadioGroup from '@/components/ui/radio-group/index.js';
-	import { Progress } from "@/components/ui/progress"
-	import * as Select from '@/components/ui/select/index.js';
-	import * as Avatar from '@/components/ui/avatar/index.js';
+	import { Button } from "@/components/ui/button";
+	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+	import { Input } from "@/components/ui/input";
+	import { Label } from "@/components/ui/label";
+	import { Textarea } from "@/components/ui/textarea";
+	import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+	import { Progress } from "@/components/ui/progress";
+	import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+	import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 	import { Separator } from "@/components/ui/separator/index.js";
 	import Loading from '$lib/components/Loading.svelte';
 	import { createEventDispatcher } from 'svelte';
@@ -233,12 +233,12 @@
 							<Card class="p-4">
 								<div class="flex justify-between items-center">
 									<div class="flex items-center gap-4">
-										<Avatar.Root class="w-12 h-12 rounded-lg">
+										<Avatar class="w-12 h-12 rounded-lg">
 											{#if brand.brandpic1}
-												<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+												<AvatarImage src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
 											{/if}
-											<Avatar.Fallback>{brand.brandname.charAt(0)}</Avatar.Fallback>
-										</Avatar.Root>
+											<AvatarFallback>{brand.brandname.charAt(0)}</AvatarFallback>
+										</Avatar>
 										<div>
 											<h4 class="font-medium">{brand.brandname}</h4>
 											{#if event.eventschemaprice}
@@ -279,16 +279,16 @@
 					<div class="space-y-4">
 						<div class="space-y-2">
 							<Label for="guestCount">Number of Guests</Label>
-							<Select.Root type="single" value={guests.toString()} onValueChange={updateGuests}>
-								<Select.Trigger>
+							<Select type="single" value={guests.toString()} onValueChange={updateGuests}>
+								<SelectTrigger>
 									{guests} Guest{guests > 1 ? 's' : ''}
-								</Select.Trigger>
-								<Select.Content>
+								</SelectTrigger>
+								<SelectContent>
 									{#each Array(constants.MAX_GUESTS) as _, i}
-										<Select.Item value={(i + 1).toString()}>{i + 1} Guest{i > 0 ? 's' : ''}</Select.Item>
+										<SelectItem value={(i + 1).toString()}>{i + 1} Guest{i > 0 ? 's' : ''}</SelectItem>
 									{/each}
-								</Select.Content>
-							</Select.Root>
+								</SelectContent>
+							</Select>
 						</div>
 						<div class="space-y-2">
 							<Label for="phone">Phone Number</Label>
@@ -362,29 +362,29 @@
 			{:else if currentStep === 4}
 				<div class="space-y-6">
 					<h3 class="text-center text-xl font-semibold">Payment Method</h3>
-					<RadioGroup.Root value={paymentMethod} onValueChange={updatePaymentMethod} class="space-y-3">
+					<RadioGroup value={paymentMethod} onValueChange={updatePaymentMethod} class="space-y-3">
 						<div class="flex items-center space-x-2">
-							<RadioGroup.Item value="aba" />
+							<RadioGroupItem value="aba" />
 							<Label for="aba" class="flex items-center gap-2">
 								<span>🏦 ABA QR Pay</span>
 								<span class="text-xs text-muted-foreground">- Scan QR code with ABA Mobile</span>
 							</Label>
 						</div>
 						<div class="flex items-center space-x-2">
-							<RadioGroup.Item value="ipay88" />
+							<RadioGroupItem value="ipay88" />
 							<Label for="ipay88" class="flex items-center gap-2">
 								<span>💳 Credit/Debit Card</span>
 								<span class="text-xs text-muted-foreground">- Visa, MasterCard, Local Banks</span>
 							</Label>
 						</div>
 						<div class="flex items-center space-x-2">
-							<RadioGroup.Item value="stars" />
+							<RadioGroupItem value="stars" />
 							<Label for="stars" class="flex items-center gap-2">
 								<span>⭐ Telegram Stars</span>
 								<span class="text-xs text-muted-foreground">- Pay with Telegram Stars</span>
 							</Label>
 						</div>
-					</RadioGroup.Root>
+					</RadioGroup>
 
 					<Card>
 						<CardHeader>
