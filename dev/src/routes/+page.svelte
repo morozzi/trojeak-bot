@@ -3,18 +3,18 @@
 	import { onMount } from 'svelte';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import type { WebApp } from '@twa-dev/sdk';
-	import type { Event, Venue } from '$lib/types/api.js';
-	import type { ViewType, BookingAction } from '$lib/types/components.js';
-	import { userStore, userActions } from '$lib/stores/user.js';
-	import { appStore, appActions } from '$lib/stores/app.js';
-	import Loading from '$lib/components/Loading.svelte';
-	import Header from '$lib/components/Header.svelte';
-	import Home from '$lib/components/Home.svelte';
-	import Events from '$lib/components/Events.svelte';
-	import Venues from '$lib/components/Venues.svelte';
-	import Brands from '$lib/components/Brands.svelte';
-	import Booking from '$lib/components/Booking.svelte';
-	import Footer from '$lib/components/Footer.svelte';
+	import type { Event, Venue } from '@/lib/types/api.js';
+	import type { ViewType, BookingAction } from '@/lib/types/components.js';
+	import { userStore, userActions } from '@/lib/stores/user.js';
+	import { appStore, appActions } from '@/lib/stores/app.js';
+	import Loading from '@/lib/components/Loading.svelte';
+	import Header from '@/lib/components/Header.svelte';
+	import Home from '@/lib/components/Home.svelte';
+	import Events from '@/lib/components/Events.svelte';
+	import Venues from '@/lib/components/Venues.svelte';
+	import Brands from '@/lib/components/Brands.svelte';
+	import Booking from '@/lib/components/Booking.svelte';
+	import Footer from '@/lib/components/Footer.svelte';
 
 	const queryClient = new QueryClient({
 		defaultOptions: {
