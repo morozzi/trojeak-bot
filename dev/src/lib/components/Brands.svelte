@@ -139,7 +139,7 @@
 						</CardHeader>
 						
 						{#if brand.brandpic2 && brand.brandfeatured}
-							<CardContent>
+							<CardContent class="px-0">
 								<AspectRatio ratio={16/9}>
 									<img src="/pic/brand/{brand.brandpic2}" alt="{brand.brandname}" class="w-full h-full object-cover" />
 								</AspectRatio>
