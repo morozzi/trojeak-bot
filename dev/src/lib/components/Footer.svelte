@@ -7,7 +7,7 @@
 	import { Switch } from "@/components/ui/switch";
 	import { SlidersHorizontal } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '@/lib/types/components.js';
-	import { appStore, venueTypesQuery } from '@/lib/stores/app.js';
+	import { appStore, appActions } from '@/lib/stores/app.js';
 
 	interface Props {
 		currentView: ViewType;
@@ -44,6 +44,40 @@
 		isBooking: currentView.startsWith('booking-step-'),
 		isList: currentView.endsWith('-list'),
 		isHome: currentView === 'home'
+	});
+
+	const venueTypesQuery = createQuery({
+		queryKey: ['venue-types'],
+		queryFn: async () => {
+			const response = await fetch('/api/venue-types.php');
+			if (!response.ok) throw new Error('Failed to fetch venue types');
+			const data = await response.json();
+			return data.success ? data.data : [];
+		},
+		enabled: () => ['events-list', 'venues-list'].includes(currentView)
+	});
+
+	const brandsQuery = createQuery({
+		queryKey: ['brands'],
+		queryFn: async () => {
+			const response = await fetch(`/api/brands.php`);
+			if (!response.ok) throw new Error('Failed to fetch brands');
+			const data = await response.json();
+			return data.success ? data.data : [];
+		},
+		enabled: () => currentView === 'events-list'
+	});
+
+	$effect(() => {
+		if ($venueTypesQuery.data) {
+			appActions.setVenueTypesData($venueTypesQuery.data);
+		}
+	});
+
+	$effect(() => {
+		if ($brandsQuery.data) {
+			appActions.setBrandsData($brandsQuery.data);
+		}
 	});
 
 	const leftButtons = $derived.by(() => {

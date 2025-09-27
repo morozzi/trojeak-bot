@@ -1,6 +1,5 @@
 // lib/stores/app.ts
 import { writable, derived } from 'svelte/store';
-import { createQuery } from '@tanstack/svelte-query';
 import type { WebApp } from '@twa-dev/sdk';
 import type { ViewType, FilterState } from '@/lib/types/components.js';
 import type { Event, Venue, VenueType, Brand } from '@/lib/types/api.js';
@@ -70,42 +69,14 @@ const initialState: AppState = {
 
 const baseAppStore = writable(initialState);
 
-export const venueTypesQuery = createQuery({
-	queryKey: ['venue-types'],
-	queryFn: async () => {
-		const response = await fetch('/api/venue-types.php');
-		if (!response.ok) throw new Error('Failed to fetch venue types');
-		const data = await response.json();
-		return data.success ? data.data : [];
-	},
-	enabled: derived(baseAppStore, ($store) => 
-		['events-list', 'venues-list'].includes($store.currentView)
-	)
-});
-
-export const brandsQuery = createQuery({
-	queryKey: ['brands'],
-	queryFn: async () => {
-		const response = await fetch('/api/brands.php');
-		if (!response.ok) throw new Error('Failed to fetch brands');
-		const data = await response.json();
-		return data.success ? data.data : [];
-	},
-	enabled: derived(baseAppStore, ($store) => 
-		['home', 'events-list', 'events-detail', 'venues-detail', 'brands-list', 'brands-detail', 'booking-step-1'].includes($store.currentView)
-	)
-});
-
 export const appStore = derived(
-	[baseAppStore, venueTypesQuery, brandsQuery],
-	([$base, $venueTypes, $brands]) => ({
+	baseAppStore,
+	($base) => ({
 		...$base,
 		canGoBack: $base.navigationHistory.length > 0,
 		selectedEventId: $base.selectedEvent?.eventid.toString(),
 		selectedVenueId: $base.selectedVenue?.venueid.toString(),
-		selectedBrandId: $base.selectedBrand?.brandid.toString(),
-		venueTypesData: $venueTypes.data || [],
-		brandsData: $brands.data || []
+		selectedBrandId: $base.selectedBrand?.brandid.toString()
 	})
 );
 
@@ -201,6 +172,14 @@ export const appActions = {
 
 	setCityData: (cities: any[]) => {
 		baseAppStore.update(state => ({ ...state, cityData: cities }));
+	},
+
+	setVenueTypesData: (venueTypes: VenueType[]) => {
+		baseAppStore.update(state => ({ ...state, venueTypesData: venueTypes }));
+	},
+
+	setBrandsData: (brands: Brand[]) => {
+		baseAppStore.update(state => ({ ...state, brandsData: brands }));
 	},
 
 	setFilter: (filterUpdates: Partial<FilterState>) => {
