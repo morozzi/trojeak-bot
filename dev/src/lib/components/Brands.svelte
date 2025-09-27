@@ -5,7 +5,7 @@
 	import { Badge } from "@/components/ui/badge/index.js";
 	import { Button } from "@/components/ui/button";
 	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-	import * as Avatar from '@/components/ui/avatar/index.js';
+	import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 	import { Star } from '@lucide/svelte';
 	import EventList from '@/lib/components/EventList.svelte';
 	import Loading from '@/lib/components/Loading.svelte';
@@ -120,12 +120,12 @@
 						<CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
 								<div class="flex items-center gap-4">
-									<Avatar.Root class="w-16 h-16 rounded-lg">
+									<Avatar class="w-16 h-16 rounded-lg">
 										{#if brand.brandpic1}
-											<Avatar.Image src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
+											<AvatarImage src="/pic/brand/{brand.brandpic1}" alt={brand.brandname} class="rounded-lg" />
 										{/if}
-										<Avatar.Fallback class="rounded-lg bg-muted">{brand.brandname.charAt(0)}</Avatar.Fallback>
-									</Avatar.Root>
+										<AvatarFallback class="rounded-lg bg-muted">{brand.brandname.charAt(0)}</AvatarFallback>
+									</Avatar>
 									<div class="space-y-1">
 										<CardTitle class="text-xl font-semibold">{brand.brandname}</CardTitle>
 										<div class="flex gap-2">
@@ -139,12 +139,14 @@
 						</CardHeader>
 						
 						{#if brand.brandpic2 && brand.brandfeatured}
-							<AspectRatio ratio={16/9}>
-								<img src="/pic/brand/{brand.brandpic2}" alt="{brand.brandname}" class="w-full h-full object-cover" />
-							</AspectRatio>
+							<CardContent>
+								<AspectRatio ratio={16/9}>
+									<img src="/pic/brand/{brand.brandpic2}" alt="{brand.brandname}" class="w-full h-full object-cover" />
+								</AspectRatio>
+							</CardContent>
 						{/if}
 
-						<CardContent class="p-4 px-6 pb-4 space-y-4">
+						<CardFooter class="p-4 px-6">
 							{#if $eventsQuery.isSuccess}
 								{@const brandData = getBrandEvents(brand.brandid, true)}
 								
@@ -156,7 +158,7 @@
 									{/if}
 								</p>
 							{/if}
-						</CardContent>
+						</CardFooter>
 					</Card>
 				{/each}
 			{/if}
@@ -177,12 +179,12 @@
 				<Card>
 					<CardHeader class="gap-0">
 						<div class="flex items-center gap-6">
-							<Avatar.Root class="w-32 h-32 rounded-lg">
+							<Avatar class="w-32 h-32 rounded-lg">
 								{#if selectedBrand.brandpic1}
-									<Avatar.Image src="/pic/brand/{selectedBrand.brandpic1}" alt={selectedBrand.brandname} class="rounded-lg" />
+									<AvatarImage src="/pic/brand/{selectedBrand.brandpic1}" alt={selectedBrand.brandname} class="rounded-lg" />
 								{/if}
-								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedBrand.brandname.charAt(0)}</Avatar.Fallback>
-							</Avatar.Root>
+								<AvatarFallback class="rounded-lg bg-muted text-lg">{selectedBrand.brandname.charAt(0)}</AvatarFallback>
+							</Avatar>
 							<div class="space-y-1">
 								<CardTitle class="text-3xl font-bold">{selectedBrand.brandname}</CardTitle>
 								<div class="flex gap-2">
