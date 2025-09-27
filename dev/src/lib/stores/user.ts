@@ -1,6 +1,6 @@
 // lib/stores/user.ts
 import { writable, derived } from 'svelte/store';
-import type { TelegramUser } from '$lib/types/components.js';
+import type { TelegramUser } from '@/lib/types/components.js';
 import { appStore } from './app.js';
 
 interface UserState {

@@ -1,8 +1,8 @@
 // lib/stores/app.ts
 import { writable, derived } from 'svelte/store';
 import type { WebApp } from '@twa-dev/sdk';
-import type { ViewType } from '$lib/types/components.js';
-import type { Event, Venue } from '$lib/types/api.js';
+import type { ViewType } from '@/lib/types/components.js';
+import type { Event, Venue } from '@/lib/types/api.js';
 
 const SCROLL_RESTORE_VIEWS = ['home', 'events-list', 'events-detail', 'venues-list', 'venues-detail', 'brands-list', 'brands-detail'];
 
