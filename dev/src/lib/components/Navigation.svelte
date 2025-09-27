@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 	import * as Button from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Label from '$lib/components/ui/label/index.js';
@@ -16,6 +17,7 @@
 		canProceedBooking?: boolean;
 		canCompleteBooking?: boolean;
 		footerVisible?: boolean;
+		brands?: Array<{brandid: number, brandname: string}>;
 	}
 
 	const {
@@ -25,7 +27,8 @@
 		isBookingProcessing = false,
 		canProceedBooking = false,
 		canCompleteBooking = false,
-		footerVisible = true
+		footerVisible = true,
+		brands = []
 	}: Props = $props();
 
 	let footerEl: HTMLElement | undefined = $state();
@@ -43,6 +46,16 @@
 		isBooking: currentView.startsWith('booking-step-'),
 		isList: currentView.endsWith('-list'),
 		isHome: currentView === 'home'
+	});
+
+	const venueTypesQuery = createQuery({
+		queryKey: ['venue-types'],
+		queryFn: async () => {
+			const response = await fetch('/api/venue-types.php');
+			if (!response.ok) throw new Error('Failed to fetch venue types');
+			return response.json();
+		},
+		enabled: () => viewType.isList
 	});
 
 	const leftButtons = $derived.by(() => {
@@ -126,14 +139,15 @@
 	}
 
 	function getFilters(view: ViewType) {
+		const venueTypes = $venueTypesQuery.data || [];
 		const filterConfigs = {
 			'events-list': [
-				{ key: 'venueType', type: 'select', placeholder: 'Venue Types' },
-				{ key: 'brand', type: 'select', placeholder: 'Brands' },
+				{ key: 'venueType', type: 'select', placeholder: 'Venue Types', options: venueTypes },
+				{ key: 'brand', type: 'select', placeholder: 'Brands', options: brands },
 				{ key: 'promotion', type: 'switch', label: 'Promo' }
 			],
 			'venues-list': [
-				{ key: 'venueType', type: 'select', placeholder: 'Venue Types' },
+				{ key: 'venueType', type: 'select', placeholder: 'Venue Types', options: venueTypes },
 				{ key: 'haveEvents', type: 'switch', label: 'Events' }
 			],
 			'brands-list': [
@@ -195,6 +209,13 @@
 										</Select.Trigger>
 										<Select.Content>
 											<Select.Item value={null}>All</Select.Item>
+											{#if filter.options}
+												{#each filter.options as option}
+													<Select.Item value={filter.key === 'venueType' ? option.venuetypesid?.toString() : option.brandid?.toString()}>
+														{filter.key === 'venueType' ? option.venuetypename : option.brandname}
+													</Select.Item>
+												{/each}
+											{/if}
 										</Select.Content>
 									</Select.Root>
 								</div>

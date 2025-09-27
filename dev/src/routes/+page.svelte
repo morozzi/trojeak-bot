@@ -24,6 +24,15 @@
 			},
 		},
 	});
+	
+	const brandsQuery = createQuery({
+		queryKey: ['brands'],
+		queryFn: async () => {
+			const response = await fetch('/api/brands.php');
+			if (!response.ok) throw new Error('Failed to fetch brands');
+			return response.json();
+		}
+	});
 
 	let currentFooterEl: HTMLElement | undefined = $state();
 	let footerVisible = $state(true);
@@ -308,6 +317,7 @@
 			<Navigation 
 				currentView={$appStore.currentView}
 				canGoBack={$appStore.canGoBack}
+				brands={$brandsQuery.data || []}
 				bookingStep={$appStore.bookingState?.currentStep}
 				isBookingProcessing={isBookingProcessing}
 				canProceedBooking={canProceedBooking}
