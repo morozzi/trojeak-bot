@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
-	import * as Button from '$lib/components/ui/button/index.js';
+	import { Button } from "@/lib/components/ui/button"
 	import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/lib/components/ui/select"
 	import { Label } from "@/lib/components/ui/label"
 	import { Drawer, DrawerContent } from '@/lib/components/ui/drawer';
@@ -163,26 +163,26 @@
 		<div class="grid grid-cols-[1fr_auto_1fr] items-center pt-4 pb-8">
 			<div class="flex items-center justify-start">
 				{#each leftButtons as button}
-					<Button.Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
+					<Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
 						{button.text}
-					</Button.Button>
+					</Button>
 				{/each}
 			</div>
 			<div class="flex items-center justify-center {centerButtons.length > 1 ? 'gap-6' : ''}">
 				{#each centerButtons as button}
-					<Button.Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
+					<Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
 						{#if button.icon}
 							<button.icon size={16} />
 						{/if}
 						{button.text}
-					</Button.Button>
+					</Button>
 				{/each}
 			</div>
 			<div class="flex items-center justify-end">
 				{#each rightButtons as button}
-					<Button.Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
+					<Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
 						{button.text}
-					</Button.Button>
+					</Button>
 				{/each}
 			</div>
 		</div>
