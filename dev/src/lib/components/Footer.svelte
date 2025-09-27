@@ -7,7 +7,7 @@
 	import { Drawer, DrawerContent } from '@/components/ui/drawer';
 	import { Switch } from "@/components/ui/switch";
 	import { SlidersHorizontal } from '@lucide/svelte';
-	import type { ViewType, BookingAction } from '$lib/types/components.js';
+	import type { ViewType, BookingAction } from '@/lib/types/components.js';
 
 	interface Props {
 		currentView: ViewType;

@@ -1,18 +1,18 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { AspectRatio } from "@/components/ui/aspect-ratio/index.js";
 	import { Badge } from "@/components/ui/badge/index.js";
-	import * as Button from '@/components/ui/button/index.js';
-	import * as Card from '@/components/ui/card/index.js';
+	import { Button } from "@/components/ui/button";
+	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 	import * as Avatar from '@/components/ui/avatar/index.js';
 	import { Star } from '@lucide/svelte';
-	import EventList from '$lib/components/EventList.svelte';
-	import Loading from '$lib/components/Loading.svelte';
-	import { createEventDispatcher } from 'svelte';
-	import type { Brand, Event } from '$lib/types/api.js';
-	import type { ViewType } from '$lib/types/components.js';
-	import { userStore } from '$lib/stores/user.js';
-	import { appStore } from '$lib/stores/app.js';
+	import EventList from '@/lib/components/EventList.svelte';
+	import Loading from '@/lib/components/Loading.svelte';
+	import type { Brand, Event } from '@/lib/types/api.js';
+	import type { ViewType } from '@/lib/types/components.js';
+	import { userStore } from '@/lib/stores/user.js';
+	import { appStore } from '@/lib/stores/app.js';
 
 	let haveEventsFilter = $state<boolean>(false);
 
@@ -103,21 +103,21 @@
 			{#if $brandsQuery.isLoading}
 				<Loading variant="list" />
 			{:else if $brandsQuery.error}
-				<Card.Card>
-					<Card.CardContent class="p-4">
+				<Card>
+					<CardContent class="p-4">
 						<p class="text-destructive">Failed to load brands. Please try again.</p>
-					</Card.CardContent>
-				</Card.Card>
+					</CardContent>
+				</Card>
 			{:else if brands.length === 0}
-				<Card.Card>
-					<Card.CardContent class="p-4">
+				<Card>
+					<CardContent class="p-4">
 						<p class="text-muted-foreground">No brands available.</p>
-					</Card.CardContent>
-				</Card.Card>
+					</CardContent>
+				</Card>
 			{:else}
 				{#each brands as brand}
-					<Card.Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToBrand(brand.brandid.toString())}>
-						<Card.CardHeader class="gap-0 pb-4">
+					<Card class="py-4 pb-0 gap-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onclick={() => goToBrand(brand.brandid.toString())}>
+						<CardHeader class="gap-0 pb-4">
 							<div class="flex justify-between items-center">
 								<div class="flex items-center gap-4">
 									<Avatar.Root class="w-16 h-16 rounded-lg">
@@ -127,7 +127,7 @@
 										<Avatar.Fallback class="rounded-lg bg-muted">{brand.brandname.charAt(0)}</Avatar.Fallback>
 									</Avatar.Root>
 									<div class="space-y-1">
-										<Card.CardTitle class="text-xl font-semibold">{brand.brandname}</Card.CardTitle>
+										<CardTitle class="text-xl font-semibold">{brand.brandname}</CardTitle>
 										<div class="flex gap-2">
 											{#if brand.brandfeatured}
 												<Badge><Star /> Featured</Badge>
@@ -136,7 +136,7 @@
 									</div>
 								</div>
 							</div>
-						</Card.CardHeader>
+						</CardHeader>
 						
 						{#if brand.brandpic2 && brand.brandfeatured}
 							<AspectRatio ratio={16/9}>
@@ -144,7 +144,7 @@
 							</AspectRatio>
 						{/if}
 
-						<Card.CardContent class="p-4 px-6 pb-4 space-y-4">
+						<CardContent class="p-4 px-6 pb-4 space-y-4">
 							{#if $eventsQuery.isSuccess}
 								{@const brandData = getBrandEvents(brand.brandid, true)}
 								
@@ -156,8 +156,8 @@
 									{/if}
 								</p>
 							{/if}
-						</Card.CardContent>
-					</Card.Card>
+						</CardContent>
+					</Card>
 				{/each}
 			{/if}
 		</div>
@@ -174,8 +174,8 @@
 					</AspectRatio>
 				{/if}
 				
-				<Card.Card>
-					<Card.CardHeader class="gap-0">
+				<Card>
+					<CardHeader class="gap-0">
 						<div class="flex items-center gap-6">
 							<Avatar.Root class="w-32 h-32 rounded-lg">
 								{#if selectedBrand.brandpic1}
@@ -184,7 +184,7 @@
 								<Avatar.Fallback class="rounded-lg bg-muted text-lg">{selectedBrand.brandname.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
 							<div class="space-y-1">
-								<Card.CardTitle class="text-3xl font-bold">{selectedBrand.brandname}</Card.CardTitle>
+								<CardTitle class="text-3xl font-bold">{selectedBrand.brandname}</CardTitle>
 								<div class="flex gap-2">
 									{#if selectedBrand.brandfeatured}
 										<Badge><Star /> Featured</Badge>
@@ -200,8 +200,8 @@
 								</p>
 							</div>
 						</div>
-					</Card.CardHeader>
-				</Card.Card>
+					</CardHeader>
+				</Card>
 
 				{#if brandEvents.length > 0}
 					<h3 class="text-3xl font-semibold mt-10 mb-4 text-center">Upcoming Events</h3>
@@ -212,18 +212,18 @@
 					/>
 				{:else}
 					<div class="text-center pt-4">
-						<Button.Button variant="default" size="lg" class="text-md bg-primary text-primary-foreground hover:bg-primary/90">
+						<Button variant="default" size="lg" class="text-md bg-primary text-primary-foreground hover:bg-primary/90">
 							Notify me about events
-						</Button.Button>
+						</Button>
 					</div>
 				{/if}
 			</div>
 		{:else}
-			<Card.Card>
-				<Card.CardContent class="p-4">
+			<Card>
+				<CardContent class="p-4">
 					<p class="text-muted-foreground">Brand not found.</p>
-				</Card.CardContent>
-			</Card.Card>
+				</CardContent>
+			</Card>
 		{/if}
 	{/if}
 </div>

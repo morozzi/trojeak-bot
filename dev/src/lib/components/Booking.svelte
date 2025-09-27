@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
+	import { createEventDispatcher } from 'svelte';
 	import { Button } from "@/components/ui/button";
 	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 	import { Input } from "@/components/ui/input";
@@ -11,7 +12,6 @@
 	import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 	import { Separator } from "@/components/ui/separator/index.js";
 	import Loading from '@/lib/components/Loading.svelte';
-	import { createEventDispatcher } from 'svelte';
 	import type { Event } from '@/lib/types/api.js';
 	import type { ViewType } from '@/lib/types/components.js';
 	import { appStore, appActions } from '@/lib/stores/app.js';
