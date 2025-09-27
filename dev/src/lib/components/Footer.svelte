@@ -172,7 +172,7 @@
 				{#each centerButtons as button}
 					<Button variant={button.variant || 'outline'} onclick={button.action} disabled={button.disabled}>
 						{#if button.icon}
-							<button.icon size={16} />
+							<button.icon />
 						{/if}
 						{button.text}
 					</Button>
