@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
-	import * as Button from '$lib/components/ui/button/index.js';
-	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Input from '$lib/components/ui/input/index.js';
-	import * as Label from '$lib/components/ui/label/index.js';
-	import * as Textarea from '$lib/components/ui/textarea/index.js';
-	import * as RadioGroup from '$lib/components/ui/radio-group/index.js';
-	import * as Progress from '$lib/components/ui/progress/index.js';
-	import * as Select from '$lib/components/ui/select/index.js';
-	import * as Avatar from '$lib/components/ui/avatar/index.js';
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import * as Button from '@/components/ui/button/index.js';
+	import * as Card from '@/components/ui/card/index.js';
+	import * as Input from '@/components/ui/input/index.js';
+	import * as Label from '@/components/ui/label/index.js';
+	import * as Textarea from '@/components/ui/textarea/index.js';
+	import * as RadioGroup from '@/components/ui/radio-group/index.js';
+	import * as Progress from '@/components/ui/progress/index.js';
+	import * as Select from '@/components/ui/select/index.js';
+	import * as Avatar from '@/components/ui/avatar/index.js';
+	import { Separator } from "@/components/ui/separator/index.js";
 	import Loading from '$lib/components/Loading.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import type { Event } from '$lib/types/api.js';

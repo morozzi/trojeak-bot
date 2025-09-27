@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { AspectRatio } from "$lib/components/ui/aspect-ratio/index.js";
-	import { Badge } from "$lib/components/ui/badge/index.js";
-	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import { AspectRatio } from "@/components/ui/aspect-ratio/index.js";
+	import { Badge } from "@/components/ui/badge/index.js";
+	import * as Card from '@/components/ui/card/index.js';
+	import * as Avatar from '@/components/ui/avatar/index.js';
 	import { Star } from '@lucide/svelte';
 	import type { Event, Brand } from '$lib/types/api.js';
 

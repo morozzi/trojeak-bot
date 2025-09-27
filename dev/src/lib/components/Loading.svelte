@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
+	import { Skeleton } from '@/components/ui/skeleton/index.js';
 
 	interface Props {
 		variant?: 'list' | 'detail' | 'booking';

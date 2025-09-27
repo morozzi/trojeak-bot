@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
-	import { AspectRatio } from "$lib/components/ui/aspect-ratio/index.js";
-	import { Badge } from "$lib/components/ui/badge/index.js";
-	import * as Button from '$lib/components/ui/button/index.js';
-	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import { AspectRatio } from "@/components/ui/aspect-ratio/index.js";
+	import { Badge } from "@/components/ui/badge/index.js";
+	import * as Button from '@/components/ui/button/index.js';
+	import * as Card from '@/components/ui/card/index.js';
+	import * as Avatar from '@/components/ui/avatar/index.js';
 	import { Star } from '@lucide/svelte';
 	import EventList from '$lib/components/EventList.svelte';
 	import Loading from '$lib/components/Loading.svelte';

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
-	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Button from '$lib/components/ui/button/index.js';
+	import * as Card from '@/components/ui/card/index.js';
+	import * as Button from '@/components/ui/button/index.js';
 	import EventList from '$lib/components/EventList.svelte';
 	import Loading from '$lib/components/Loading.svelte';
 	import type { Event } from '$lib/types/api.js';

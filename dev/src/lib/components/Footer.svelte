@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { Button } from "@/lib/components/ui/button"
-	import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/lib/components/ui/select"
-	import { Label } from "@/lib/components/ui/label"
-	import { Drawer, DrawerContent } from '@/lib/components/ui/drawer';
-	import { Switch } from "@/lib/components/ui/switch";
+	import { Button } from "@/components/ui/button"
+	import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+	import { Label } from "@/components/ui/label"
+	import { Drawer, DrawerContent } from '@/components/ui/drawer';
+	import { Switch } from "@/components/ui/switch";
 	import { SlidersHorizontal } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '$lib/types/components.js';
 
