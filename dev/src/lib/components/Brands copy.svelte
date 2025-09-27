@@ -12,7 +12,9 @@
 	import type { Brand, Event } from '@/lib/types/api.js';
 	import type { ViewType } from '@/lib/types/components.js';
 	import { userStore } from '@/lib/stores/user.js';
-	import { appStore, brandsQuery } from '@/lib/stores/app.js';
+	import { appStore } from '@/lib/stores/app.js';
+
+	let haveEventsFilter = $state<boolean>(false);
 
 	const dispatch = createEventDispatcher<{
 		navigate: { view: ViewType };
@@ -21,10 +23,19 @@
 
 	const viewMode = $derived($appStore.currentView === 'brands-detail' ? 'detail' : 'list');
 	const selectedBrandId = $derived($appStore.selectedBrandId || null);
+
+	const brandsQuery = createQuery({
+		queryKey: ['brands'],
+		queryFn: async () => {
+			const response = await fetch(`/api/brands.php`);
+			if (!response.ok) throw new Error('Failed to fetch brands');
+			return response.json();
+		}
+	});
 	
 	const brands = $derived(
-		($appStore.brandsData || []).filter((brand: Brand) => {
-			if ($appStore.filterState.haveEvents) {
+		($brandsQuery.data || []).filter((brand: Brand) => {
+			if (haveEventsFilter) {
 				const brandData = getBrandEvents(brand.brandid, true);
 				if (brandData.count === 0) return false;
 			}
@@ -67,6 +78,11 @@
 		
 		return brandEvents;
 	});
+
+	function handleFilterChange(event: CustomEvent<{type: string; value: string | boolean | null}>) {
+		const { type, value } = event.detail;
+		if (type === 'haveEvents') haveEventsFilter = value as boolean;
+	}
 	
 	function goToBrand(brandId: string): void {
     dispatch('navigate', { view: 'brands-detail', brandId });
@@ -193,7 +209,7 @@
 					<h3 class="text-3xl font-semibold mt-10 mb-4 text-center">Upcoming Events</h3>
 					<EventList 
 						events={brandEvents} 
-						brandData={$appStore.brandsData}
+						brandData={$brandsQuery.data || []}
 						onEventClick={goToEvent} 
 					/>
 				{:else}

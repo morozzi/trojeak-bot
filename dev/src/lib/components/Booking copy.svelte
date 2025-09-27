@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 	import { Button } from "@/components/ui/button";
 	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 	import { Input } from "@/components/ui/input";
@@ -13,7 +14,7 @@
 	import Loading from '@/lib/components/Loading.svelte';
 	import type { Event } from '@/lib/types/api.js';
 	import type { ViewType } from '@/lib/types/components.js';
-	import { appStore, appActions, brandsQuery } from '@/lib/stores/app.js';
+	import { appStore, appActions } from '@/lib/stores/app.js';
 	import { userStore } from '@/lib/stores/user.js';
 	import { BookingValidator, type BookingData } from '@/lib/api/validation.js';
 
@@ -33,6 +34,15 @@
 		footerVisibilityChange: { visible: boolean };
 		validationChange: { canProceed: boolean; canComplete: boolean; isProcessing: boolean };
 	}>();
+
+	const brandsQuery = createQuery({
+		queryKey: ['brands'],
+		queryFn: async () => {
+			const response = await fetch(`/api/brands.php`);
+			if (!response.ok) throw new Error('Failed to fetch brands');
+			return response.json();
+		}
+	});
 	
 	const stepTitles = ['Drinks', 'Guests', 'Details', 'Payment'];
 	const currentStep = $derived($appStore.bookingState?.currentStep || 1);
@@ -45,7 +55,7 @@
 	const validator = $derived(constants ? new BookingValidator(constants) : null);
 
 	const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
-	const eventBrands = $derived($appStore.brandsData?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []);
+	const eventBrands = $derived($brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []);
 
 	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
 

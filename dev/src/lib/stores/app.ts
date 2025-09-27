@@ -1,8 +1,9 @@
 // lib/stores/app.ts
 import { writable, derived } from 'svelte/store';
+import { createQuery } from '@tanstack/svelte-query';
 import type { WebApp } from '@twa-dev/sdk';
-import type { ViewType } from '@/lib/types/components.js';
-import type { Event, Venue } from '@/lib/types/api.js';
+import type { ViewType, FilterState } from '@/lib/types/components.js';
+import type { Event, Venue, VenueType, Brand } from '@/lib/types/api.js';
 
 const SCROLL_RESTORE_VIEWS = ['home', 'events-list', 'events-detail', 'venues-list', 'venues-detail', 'brands-list', 'brands-detail'];
 
@@ -39,6 +40,9 @@ interface AppState {
 	navigationHistory: NavigationEntry[];
 	bookingState: BookingState | null;
 	cityData: any[];
+	filterState: FilterState;
+	venueTypesData: VenueType[];
+	brandsData: Brand[];
 }
 
 const MAX_NAVIGATION_ENTRIES = 10;
@@ -53,19 +57,55 @@ const initialState: AppState = {
 	selectedBrand: null,
 	navigationHistory: [],
 	bookingState: null,
-	cityData: []
+	cityData: [],
+	filterState: {
+		venueTypes: [],
+		brands: [],
+		promotion: false,
+		haveEvents: false
+	},
+	venueTypesData: [],
+	brandsData: []
 };
 
 const baseAppStore = writable(initialState);
 
+export const venueTypesQuery = createQuery({
+	queryKey: ['venue-types'],
+	queryFn: async () => {
+		const response = await fetch('/api/venue-types.php');
+		if (!response.ok) throw new Error('Failed to fetch venue types');
+		const data = await response.json();
+		return data.success ? data.data : [];
+	},
+	enabled: derived(baseAppStore, ($store) => 
+		['events-list', 'venues-list'].includes($store.currentView)
+	)
+});
+
+export const brandsQuery = createQuery({
+	queryKey: ['brands'],
+	queryFn: async () => {
+		const response = await fetch('/api/brands.php');
+		if (!response.ok) throw new Error('Failed to fetch brands');
+		const data = await response.json();
+		return data.success ? data.data : [];
+	},
+	enabled: derived(baseAppStore, ($store) => 
+		['home', 'events-list', 'events-detail', 'venues-detail', 'brands-list', 'brands-detail', 'booking-step-1'].includes($store.currentView)
+	)
+});
+
 export const appStore = derived(
-	baseAppStore,
-	($base) => ({
+	[baseAppStore, venueTypesQuery, brandsQuery],
+	([$base, $venueTypes, $brands]) => ({
 		...$base,
 		canGoBack: $base.navigationHistory.length > 0,
 		selectedEventId: $base.selectedEvent?.eventid.toString(),
 		selectedVenueId: $base.selectedVenue?.venueid.toString(),
-		selectedBrandId: $base.selectedBrand?.brandid.toString()
+		selectedBrandId: $base.selectedBrand?.brandid.toString(),
+		venueTypesData: $venueTypes.data || [],
+		brandsData: $brands.data || []
 	})
 );
 
@@ -161,6 +201,53 @@ export const appActions = {
 
 	setCityData: (cities: any[]) => {
 		baseAppStore.update(state => ({ ...state, cityData: cities }));
+	},
+
+	setFilter: (filterUpdates: Partial<FilterState>) => {
+		baseAppStore.update(state => ({
+			...state,
+			filterState: { ...state.filterState, ...filterUpdates }
+		}));
+	},
+
+	addVenueType: (venueType: string) => {
+		baseAppStore.update(state => ({
+			...state,
+			filterState: {
+				...state.filterState,
+				venueTypes: [...state.filterState.venueTypes, venueType]
+			}
+		}));
+	},
+
+	removeVenueType: (venueType: string) => {
+		baseAppStore.update(state => ({
+			...state,
+			filterState: {
+				...state.filterState,
+				venueTypes: state.filterState.venueTypes.filter(type => type !== venueType)
+			}
+		}));
+	},
+
+	addBrand: (brandId: string) => {
+		baseAppStore.update(state => ({
+			...state,
+			filterState: {
+				...state.filterState,
+				brands: [...state.filterState.brands, brandId]
+			}
+		}));
+	},
+
+	removeBrand: (brandId: string) => {
+		baseAppStore.update(state => ({
+			...state,
+			filterState: {
+				...state.filterState,
+				brands: state.filterState.brands.filter(id => id !== brandId)
+			}
+		}));
 	},
 
 	startBooking: (eventId: string) => {

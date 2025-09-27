@@ -8,7 +8,6 @@
 	import type { Event } from '@/lib/types/api.js';
 	import type { ViewType } from '@/lib/types/components.js';
 	import { userStore } from '@/lib/stores/user.js';
-	import { appStore } from '@/lib/stores/app.js';
 
 	const dispatch = createEventDispatcher<{
 		navigate: { view: ViewType };
@@ -19,6 +18,15 @@
 		queryFn: async () => {
 			const response = await fetch(`/api/events.php?lang=${$userStore.selectedLanguage}&city=${$userStore.selectedCity}&featured=1`);
 			if (!response.ok) throw new Error('Failed to fetch featured events');
+			return response.json();
+		}
+	});
+	
+	const brandsQuery = createQuery({
+		queryKey: ['brands'],
+		queryFn: async () => {
+			const response = await fetch(`/api/brands.php`);
+			if (!response.ok) throw new Error('Failed to fetch brands');
 			return response.json();
 		}
 	});
@@ -51,7 +59,7 @@
 	{:else if ($featuredEventsQuery.data || []).length > 0}
 		<EventList 
 			events={$featuredEventsQuery.data || []} 
-			brandData={$appStore.brandsData}
+			brandData={$brandsQuery.data || []}
 			onEventClick={goToEvent} 
 		/>
 	{:else}
