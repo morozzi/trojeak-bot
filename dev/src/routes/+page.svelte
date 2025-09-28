@@ -266,11 +266,14 @@
 	}
 </script>
 
-<!-- Temporary debug display -->
+<!-- Expand the debug display -->
 {#if $userStore.userData}
-<div style="position: fixed; top: 0; left: 0; background: red; color: white; padding: 10px; z-index: 9999;">
+<div style="position: fixed; top: 0; left: 0; background: red; color: white; padding: 10px; z-index: 9999; font-size: 12px;">
   venue_types: {$userStore.userData?.user?.venue_types || 'null'}
   <br>filter length: {$userStore.filterState.venueTypes.length}
+  <br>success: {$userStore.userData?.success ? 'yes' : 'no'}
+  <br>has user: {$userStore.userData?.user ? 'yes' : 'no'}
+  <br>condition met: {($userStore.userData?.success && $userStore.userData.user?.venue_types && $userStore.filterState.venueTypes.length === 0) ? 'YES' : 'NO'}
 </div>
 {/if}
 
