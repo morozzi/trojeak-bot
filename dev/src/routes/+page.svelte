@@ -276,6 +276,7 @@
   <br>success: {$userStore.userData?.success ? 'yes' : 'no'}
   <br>has user: {$userStore.userData?.user ? 'yes' : 'no'}
   <br>condition met: {($userStore.userData?.success && $userStore.userData.user?.venue_types && $userStore.filterState.venueTypes.length === 0) ? 'YES' : 'NO'}
+  <br>parsed: {JSON.stringify($userStore.userData?.user?.venue_types?.split(',').map(sid => sid.trim()).filter(sid => sid) || [])}
 </div>
 {/if}
 
