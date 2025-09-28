@@ -266,6 +266,14 @@
 	}
 </script>
 
+<!-- Temporary debug display -->
+{#if $userStore.userData}
+<div style="position: fixed; top: 0; left: 0; background: red; color: white; padding: 10px; z-index: 9999;">
+  venue_types: {$userStore.userData?.user?.venue_types || 'null'}
+  <br>filter length: {$userStore.filterState.venueTypes.length}
+</div>
+{/if}
+
 <QueryClientProvider client={queryClient}>
 	<div 
 		class="min-h-[100svh] bg-background"
