@@ -182,53 +182,6 @@ export const appActions = {
 		baseAppStore.update(state => ({ ...state, brandsData: brands }));
 	},
 
-	setFilter: (filterUpdates: Partial<FilterState>) => {
-		baseAppStore.update(state => ({
-			...state,
-			filterState: { ...state.filterState, ...filterUpdates }
-		}));
-	},
-
-	addVenueType: (venueType: string) => {
-		baseAppStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				venueTypes: [...state.filterState.venueTypes, venueType]
-			}
-		}));
-	},
-
-	removeVenueType: (venueType: string) => {
-		baseAppStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				venueTypes: state.filterState.venueTypes.filter(type => type !== venueType)
-			}
-		}));
-	},
-
-	addBrand: (brandId: string) => {
-		baseAppStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				brands: [...state.filterState.brands, brandId]
-			}
-		}));
-	},
-
-	removeBrand: (brandId: string) => {
-		baseAppStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				brands: state.filterState.brands.filter(id => id !== brandId)
-			}
-		}));
-	},
-
 	startBooking: (eventId: string) => {
 		baseAppStore.update(state => ({
 			...state,
