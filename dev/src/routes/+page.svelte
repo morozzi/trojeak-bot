@@ -30,6 +30,7 @@
 	let canProceedBooking = $state(false);
 	let canCompleteBooking = $state(false);
 	let isBookingProcessing = $state(false);
+	let brandsData = $state([]);
 
 	function updateFooterHeight() {
 		const height = currentFooterEl.offsetHeight;
@@ -57,6 +58,19 @@
 				.catch(err => {
 					userActions.setUserError(err.message);
 					userActions.setUserDataLoaded(true);
+				});
+		}
+	});
+
+	$effect(() => {
+		if ($userStore.isUserDataLoaded) {
+			fetch('/api/brands.php')
+				.then(response => response.json())
+				.then(data => {
+					brandsData = data;
+				})
+				.catch(err => {
+					console.error('Failed to fetch brands:', err);
 				});
 		}
 	});
@@ -313,6 +327,7 @@
 				canProceedBooking={canProceedBooking}
 				canCompleteBooking={canCompleteBooking}
 				footerVisible={footerVisible}
+				brands={brandsData}
 				on:goBack={handleGoBack}
 				on:navigate={handleNavigate}
 				on:bookingAction={handleBookingAction}
