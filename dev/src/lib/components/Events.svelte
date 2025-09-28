@@ -42,9 +42,9 @@
 
 	const events = $derived(
 		($eventsQuery.data || []).filter((event: Event) => {
-			if ($appStore.filterState.venueTypes.length > 0 && !$appStore.filterState.venueTypes.includes(event.venuetype)) return false;
-			if ($appStore.filterState.brands.length > 0 && !$appStore.filterState.brands.some(brand => event.brandid.includes(brand))) return false;
-			if ($appStore.filterState.promotion && !event.eventschema) return false;
+			if ($userStore.filterState.venueTypes.length > 0 && !$userStore.filterState.venueTypes.includes(event.venuetype)) return false;
+			if ($userStore.filterState.brands.length > 0 && !$userStore.filterState.brands.some(brand => event.brandid.includes(brand))) return false;
+			if ($userStore.filterState.promotion && !event.eventschema) return false;
 			return true;
 		})
 	);

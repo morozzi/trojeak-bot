@@ -1,9 +1,8 @@
 // lib/stores/app.ts
 import { writable, derived } from 'svelte/store';
 import type { WebApp } from '@twa-dev/sdk';
-import type { ViewType, FilterState } from '@/lib/types/components.js';
+import type { ViewType } from '@/lib/types/components.js';
 import type { Event, Venue } from '@/lib/types/api.js';
-import { userStore } from '@/lib/stores/user.ts';
 
 const SCROLL_RESTORE_VIEWS = ['home', 'events-list', 'events-detail', 'venues-list', 'venues-detail', 'brands-list', 'brands-detail'];
 
@@ -40,7 +39,6 @@ interface AppState {
 	navigationHistory: NavigationEntry[];
 	bookingState: BookingState | null;
 	cityData: any[];
-	filterState: FilterState;
 }
 
 const MAX_NAVIGATION_ENTRIES = 10;
@@ -55,13 +53,7 @@ const initialState: AppState = {
 	selectedBrand: null,
 	navigationHistory: [],
 	bookingState: null,
-	cityData: [],
-	filterState: {
-		venueTypes: [],
-		brands: [],
-		promotion: false,
-		haveEvents: false
-	}
+	cityData: []
 };
 
 const baseAppStore = writable(initialState);
@@ -171,50 +163,6 @@ export const appActions = {
 		baseAppStore.update(state => ({ ...state, cityData: cities }));
 	},
 
-	setFilter: (filterState: FilterState) => {
-		baseAppStore.update(state => ({ ...state, filterState }));
-	},
-
-	addVenueType: (venueType: string) => {
-		baseAppStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				venueTypes: [...state.filterState.venueTypes, venueType]
-			}
-		}));
-	},
-
-	removeVenueType: (venueType: string) => {
-		baseAppStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				venueTypes: state.filterState.venueTypes.filter(vt => vt !== venueType)
-			}
-		}));
-	},
-
-	addBrand: (brand: string) => {
-		baseAppStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				brands: [...state.filterState.brands, brand]
-			}
-		}));
-	},
-
-	removeBrand: (brand: string) => {
-		baseAppStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				brands: state.filterState.brands.filter(b => b !== brand)
-			}
-		}));
-	},
-
 	startBooking: (eventId: string) => {
 		baseAppStore.update(state => ({
 			...state,
@@ -269,15 +217,3 @@ export const appActions = {
 		baseAppStore.set(initialState);
 	}
 };
-
-$effect(() => {
-	if ($userStore.selectedVenueTypes && $appStore.filterState.venueTypes.length === 0) {
-		const venueTypeSids = $userStore.selectedVenueTypes.split(',').map(sid => sid.trim()).filter(sid => sid);
-		if (venueTypeSids.length > 0) {
-			appActions.setFilter({
-				...$appStore.filterState, 
-				venueTypes: venueTypeSids
-			});
-		}
-	}
-});

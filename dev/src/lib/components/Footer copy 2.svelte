@@ -9,7 +9,6 @@
 	import { SlidersHorizontal } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '@/lib/types/components.js';
 	import { appStore, appActions } from '@/lib/stores/app.js';
-	import { userStore, userActions } from '@/lib/stores/user.ts';
 
 	interface Props {
 		currentView: ViewType;
@@ -137,13 +136,13 @@
 
 	function handleFilterChange(type: string, value: string | boolean | null): void {
 		if (type === 'venueType') {
-			userActions.setFilter({...$userStore.filterState, venueTypes: value ? [value] : []});
+			appActions.setFilter({...$appStore.filterState, venueTypes: value ? [value] : []});
 		} else if (type === 'brand') {
-			userActions.setFilter({...$userStore.filterState, brands: value ? [value] : []});
+			appActions.setFilter({...$appStore.filterState, brands: value ? [value] : []});
 		} else if (type === 'promotion') {
-			userActions.setFilter({...$userStore.filterState, promotion: value as boolean});
+			appActions.setFilter({...$appStore.filterState, promotion: value as boolean});
 		} else if (type === 'haveEvents') {
-			userActions.setFilter({...$userStore.filterState, haveEvents: value as boolean});
+			appActions.setFilter({...$appStore.filterState, haveEvents: value as boolean});
 		}
 	}
 

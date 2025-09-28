@@ -32,7 +32,7 @@
 	
 	const brands = $derived(
 		($brandsQuery.data || []).filter((brand: Brand) => {
-			if ($appStore.filterState.haveEvents) {
+			if ($userStore.filterState.haveEvents) {
 				const brandData = getBrandEvents(brand.brandid, true);
 				if (brandData.count === 0) return false;
 			}

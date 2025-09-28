@@ -51,8 +51,8 @@
 
 	const venues = $derived(
 		($venuesQuery.data || []).filter((venue: Venue) => {
-			if ($appStore.filterState.venueTypes.length > 0 && !$appStore.filterState.venueTypes.includes(venue.venuetype)) return false;
-			if ($appStore.filterState.haveEvents) {
+			if ($userStore.filterState.venueTypes.length > 0 && !$userStore.filterState.venueTypes.includes(venue.venuetype)) return false;
+			if ($userStore.filterState.haveEvents) {
 				const venueData = getVenueEvents(venue.venueid, true);
 				if (venueData.count === 0) return false;
 			}

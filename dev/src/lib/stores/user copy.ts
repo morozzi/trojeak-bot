@@ -1,6 +1,6 @@
 // lib/stores/user.ts
 import { writable, derived } from 'svelte/store';
-import type { TelegramUser, FilterState } from '@/lib/types/components.js';
+import type { TelegramUser } from '@/lib/types/components.js';
 import { appStore } from './app.js';
 
 interface UserState {
@@ -15,7 +15,6 @@ interface UserState {
 	selectedCity: string | null;
 	isUserDataLoaded: boolean;
 	userInfo: TelegramUser | null;
-	filterState: FilterState;
 }
 
 const initialState: UserState = {
@@ -29,13 +28,7 @@ const initialState: UserState = {
 	selectedLanguage: 'en',
 	selectedCity: null,
 	isUserDataLoaded: false,
-	userInfo: null,
-	filterState: {
-		venueTypes: [],
-		brands: [],
-		promotion: false,
-		haveEvents: false
-	}
+	userInfo: null
 };
 
 const baseUserStore = writable(initialState);
@@ -46,12 +39,12 @@ export const userStore = derived(
 		const selectedLanguage = $base.userSelectedLanguage || 
 			($base.userData?.success && $base.userData.user ? $base.userData.user.language : null) ||
 			'en';
-			
+
 		const selectedCity = $base.userSelectedCity ||
 			($base.userData?.success && $base.userData.user ? 
 				($base.userData.user.cityid === 0 ? null : $base.userData.user.cityid.toString()) :
 				null);
-				
+
 		const selectedVenueTypes = $base.userSelectedVenueTypes ||
 			($base.userData?.success && $base.userData.user ? 
 				$base.userData.user.venue_types || [] :
@@ -63,18 +56,8 @@ export const userStore = derived(
 		})();
 		
 		const isUserDataLoaded = $base.userDataLoaded;
-		const userInfo: TelegramUser | null = $app.webApp?.initDataUnsafe?.user || null;
 
-		let filterState = $base.filterState;
-		if ($base.userData?.success && $base.userData.user?.venue_types && filterState.venueTypes.length === 0) {
-			const venueTypeSids = $base.userData.user.venue_types.split(',').map(sid => sid.trim()).filter(sid => sid);
-			if (venueTypeSids.length > 0) {
-				filterState = {
-					...filterState,
-					venueTypes: venueTypeSids
-				};
-			}
-		}
+		const userInfo: TelegramUser | null = $app.webApp?.initDataUnsafe?.user || null;
 
 		return {
 			...$base,
@@ -83,8 +66,7 @@ export const userStore = derived(
 			selectedVenueTypes,
 			selectedCityName,
 			isUserDataLoaded,
-			userInfo,
-			filterState
+			userInfo
 		};
 	}
 );
@@ -111,50 +93,6 @@ export const userActions = {
 
 	setInitData: (data: string) => {
 		baseUserStore.update(state => ({ ...state, initData: data }));
-	},
-
-	setFilter: (filterState: FilterState) => {
-		baseUserStore.update(state => ({ ...state, filterState }));
-	},
-
-	addVenueType: (venueType: string) => {
-		baseUserStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				venueTypes: [...state.filterState.venueTypes, venueType]
-			}
-		}));
-	},
-
-	removeVenueType: (venueType: string) => {
-		baseUserStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				venueTypes: state.filterState.venueTypes.filter(vt => vt !== venueType)
-			}
-		}));
-	},
-
-	addBrand: (brand: string) => {
-		baseUserStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				brands: [...state.filterState.brands, brand]
-			}
-		}));
-	},
-
-	removeBrand: (brand: string) => {
-		baseUserStore.update(state => ({
-			...state,
-			filterState: {
-				...state.filterState,
-				brands: state.filterState.brands.filter(b => b !== brand)
-			}
-		}));
 	},
 
 	resetUser: () => {
