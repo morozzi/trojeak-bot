@@ -63,6 +63,15 @@
 	});
 
 	$effect(() => {
+		if ($userStore.userData?.success && $userStore.userData.user?.venue_types && $userStore.filterState.venueTypes.length === 0) {
+			const venueTypeSids = $userStore.userData.user.venue_types.split(',').map(sid => sid.trim()).filter(sid => sid);
+			if (venueTypeSids.length > 0) {
+				userActions.setFilter({...$userStore.filterState, venueTypes: venueTypeSids});
+			}
+		}
+	});
+
+	$effect(() => {
 		if ($userStore.isUserDataLoaded) {
 			fetch('/api/brands.php')
 				.then(response => response.json())

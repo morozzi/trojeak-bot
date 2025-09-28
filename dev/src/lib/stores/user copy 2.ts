@@ -65,6 +65,17 @@ export const userStore = derived(
 		const isUserDataLoaded = $base.userDataLoaded;
 		const userInfo: TelegramUser | null = $app.webApp?.initDataUnsafe?.user || null;
 
+		let filterState = $base.filterState;
+		if ($base.userData?.success && $base.userData.user?.venue_types && filterState.venueTypes.length === 0) {
+			const venueTypeSids = $base.userData.user.venue_types.split(',').map(sid => sid.trim()).filter(sid => sid);
+			if (venueTypeSids.length > 0) {
+				filterState = {
+					...filterState,
+					venueTypes: venueTypeSids
+				};
+			}
+		}
+
 		return {
 			...$base,
 			selectedLanguage,
@@ -72,7 +83,8 @@ export const userStore = derived(
 			selectedVenueTypes,
 			selectedCityName,
 			isUserDataLoaded,
-			userInfo
+			userInfo,
+			filterState
 		};
 	}
 );
