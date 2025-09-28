@@ -18,9 +18,10 @@ export type ViewType =
 export type BookingAction = 'prev' | 'next' | 'cancel' | 'complete';
 
 export interface FilterState {
-  cityId?: number;
-  venueType?: string;
-  featuredOnly?: boolean;
+  venueTypes: string[];
+  brands: string[];
+  promotion: boolean;
+  haveEvents: boolean;
 }
 
 export interface NavigationState {

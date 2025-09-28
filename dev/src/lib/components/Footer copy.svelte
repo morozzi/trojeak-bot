@@ -8,7 +8,6 @@
 	import { Switch } from "@/components/ui/switch";
 	import { SlidersHorizontal } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '@/lib/types/components.js';
-	import { appStore, appActions } from '@/lib/stores/app.js';
 
 	interface Props {
 		currentView: ViewType;
@@ -40,6 +39,7 @@
 		goBack: void;
 		bookingAction: { action: BookingAction };
 		footerReady: { element: HTMLElement };
+		filterChange: { type: string; value: string | boolean | null };
 	}>();
 
 	const viewType = $derived({
@@ -135,15 +135,7 @@
 	}
 
 	function handleFilterChange(type: string, value: string | boolean | null): void {
-		if (type === 'venueType') {
-			appActions.setFilter({...$appStore.filterState, venueTypes: value ? [value] : []});
-		} else if (type === 'brand') {
-			appActions.setFilter({...$appStore.filterState, brands: value ? [value] : []});
-		} else if (type === 'promotion') {
-			appActions.setFilter({...$appStore.filterState, promotion: value as boolean});
-		} else if (type === 'haveEvents') {
-			appActions.setFilter({...$appStore.filterState, haveEvents: value as boolean});
-		}
+		dispatch('filterChange', { type, value });
 	}
 
 	function getFilters(view: ViewType) {

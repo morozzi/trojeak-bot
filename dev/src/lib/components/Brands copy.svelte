@@ -14,8 +14,11 @@
 	import { userStore } from '@/lib/stores/user.js';
 	import { appStore } from '@/lib/stores/app.js';
 
+	let haveEventsFilter = $state<boolean>(false);
+
 	const dispatch = createEventDispatcher<{
 		navigate: { view: ViewType };
+		filterChange: { type: string; value: string | boolean | null };
 	}>();
 
 	const viewMode = $derived($appStore.currentView === 'brands-detail' ? 'detail' : 'list');
@@ -32,7 +35,7 @@
 	
 	const brands = $derived(
 		($brandsQuery.data || []).filter((brand: Brand) => {
-			if ($appStore.filterState.haveEvents) {
+			if (haveEventsFilter) {
 				const brandData = getBrandEvents(brand.brandid, true);
 				if (brandData.count === 0) return false;
 			}
@@ -75,6 +78,11 @@
 		
 		return brandEvents;
 	});
+
+	function handleFilterChange(event: CustomEvent<{type: string; value: string | boolean | null}>) {
+		const { type, value } = event.detail;
+		if (type === 'haveEvents') haveEventsFilter = value as boolean;
+	}
 	
 	function goToBrand(brandId: string): void {
     dispatch('navigate', { view: 'brands-detail', brandId });
