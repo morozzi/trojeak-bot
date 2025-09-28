@@ -266,7 +266,8 @@
 	}
 </script>
 
-<!-- Expand the debug display -->
+<QueryClientProvider client={queryClient}>
+
 {#if $userStore.userData}
 <div style="position: fixed; top: 0; left: 0; background: red; color: white; padding: 10px; z-index: 9999; font-size: 12px;">
   venue_types: {$userStore.userData?.user?.venue_types || 'null'}
@@ -276,7 +277,6 @@
 </div>
 {/if}
 
-<QueryClientProvider client={queryClient}>
 	<div 
 		class="min-h-[100svh] bg-background"
 		style="--app-footer-h: calc(var(--footer-h, 72px) + env(safe-area-inset-bottom, 0px));"
