@@ -101,6 +101,13 @@
 			appActions.setLoading(false);
 		}
 	});
+
+	// Temporary bypass for testing
+	setTimeout(() => {
+		if (!$userStore.isUserDataLoaded) {
+			userActions.setUserDataLoaded(true);
+		}
+	}, 3000);
 	
 	function handleStartBooking(event: CustomEvent<{event: Event}>) {
 		appActions.setSelectedEvent(event.detail.event);
