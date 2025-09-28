@@ -1,4 +1,5 @@
 // lib/types/components.ts - Component interfaces and utility types
+
 export interface TelegramUser {
   id: number;
   first_name: string;
@@ -17,10 +18,9 @@ export type ViewType =
 export type BookingAction = 'prev' | 'next' | 'cancel' | 'complete';
 
 export interface FilterState {
-  venueTypes: string[];
-  brands: string[];
-  promotion: boolean;
-  haveEvents: boolean;
+  cityId?: number;
+  venueType?: string;
+  featuredOnly?: boolean;
 }
 
 export interface NavigationState {

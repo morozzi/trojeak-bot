@@ -1,8 +1,8 @@
 // lib/stores/app.ts
 import { writable, derived } from 'svelte/store';
 import type { WebApp } from '@twa-dev/sdk';
-import type { ViewType, FilterState } from '@/lib/types/components.js';
-import type { Event, Venue, VenueType, Brand } from '@/lib/types/api.js';
+import type { ViewType } from '@/lib/types/components.js';
+import type { Event, Venue } from '@/lib/types/api.js';
 
 const SCROLL_RESTORE_VIEWS = ['home', 'events-list', 'events-detail', 'venues-list', 'venues-detail', 'brands-list', 'brands-detail'];
 
@@ -39,9 +39,6 @@ interface AppState {
 	navigationHistory: NavigationEntry[];
 	bookingState: BookingState | null;
 	cityData: any[];
-	filterState: FilterState;
-	venueTypesData: VenueType[];
-	brandsData: Brand[];
 }
 
 const MAX_NAVIGATION_ENTRIES = 10;
@@ -56,15 +53,7 @@ const initialState: AppState = {
 	selectedBrand: null,
 	navigationHistory: [],
 	bookingState: null,
-	cityData: [],
-	filterState: {
-		venueTypes: [],
-		brands: [],
-		promotion: false,
-		haveEvents: false
-	},
-	venueTypesData: [],
-	brandsData: []
+	cityData: []
 };
 
 const baseAppStore = writable(initialState);
@@ -172,14 +161,6 @@ export const appActions = {
 
 	setCityData: (cities: any[]) => {
 		baseAppStore.update(state => ({ ...state, cityData: cities }));
-	},
-
-	setVenueTypesData: (venueTypes: VenueType[]) => {
-		baseAppStore.update(state => ({ ...state, venueTypesData: venueTypes }));
-	},
-
-	setBrandsData: (brands: Brand[]) => {
-		baseAppStore.update(state => ({ ...state, brandsData: brands }));
 	},
 
 	startBooking: (eventId: string) => {

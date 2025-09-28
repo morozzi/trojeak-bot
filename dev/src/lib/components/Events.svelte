@@ -12,7 +12,11 @@
 	import type { Event } from '@/lib/types/api.js';
 	import type { ViewType } from '@/lib/types/components.js';
 	import { userStore } from '@/lib/stores/user.js';
-	import { appStore, appActions } from '@/lib/stores/app.js';
+	import { appStore } from '@/lib/stores/app.js';
+
+	let venueTypeFilter = $state<string | null>(null);
+	let brandFilter = $state<string | null>(null);
+	let promotionFilter = $state<boolean>(false);
 
 	const dispatch = createEventDispatcher<{
 		startBooking: { event: Event };
@@ -37,25 +41,31 @@
 		queryFn: async () => {
 			const response = await fetch(`/api/brands.php`);
 			if (!response.ok) throw new Error('Failed to fetch brands');
-			const data = await response.json();
-			return data.success ? data.data : [];
+			return response.json();
 		}
 	});
 
 	$effect(() => {
-		if ($brandsQuery.data) {
-			appActions.setBrandsData($brandsQuery.data);
+		if ($userStore.selectedVenueTypes && $userStore.selectedVenueTypes.length > 0 && !venueTypeFilter) {
+			venueTypeFilter = $userStore.selectedVenueTypes[0];
 		}
 	});
 
 	const events = $derived(
 		($eventsQuery.data || []).filter((event: Event) => {
-			if ($appStore.filterState.venueTypes.length > 0 && !$appStore.filterState.venueTypes.includes(event.venuetype)) return false;
-			if ($appStore.filterState.brands.length > 0 && !$appStore.filterState.brands.some(brandId => event.brandid.includes(brandId))) return false;
-			if ($appStore.filterState.promotion && !event.eventschema) return false;
+			if (venueTypeFilter && event.venuetype !== venueTypeFilter) return false;
+			if (brandFilter && !event.brandid.includes(brandFilter)) return false;
+			if (promotionFilter && !event.eventschema) return false;
 			return true;
 		})
 	);
+
+	function handleFilterChange(event: CustomEvent<{type: string; value: string | boolean | null}>) {
+		const { type, value } = event.detail;
+		if (type === 'venueType') venueTypeFilter = value as string | null;
+		if (type === 'brand') brandFilter = value as string | null;
+		if (type === 'promotion') promotionFilter = value as boolean;
+	}
 
 	function goToEvent(eventId: string): void {
     dispatch('navigate', { view: 'events-detail', eventId });
@@ -90,7 +100,7 @@
 			{:else}
 				<EventList 
 					events={events} 
-					brandData={$appStore.brandsData}
+					brandData={$brandsQuery.data || []}
 					onEventClick={goToEvent} 
 				/>
 			{/if}
@@ -101,7 +111,7 @@
 			<Loading variant="detail" />
 		{:else if selectedEvent}
 			{@const eventBrandIds = selectedEvent.brandid.split(',').map(id => id.replace(/\^/g, ''))}
-			{@const eventBrands = $appStore.brandsData?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []}
+			{@const eventBrands = $brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []}
 			<div class="space-y-8">
 				{#if selectedEvent.eventpic}
 					<AspectRatio class="pb-2" ratio={4/5}>

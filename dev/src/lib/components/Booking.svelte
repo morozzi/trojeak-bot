@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 	import { Button } from "@/components/ui/button";
 	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 	import { Input } from "@/components/ui/input";
@@ -33,20 +34,13 @@
 		footerVisibilityChange: { visible: boolean };
 		validationChange: { canProceed: boolean; canComplete: boolean; isProcessing: boolean };
 	}>();
-	
+
 	const brandsQuery = createQuery({
 		queryKey: ['brands'],
 		queryFn: async () => {
 			const response = await fetch(`/api/brands.php`);
 			if (!response.ok) throw new Error('Failed to fetch brands');
-			const data = await response.json();
-			return data.success ? data.data : [];
-		}
-	});
-
-	$effect(() => {
-		if ($brandsQuery.data) {
-			appActions.setBrandsData($brandsQuery.data);
+			return response.json();
 		}
 	});
 	
@@ -61,7 +55,7 @@
 	const validator = $derived(constants ? new BookingValidator(constants) : null);
 
 	const eventBrandIds = event.brandid.split(',').map(id => id.replace(/\^/g, ''));
-	const eventBrands = $derived($appStore.brandsData?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []);
+	const eventBrands = $derived($brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []);
 
 	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
 

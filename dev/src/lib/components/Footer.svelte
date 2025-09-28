@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 	import { Button } from "@/components/ui/button"
 	import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 	import { Label } from "@/components/ui/label"
@@ -7,7 +8,6 @@
 	import { Switch } from "@/components/ui/switch";
 	import { SlidersHorizontal } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '@/lib/types/components.js';
-	import { appStore, appActions } from '@/lib/stores/app.js';
 
 	interface Props {
 		currentView: ViewType;
@@ -17,6 +17,7 @@
 		canProceedBooking?: boolean;
 		canCompleteBooking?: boolean;
 		footerVisible?: boolean;
+		brands?: Array<{brandid: number, brandname: string}>;
 	}
 
 	const {
@@ -26,7 +27,8 @@
 		isBookingProcessing = false,
 		canProceedBooking = false,
 		canCompleteBooking = false,
-		footerVisible = true
+		footerVisible = true,
+		brands = []
 	}: Props = $props();
 
 	let footerEl: HTMLElement | undefined = $state();
@@ -51,33 +53,9 @@
 		queryFn: async () => {
 			const response = await fetch('/api/venue-types.php');
 			if (!response.ok) throw new Error('Failed to fetch venue types');
-			const data = await response.json();
-			return data.success ? data.data : [];
+			return response.json();
 		},
-		enabled: () => ['events-list', 'venues-list'].includes(currentView)
-	});
-
-	const brandsQuery = createQuery({
-		queryKey: ['brands'],
-		queryFn: async () => {
-			const response = await fetch(`/api/brands.php`);
-			if (!response.ok) throw new Error('Failed to fetch brands');
-			const data = await response.json();
-			return data.success ? data.data : [];
-		},
-		enabled: () => currentView === 'events-list'
-	});
-
-	$effect(() => {
-		if ($venueTypesQuery.data) {
-			appActions.setVenueTypesData($venueTypesQuery.data);
-		}
-	});
-
-	$effect(() => {
-		if ($brandsQuery.data) {
-			appActions.setBrandsData($brandsQuery.data);
-		}
+		enabled: () => viewType.isList
 	});
 
 	const leftButtons = $derived.by(() => {
@@ -161,8 +139,7 @@
 	}
 
 	function getFilters(view: ViewType) {
-		const venueTypes = $appStore.venueTypesData || [];
-		const brands = $appStore.brandsData || [];
+		const venueTypes = $venueTypesQuery.data || [];
 		const filterConfigs = {
 			'events-list': [
 				{ key: 'venueType', type: 'select', placeholder: 'Venue Types', options: venueTypes },
