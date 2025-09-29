@@ -72,7 +72,13 @@
     if ($userStore.userData?.success && $userStore.userData.user?.venue_types && $userStore.filterState.venueTypes.length === 0) {
         effectRan = true;
         try {
-            const venueTypeSids = $userStore.userData.user.venue_types.split(',').map(sid => sid.trim()).filter(sid => sid);
+            const rawVenueTypes = $userStore.userData.user.venue_types;
+            
+            // Handle both array and string formats
+            const venueTypeSids = Array.isArray(rawVenueTypes) 
+                ? rawVenueTypes 
+                : rawVenueTypes.split(',').map(sid => sid.trim()).filter(sid => sid);
+            
             parsedCount = venueTypeSids.length;
             
             if (venueTypeSids.length > 0) {
