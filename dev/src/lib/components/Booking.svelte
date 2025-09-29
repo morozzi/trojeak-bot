@@ -54,7 +54,7 @@
 	const constants = $derived($userStore.userData?.constants);
 	const validator = $derived(constants ? new BookingValidator(constants) : null);
 
-	const eventBrandIds = eventBrandId.split(',').map(id => id.replace(/\^/g, ''));
+	const eventBrandIds = $derived(eventBrandId.split(',').map(id => id.replace(/\^/g, '')));
 	const eventBrands = $derived($brandsQuery.data?.filter(b => eventBrandIds.includes(b.brandid.toString())) || []);
 
 	const totalItems = $derived(Object.values(selectedBrands).reduce((sum, qty) => sum + qty, 0));
