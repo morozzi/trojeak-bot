@@ -156,7 +156,7 @@
 			{/if}
 		</div>
 	{:else if viewMode === 'detail' && selectedBrandId}
-		{@const selectedBrand = brands.find(b => b.brandid.toString() === selectedBrandId)}
+		{@const selectedBrand = ($brandsQuery.data || []).find(b => b.brandid.toString() === selectedBrandId)}
 		{#if $brandsQuery.isLoading || $eventsQuery.isLoading}
 			<Loading variant="detail" />
 		{:else if selectedBrand}

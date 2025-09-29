@@ -91,7 +91,7 @@
 			{/if}
 		</div>
 	{:else if viewMode === 'detail' && selectedEventId}
-		{@const selectedEvent = events.find(e => e.eventid.toString() === selectedEventId)}
+		{@const selectedEvent = ($eventsQuery.data || []).find(e => e.eventid.toString() === selectedEventId)}
 		{#if $eventsQuery.isLoading || $brandsQuery.isLoading}
 			<Loading variant="detail" />
 		{:else if selectedEvent}
