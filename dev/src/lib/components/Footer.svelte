@@ -218,7 +218,7 @@
 										onValueChange={(values) => handleFilterChange(filter.key, values)}
 									>
 										<SelectTrigger class="scale-105 w-auto min-w-32" id={filter.key}>
-											<SelectValue placeholder="All" />
+											<SelectValue placeholder="Select" />
 										</SelectTrigger>
 										<SelectContent class="scale-105 w-auto">
 											{#if filter.options}
