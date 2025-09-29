@@ -31,6 +31,11 @@
 	let canCompleteBooking = $state(false);
 	let isBookingProcessing = $state(false);
 	let brandsData = $state([]);
+	
+	//DEBUG
+	let effectRan = $state(false);
+	let effectError = $state('');
+	let parsedCount = $state(0);
 
 	function updateFooterHeight() {
 		const height = currentFooterEl.offsetHeight;
@@ -62,14 +67,30 @@
 		}
 	});
 
+	// DEBUG
 	$effect(() => {
-		if ($userStore.userData?.success && $userStore.userData.user?.venue_types && $userStore.filterState.venueTypes.length === 0) {
-			const venueTypeSids = $userStore.userData.user.venue_types.split(',').map(sid => sid.trim()).filter(sid => sid);
-			if (venueTypeSids.length > 0) {
-				userActions.setFilter({...$userStore.filterState, venueTypes: venueTypeSids});
-			}
-		}
-	});
+    if ($userStore.userData?.success && $userStore.userData.user?.venue_types && $userStore.filterState.venueTypes.length === 0) {
+        effectRan = true;
+        try {
+            const venueTypeSids = $userStore.userData.user.venue_types.split(',').map(sid => sid.trim()).filter(sid => sid);
+            parsedCount = venueTypeSids.length;
+            
+            if (venueTypeSids.length > 0) {
+                const newFilter = {
+                    venueTypes: venueTypeSids,
+                    brands: [],
+                    promotion: false,
+                    haveEvents: false
+                };
+                userActions.setFilter(newFilter);
+            } else {
+                effectError = 'parsed array empty';
+            }
+        } catch (e) {
+            effectError = e.message || 'unknown error';
+        }
+    }
+});
 
 	$effect(() => {
 		if ($userStore.isUserDataLoaded) {
@@ -270,12 +291,16 @@
 
 <!-- Expand the debug display -->
 {#if $userStore.userData}
-<div style="position: fixed; top: 0; left: 0; background: red; color: white; padding: 10px; z-index: 9999; font-size: 12px;">
-  venue_types: {$userStore.userData?.user?.venue_types || 'null'}
-  <br>filter length: {$userStore.filterState.venueTypes.length}
-  <br>success: {$userStore.userData?.success ? 'yes' : 'no'}
-  <br>has user: {$userStore.userData?.user ? 'yes' : 'no'}
-  <br>condition met: {($userStore.userData?.success && $userStore.userData.user?.venue_types && $userStore.filterState.venueTypes.length === 0) ? 'YES' : 'NO'}
+<div style="position: fixed; top: 0; left: 0; background: red; color: white; padding: 10px; z-index: 9999; font-size: 11px; max-width: 250px; line-height: 1.3;">
+  <strong>DEBUG:</strong><br>
+  venue_types: {$userStore.userData?.user?.venue_types || 'null'}<br>
+  filter length: {$userStore.filterState.venueTypes.length}<br>
+  filter[0]: {$userStore.filterState.venueTypes[0] || 'empty'}<br>
+  filter[1]: {$userStore.filterState.venueTypes[1] || 'none'}<br>
+  condition: {($userStore.userData?.success && $userStore.userData.user?.venue_types && $userStore.filterState.venueTypes.length === 0) ? 'YES' : 'NO'}<br>
+  effect ran: {effectRan ? 'YES' : 'NO'}<br>
+  parsed count: {parsedCount}<br>
+  error: {effectError || 'none'}
 </div>
 {/if}
 
