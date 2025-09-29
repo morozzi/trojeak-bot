@@ -147,19 +147,6 @@
 		}
 	}
 
-	function getCurrentFilterValue(filterKey: string): string | null {
-		if (filterKey === 'venueType') {
-			return $userStore.filterState.venueTypes.length > 0 
-				? $userStore.filterState.venueTypes[0] 
-				: null;
-		} else if (filterKey === 'brand') {
-			return $userStore.filterState.brands.length > 0 
-				? $userStore.filterState.brands[0] 
-				: null;
-		}
-		return null;
-	}
-
 	function getFilters(view: ViewType) {
 		const venueTypes = $venueTypesQuery.data || [];
 		const filterConfigs = {
@@ -225,13 +212,7 @@
 							{#each selectFilters as filter}
 								<div class="space-y-2">
 									<Label for={filter.key}>{filter.placeholder}</Label>
-									<Select 
-										selected={{ 
-											value: getCurrentFilterValue(filter.key), 
-											label: getCurrentFilterValue(filter.key) || 'All'
-										}}
-										onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}
-									>
+									<Select onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}>
 										<SelectTrigger id={filter.key}>
 											<SelectValue placeholder="All" />
 										</SelectTrigger>
@@ -255,11 +236,7 @@
 						<div class="flex justify-center gap-4">
 							{#each switchFilters as filter}
 								<div class="flex items-center justify-center gap-3">
-									<Switch 
-										id={filter.key}
-										checked={filter.key === 'promotion' ? $userStore.filterState.promotion : $userStore.filterState.haveEvents}
-										onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} 
-									/>
+									<Switch id={filter.key} onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} />
 									<Label for={filter.key}>{filter.label}</Label>
 								</div>
 							{/each}
@@ -269,15 +246,4 @@
 			</div>
 		</div>
 	</DrawerContent>
-	
-	{#if $userStore.userData}
-	<div style="position: fixed; top: 0; left: 0; background: purple; color: white; padding: 10px; z-index: 10000; font-size: 10px; max-width: 300px; line-height: 1.2;">
-		<strong>FILTER DEBUG:</strong><br>
-		venueTypes: [{$userStore.filterState.venueTypes.join(', ') || 'empty'}]<br>
-		brands: [{$userStore.filterState.brands.join(', ') || 'empty'}]<br>
-		promotion: {$userStore.filterState.promotion ? 'YES' : 'NO'}<br>
-		haveEvents: {$userStore.filterState.haveEvents ? 'YES' : 'NO'}<br>
-		<strong>View:</strong> {currentView}
-	</div>
-	{/if}
 </Drawer>
