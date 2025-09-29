@@ -136,8 +136,15 @@
 	});
 	
 	function handleStartBooking(event: CustomEvent<{event: Event}>) {
-		appActions.setSelectedEvent(event.detail.event);
-		appActions.startBooking(event.detail.event.eventid.toString());
+		const evt = event.detail.event;
+		appActions.startBooking(
+			evt.eventid.toString(),
+			evt.eventtitle,
+			evt.venuename,
+			evt.brandid,
+			evt.eventschema,
+			evt.eventschemaprice
+		);
 		appActions.navigate('booking-step-1');
 		window.scrollTo(0, 0);
 	}
@@ -325,19 +332,11 @@
 						on:navigate={handleNavigate}
 					/>
 				{:else if $appStore.currentView.startsWith('booking-step-')}
-					{#if $appStore.selectedEvent}
-						<Booking 
-							event={$appStore.selectedEvent}
-							on:navigate={handleNavigate}
-							on:footerVisibilityChange={handleFooterVisibilityChange}
-							on:validationChange={handleValidationChange}
-						/>
-					{:else}
-        		<div class="p-4 text-center">
-            	<p class="text-muted-foreground">Event not found</p>
-            	<Button.Button onclick={() => appActions.navigate('home')}>Go Home</Button.Button>
-        		</div>
-    			{/if}
+					<Booking 
+						on:navigate={handleNavigate}
+						on:footerVisibilityChange={handleFooterVisibilityChange}
+						on:validationChange={handleValidationChange}
+					/>
 				{/if}
 			</main>
 

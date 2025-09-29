@@ -20,6 +20,11 @@ interface NavigationEntry {
 
 interface BookingState {
 	eventId: string;
+	eventTitle: string;
+	venueName: string;
+	eventBrandId: string;
+	eventSchema: string;
+	eventSchemaPrice: number;
 	selectedBrands: {[key: string]: number};
 	guests: number;
 	phone: string;
@@ -178,11 +183,16 @@ export const appActions = {
 		baseAppStore.update(state => ({ ...state, cityData: cities }));
 	},
 
-	startBooking: (eventId: string) => {
+	startBooking: (eventId: string, eventTitle: string, venueName: string, eventBrandId: string, eventSchema: string, eventSchemaPrice: number) => {
 		baseAppStore.update(state => ({
 			...state,
 			bookingState: {
 				eventId,
+				eventTitle,
+				venueName,
+				eventBrandId,
+				eventSchema,
+				eventSchemaPrice,
 				selectedBrands: {},
 				guests: 1,
 				phone: '',
