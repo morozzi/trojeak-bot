@@ -217,10 +217,10 @@
 										value={filter.key === 'venueType' ? $userStore.filterState.venueTypes : $userStore.filterState.brands}
 										onValueChange={(values) => handleFilterChange(filter.key, values)}
 									>
-										<SelectTrigger class="scale-105" id={filter.key}>
+										<SelectTrigger class="scale-105 w-auto min-w-32" id={filter.key}>
 											<SelectValue placeholder="All" />
 										</SelectTrigger>
-										<SelectContent class="scale-105">
+										<SelectContent class="scale-105 w-auto">
 											{#if filter.options}
 												{#each filter.options as option}
 													<SelectItem value={filter.key === 'venueType' ? option.venuetypesid?.toString() : option.brandid?.toString()}>
