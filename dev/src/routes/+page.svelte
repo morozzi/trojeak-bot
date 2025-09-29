@@ -31,6 +31,7 @@
 	let canCompleteBooking = $state(false);
 	let isBookingProcessing = $state(false);
 	let brandsData = $state([]);
+	let filterInitialized = $state(false);
 
 	function updateFooterHeight() {
 		const height = currentFooterEl.offsetHeight;
@@ -63,7 +64,7 @@
 	});
 
 	$effect(() => {
-		if ($userStore.userData?.success && $userStore.userData.user?.venue_types && $userStore.filterState.venueTypes.length === 0) {
+		if (!filterInitialized && $userStore.userData?.success && $userStore.userData.user?.venue_types && $userStore.filterState.venueTypes.length === 0) {
 			const venueTypeSids = Array.isArray($userStore.userData.user.venue_types) 
 				? $userStore.userData.user.venue_types 
 				: [];
@@ -75,6 +76,7 @@
 					promotion: false,
 					haveEvents: false
 				});
+				filterInitialized = true;
 			}
 		}
 	});

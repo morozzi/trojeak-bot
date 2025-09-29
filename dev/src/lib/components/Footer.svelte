@@ -253,15 +253,4 @@
 			</div>
 		</div>
 	</DrawerContent>
-	
-	{#if $userStore.userData}
-	<div style="position: fixed; top: 0; left: 0; background: purple; color: white; padding: 10px; z-index: 10000; font-size: 10px; max-width: 300px; line-height: 1.2;">
-		<strong>FILTER DEBUG:</strong><br>
-		venueTypes: [{$userStore.filterState.venueTypes.join(', ') || 'empty'}]<br>
-		brands: [{$userStore.filterState.brands.join(', ') || 'empty'}]<br>
-		promotion: {$userStore.filterState.promotion ? 'YES' : 'NO'}<br>
-		haveEvents: {$userStore.filterState.haveEvents ? 'YES' : 'NO'}<br>
-		<strong>View:</strong> {currentView}
-	</div>
-	{/if}
 </Drawer>
