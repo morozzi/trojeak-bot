@@ -153,7 +153,7 @@
 			'events-list': [
 				{ key: 'venueType', type: 'select', placeholder: 'Venue Types', options: venueTypes },
 				{ key: 'brand', type: 'select', placeholder: 'Brands', options: brands },
-				{ key: 'promotion', type: 'switch', label: 'Promo' }
+				{ key: 'promotion', type: 'switch', label: 'With Promotion' }
 			],
 			'venues-list': [
 				{ key: 'venueType', type: 'select', placeholder: 'Venue Types', options: venueTypes },
@@ -217,10 +217,10 @@
 										value={filter.key === 'venueType' ? $userStore.filterState.venueTypes : $userStore.filterState.brands}
 										onValueChange={(values) => handleFilterChange(filter.key, values)}
 									>
-										<SelectTrigger id={filter.key}>
+										<SelectTrigger class="scale-125" id={filter.key}>
 											<SelectValue placeholder="All" />
 										</SelectTrigger>
-										<SelectContent>
+										<SelectContent class="scale-125">
 											{#if filter.options}
 												{#each filter.options as option}
 													<SelectItem value={filter.key === 'venueType' ? option.venuetypesid?.toString() : option.brandid?.toString()}>
@@ -241,6 +241,7 @@
 								<div class="flex items-center justify-center gap-3">
 									<Switch 
 										id={filter.key}
+										class="scale-125"
 										checked={filter.key === 'promotion' ? $userStore.filterState.promotion : $userStore.filterState.haveEvents}
 										onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} 
 									/>
