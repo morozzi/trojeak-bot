@@ -33,9 +33,6 @@ interface AppState {
 	isLoading: boolean;
 	error: string;
 	currentView: ViewType;
-	selectedEventId: string | null;
-	selectedVenueId: string | null;
-	selectedBrandId: string | null;
 	selectedEvent: Event | null;
 	selectedVenue: Venue | null;
 	selectedBrand: any | null;
@@ -51,9 +48,6 @@ const initialState: AppState = {
 	isLoading: true,
 	error: '',
 	currentView: 'home',
-	selectedEventId: null,
-	selectedVenueId: null,
-	selectedBrandId: null,
 	selectedEvent: null,
 	selectedVenue: null,
 	selectedBrand: null,
@@ -68,7 +62,10 @@ export const appStore = derived(
 	baseAppStore,
 	($base) => ({
 		...$base,
-		canGoBack: $base.navigationHistory.length > 0
+		canGoBack: $base.navigationHistory.length > 0,
+		selectedEventId: $base.selectedEvent?.eventid.toString(),
+		selectedVenueId: $base.selectedVenue?.venueid.toString(),
+		selectedBrandId: $base.selectedBrand?.brandid.toString()
 	})
 );
 
@@ -93,9 +90,9 @@ export const appActions = {
 				view: state.currentView,
 				scrollPosition: window.scrollY || 0,
 				context: {
-					selectedEventId: state.selectedEventId,
-					selectedVenueId: state.selectedVenueId,
-					selectedBrandId: state.selectedBrandId
+					selectedEventId: state.selectedEvent?.eventid.toString(),
+					selectedVenueId: state.selectedVenue?.venueid.toString(),
+					selectedBrandId: state.selectedBrand?.brandid.toString()
 				}
 			});
 
@@ -123,14 +120,14 @@ export const appActions = {
 						currentView: lastEntry.view
 					};
 
-					if (lastEntry.context.selectedEventId !== state.selectedEventId) {
-						updates.selectedEventId = lastEntry.context.selectedEventId || null;
+					if (lastEntry.context.selectedEventId && !state.selectedEvent) {
+						updates.selectedEvent = null;
 					}
-					if (lastEntry.context.selectedVenueId !== state.selectedVenueId) {
-						updates.selectedVenueId = lastEntry.context.selectedVenueId || null;
+					if (lastEntry.context.selectedVenueId && !state.selectedVenue) {
+						updates.selectedVenue = null;
 					}
-					if (lastEntry.context.selectedBrandId !== state.selectedBrandId) {
-						updates.selectedBrandId = lastEntry.context.selectedBrandId || null;
+					if (lastEntry.context.selectedBrandId && !state.selectedBrand) {
+						updates.selectedBrand = null;
 					}
 
 					if (SCROLL_RESTORE_VIEWS.includes(lastEntry.view)) {
@@ -148,18 +145,6 @@ export const appActions = {
 
 	clearHistory: () => {
 		baseAppStore.update(state => ({ ...state, navigationHistory: [] }));
-	},
-
-	setSelectedEventId: (id: string | null) => {
-		baseAppStore.update(state => ({ ...state, selectedEventId: id }));
-	},
-
-	setSelectedVenueId: (id: string | null) => {
-		baseAppStore.update(state => ({ ...state, selectedVenueId: id }));
-	},
-
-	setSelectedBrandId: (id: string | null) => {
-		baseAppStore.update(state => ({ ...state, selectedBrandId: id }));
 	},
 
 	setSelectedEvent: (event: Event | null) => {
@@ -214,13 +199,13 @@ export const appActions = {
 				
 				if (type === 'event' && !isNaN(numericId)) {
 					updates.currentView = 'events-detail';
-					updates.selectedEventId = id;
+					updates.selectedEvent = { eventid: numericId } as Event;
 				} else if (type === 'venue' && !isNaN(numericId)) {
 					updates.currentView = 'venues-detail';
-					updates.selectedVenueId = id;
+					updates.selectedVenue = { venueid: numericId } as Venue;
 				} else if (type === 'brand' && !isNaN(numericId)) {
 					updates.currentView = 'brands-detail';
-					updates.selectedBrandId = id;
+					updates.selectedBrand = { brandid: numericId };
 				}
 			}
 			

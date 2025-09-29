@@ -209,7 +209,6 @@
 		const { view, eventId, venueId, brandId } = event.detail;
 			
 		if (view === 'events-detail' && eventId) {
-			appActions.setSelectedEventId(eventId);
     	const isFromHome = $appStore.currentView === 'home';
     	const cacheKey = isFromHome 
         ? ['events', $userStore.selectedLanguage, $userStore.selectedCity, 'featured']
@@ -219,11 +218,9 @@
     	if (foundEvent) appActions.setSelectedEvent(foundEvent);
 
 		} else if (view === 'venues-detail' && venueId) {
-			appActions.setSelectedVenueId(venueId);
 			const foundVenue = queryClient.getQueryData(['venues', $userStore.selectedLanguage, $userStore.selectedCity])?.find(v => v.venueid.toString() === venueId);
 			if (foundVenue) appActions.setSelectedVenue(foundVenue);
 		} else if (view === 'brands-detail' && brandId) {
-			appActions.setSelectedBrandId(brandId);
 			const foundBrand = queryClient.getQueryData(['brands'])?.find(b => b.brandid.toString() === brandId);
 			if (foundBrand) appActions.setSelectedBrand(foundBrand);
 		}
