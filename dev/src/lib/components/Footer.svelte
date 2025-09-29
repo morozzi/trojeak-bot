@@ -157,10 +157,10 @@
 			],
 			'venues-list': [
 				{ key: 'venueType', type: 'select', placeholder: 'Venue Types', options: venueTypes },
-				{ key: 'haveEvents', type: 'switch', label: 'Events' }
+				{ key: 'haveEvents', type: 'switch', label: 'With Events' }
 			],
 			'brands-list': [
-				{ key: 'haveEvents', type: 'switch', label: 'Events' }
+				{ key: 'haveEvents', type: 'switch', label: 'With Events' }
 			]
 		};
 		return filterConfigs[view] || [];
@@ -217,10 +217,10 @@
 										value={filter.key === 'venueType' ? $userStore.filterState.venueTypes : $userStore.filterState.brands}
 										onValueChange={(values) => handleFilterChange(filter.key, values)}
 									>
-										<SelectTrigger class="scale-125" id={filter.key}>
+										<SelectTrigger class="scale-110" id={filter.key}>
 											<SelectValue placeholder="All" />
 										</SelectTrigger>
-										<SelectContent class="scale-125">
+										<SelectContent class="scale-110">
 											{#if filter.options}
 												{#each filter.options as option}
 													<SelectItem value={filter.key === 'venueType' ? option.venuetypesid?.toString() : option.brandid?.toString()}>
