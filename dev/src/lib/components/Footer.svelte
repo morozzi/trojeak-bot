@@ -135,29 +135,16 @@
 		dispatch('bookingAction', { action });
 	}
 
-	function handleFilterChange(type: string, value: string | boolean | null): void {
+	function handleFilterChange(type: string, value: string[] | boolean): void {
 		if (type === 'venueType') {
-			userActions.setFilter({...$userStore.filterState, venueTypes: value ? [value] : []});
+			userActions.setFilter({...$userStore.filterState, venueTypes: Array.isArray(value) ? value : []});
 		} else if (type === 'brand') {
-			userActions.setFilter({...$userStore.filterState, brands: value ? [value] : []});
+			userActions.setFilter({...$userStore.filterState, brands: Array.isArray(value) ? value : []});
 		} else if (type === 'promotion') {
 			userActions.setFilter({...$userStore.filterState, promotion: value as boolean});
 		} else if (type === 'haveEvents') {
 			userActions.setFilter({...$userStore.filterState, haveEvents: value as boolean});
 		}
-	}
-
-	function getCurrentFilterValue(filterKey: string): string | null {
-		if (filterKey === 'venueType') {
-			return $userStore.filterState.venueTypes.length > 0 
-				? $userStore.filterState.venueTypes[0] 
-				: null;
-		} else if (filterKey === 'brand') {
-			return $userStore.filterState.brands.length > 0 
-				? $userStore.filterState.brands[0] 
-				: null;
-		}
-		return null;
 	}
 
 	function getFilters(view: ViewType) {
@@ -226,17 +213,14 @@
 								<div class="space-y-2">
 									<Label for={filter.key}>{filter.placeholder}</Label>
 									<Select 
-										selected={{ 
-											value: getCurrentFilterValue(filter.key), 
-											label: getCurrentFilterValue(filter.key) || 'All'
-										}}
-										onSelectedChange={(value) => handleFilterChange(filter.key, value?.value || null)}
+										type="multiple"
+										value={filter.key === 'venueType' ? $userStore.filterState.venueTypes : $userStore.filterState.brands}
+										onValueChange={(values) => handleFilterChange(filter.key, values)}
 									>
 										<SelectTrigger id={filter.key}>
 											<SelectValue placeholder="All" />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem value={null}>All</SelectItem>
 											{#if filter.options}
 												{#each filter.options as option}
 													<SelectItem value={filter.key === 'venueType' ? option.venuetypesid?.toString() : option.brandid?.toString()}>
