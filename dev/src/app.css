@@ -226,3 +226,7 @@ button, [role="button"] {
     transition-duration: 0.01ms !important;
   }
 }
+
+[data-vaul-drawer-wrapper] [data-vaul-overlay] {
+  opacity: 0 !important;
+}

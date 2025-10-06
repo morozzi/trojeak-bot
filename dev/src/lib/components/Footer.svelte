@@ -199,7 +199,7 @@
 </nav>
 
 <Drawer bind:open={filtersOpen}>
-	<DrawerContent>
+	<DrawerContent class="transition-transform duration-300 ease-out">
 		<div class="mx-auto w-full max-w-sm">
 			<div class="p-4 pt-10 pb-12 space-y-6 text-center">
 				{#if getFilters(currentView).length > 0}
