@@ -13,8 +13,9 @@
 	} = $props();
 </script>
 <DrawerPrimitive.Portal {...portalProps}>
-	<DrawerOverlay />
+	<DrawerOverlay forceMount />
 	<DrawerPrimitive.Content
+		forceMount
 		bind:ref
 		data-slot="drawer-content"
 		class={cn(
