@@ -4,7 +4,7 @@
 	import { Button } from "@/components/ui/button"
 	import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 	import { Label } from "@/components/ui/label"
-	import { Drawer, DrawerOverlay, DrawerContent } from '@/components/ui/drawer';
+	import { Drawer, DrawerContent } from '@/components/ui/drawer';
 	import { Switch } from "@/components/ui/switch";
 	import { SlidersHorizontal } from '@lucide/svelte';
 	import type { ViewType, BookingAction } from '@/lib/types/components.js';
@@ -199,8 +199,7 @@
 </nav>
 
 <Drawer bind:open={filtersOpen}>
-	<DrawerOverlay />
-	<DrawerContent class="data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom data-[state=open]:duration-300 data-[state=open]:ease-out">
+	<DrawerContent>
 		<div class="mx-auto w-full max-w-sm">
 			<div class="p-4 pt-10 pb-12 space-y-6 text-center">
 				{#if getFilters(currentView).length > 0}
