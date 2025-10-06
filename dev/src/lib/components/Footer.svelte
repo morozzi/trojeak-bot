@@ -7,7 +7,6 @@
 	import { Drawer, DrawerOverlay, DrawerContent } from '@/components/ui/drawer';
 	import { Switch } from "@/components/ui/switch";
 	import { SlidersHorizontal } from '@lucide/svelte';
-	import { fly } from 'svelte/transition';
 	import type { ViewType, BookingAction } from '@/lib/types/components.js';
 	import { appStore, appActions } from '@/lib/stores/app.js';
 	import { userStore, userActions } from '@/lib/stores/user.ts';
@@ -200,72 +199,60 @@
 </nav>
 
 <Drawer bind:open={filtersOpen}>
-	<DrawerOverlay forceMount>
-		{#snippet child({ props, open })}
-			{#if open}
-				<div {...props} class="opacity-0"></div>
-			{/if}
-		{/snippet}
-	</DrawerOverlay>
-	<DrawerContent forceMount>
-		{#snippet child({ props, open })}
-			{#if open}
-				<div {...props} transition:fly={{ y: 200, duration: 300 }}>
-					<div class="mx-auto w-full max-w-sm">
-						<div class="p-4 pt-10 pb-12 space-y-6 text-center">
-							{#if getFilters(currentView).length > 0}
-								{@const filters = getFilters(currentView)}
-								{@const selectFilters = filters.filter(f => f.type === 'select')}
-								{@const switchFilters = filters.filter(f => f.type === 'switch')}
-								
-								{#if selectFilters.length > 0}
-									<div class="flex justify-center gap-4">
-										{#each selectFilters as filter}
-											<div class="space-y-2">
-												<Label for={filter.key}>{filter.placeholder}</Label>
-												<Select 
-													type="multiple"
-													value={filter.key === 'venueType' ? $userStore.filterState.venueTypes : $userStore.filterState.brands}
-													onValueChange={(values) => handleFilterChange(filter.key, values)}
-												>
-													<SelectTrigger class="scale-105 w-auto min-w-32" id={filter.key}>
-														<SelectValue placeholder="Select" />
-													</SelectTrigger>
-													<SelectContent class="scale-105 w-auto">
-														{#if filter.options}
-															{#each filter.options as option}
-																<SelectItem value={filter.key === 'venueType' ? option.venuetypesid?.toString() : option.brandid?.toString()}>
-																	{filter.key === 'venueType' ? option.venuetypename : option.brandname}
-																</SelectItem>
-															{/each}
-														{/if}
-													</SelectContent>
-												</Select>
-											</div>
-										{/each}
-									</div>
-								{/if}
-								
-								{#if switchFilters.length > 0}
-									<div class="flex justify-center gap-4">
-										{#each switchFilters as filter}
-											<div class="flex items-center justify-center gap-3">
-												<Switch 
-													id={filter.key}
-													class="scale-125"
-													checked={filter.key === 'promotion' ? $userStore.filterState.promotion : $userStore.filterState.haveEvents}
-													onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} 
-												/>
-												<Label for={filter.key}>{filter.label}</Label>
-											</div>
-										{/each}
-									</div>
-								{/if}
-							{/if}
+	<DrawerOverlay class="opacity-0" />
+	<DrawerContent class="data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom data-[state=open]:duration-300 data-[state=open]:ease-out">
+		<div class="mx-auto w-full max-w-sm">
+			<div class="p-4 pt-10 pb-12 space-y-6 text-center">
+				{#if getFilters(currentView).length > 0}
+					{@const filters = getFilters(currentView)}
+					{@const selectFilters = filters.filter(f => f.type === 'select')}
+					{@const switchFilters = filters.filter(f => f.type === 'switch')}
+					
+					{#if selectFilters.length > 0}
+						<div class="flex justify-center gap-4">
+							{#each selectFilters as filter}
+								<div class="space-y-2">
+									<Label for={filter.key}>{filter.placeholder}</Label>
+									<Select 
+										type="multiple"
+										value={filter.key === 'venueType' ? $userStore.filterState.venueTypes : $userStore.filterState.brands}
+										onValueChange={(values) => handleFilterChange(filter.key, values)}
+									>
+										<SelectTrigger class="scale-105 w-auto min-w-32" id={filter.key}>
+											<SelectValue placeholder="Select" />
+										</SelectTrigger>
+										<SelectContent class="scale-105 w-auto">
+											{#if filter.options}
+												{#each filter.options as option}
+													<SelectItem value={filter.key === 'venueType' ? option.venuetypesid?.toString() : option.brandid?.toString()}>
+														{filter.key === 'venueType' ? option.venuetypename : option.brandname}
+													</SelectItem>
+												{/each}
+											{/if}
+										</SelectContent>
+									</Select>
+								</div>
+							{/each}
 						</div>
-					</div>
-				</div>
-			{/if}
-		{/snippet}
+					{/if}
+					
+					{#if switchFilters.length > 0}
+						<div class="flex justify-center gap-4">
+							{#each switchFilters as filter}
+								<div class="flex items-center justify-center gap-3">
+									<Switch 
+										id={filter.key}
+										class="scale-125"
+										checked={filter.key === 'promotion' ? $userStore.filterState.promotion : $userStore.filterState.haveEvents}
+										onCheckedChange={(checked) => handleFilterChange(filter.key, checked)} 
+									/>
+									<Label for={filter.key}>{filter.label}</Label>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				{/if}
+			</div>
+		</div>
 	</DrawerContent>
 </Drawer>
